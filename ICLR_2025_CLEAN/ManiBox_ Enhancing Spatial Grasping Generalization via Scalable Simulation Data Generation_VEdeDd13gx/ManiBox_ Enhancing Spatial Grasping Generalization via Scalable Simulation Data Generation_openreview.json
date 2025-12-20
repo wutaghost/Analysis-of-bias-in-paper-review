@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "VEdeDd13gx",
+    "forum": "VEdeDd13gx",
+    "title": "ManiBox: Enhancing Spatial Grasping Generalization via Scalable Simulation Data Generation",
+    "authors": "Hengkai Tan, Xuezhou Xu, Chengyang Ying, Xinyi Mao, Songming Liu, Xingxing Zhang, Hang Su, Jun Zhu",
+    "keywords": "Robot Learning, Reinforcement Learning, Sim2Real, Embodied AI",
+    "abstract": "Learning a precise robotic grasping policy is crucial for embodied agents operating in complex real-world manipulation tasks. Despite significant advancements, most models still struggle with accurate spatial positioning of objects to be grasped. We first show that this spatial generalization challenge stems primarily from the extensive data requirements for adequate spatial understanding. However, collecting such data with real robots is prohibitively expensive, and relying on simulation data often leads to visual generalization gaps upon deployment. \nTo overcome these challenges, we then focus on state-based policy generalization and present ManiBox, a novel bounding-box-guided manipulation method built on a simulation-based teacher-student framework. The teacher policy efficiently generates scalable simulation data using bounding boxes, which are proven to uniquely determine the objects' spatial positions. The student policy then utilizes these low-dimensional spatial states to enable zero-shot transfer to real robots. \nThrough comprehensive evaluations in simulated and real-world environments, ManiBox demonstrates a marked improvement in spatial grasping generalization and adaptability to diverse objects and backgrounds.\nFurther, our empirical study into scaling laws for policy performance indicates that spatial volume generalization scales positively with data volume. For a certain level of spatial volume, the success rate of grasping empirically follows Michaelis-Menten kinetics relative to data volume, showing a saturation effect as data increases. Our data and code are available in the supplementary material.",
+    "pdf_link": "https://openreview.net/pdf/4e1f7333f236b8213eebaf310e983f722df8d0f5.pdf",
+    "submission_date": "2024-09-28 09:59:34.689000"
+  },
+  "reviews": [
+    {
+      "note_id": "7gxM9JlJ8B",
+      "replyto": "VEdeDd13gx",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-09 01:48:38.482000",
+      "modified": "2024-11-12 16:26:11.701000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14017/Reviewer_WAZp",
+      "actor": "Reviewer WAZp",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "The paper is well written and easy to read. Aside from a few details that I mention in the questions section, In my opinion the authors provide sufficient details about the experimental set up for an interested reader. The supplementary video provided also supports the paper well.\n\nThe challenge being addressed is very relevant to robotic manipulation and the results and methodology presented in the paper are interesting and compelling enough to inspire future research along similar lines.",
+      "weaknesses": "1) Pseudo algorithm - In my opinion, the readability of the paper can be improved by including a pseudo algorithm that describes how the teacher is trained --> the criteria for selecting the successful robot trajectory from teacher policy --> The distillation process that generates the student policy could be very useful for a reader. \n2) The paper lacks a section on the weaknesses of the current approach. Even in the supplementary video, I dont recall a scenario where the policy fails. I think its important to know some of the failure cases of the method as well. \n3) Although this might be common knowledge among RL researchers - more information regarding the reward design could be helpful. Im assuming it involves getting close to the object and then closing fingers, however, this clearly depends on the distance to object and how fast the robot is moving - describing the reward mathematically would be a good addition to the paper.",
+      "questions": "The proposed method uses bounding box as object representation for grasping, however clearly bounding box does not capture local surface geometry of the object being manipulated. For example, an odd shape such as banana will not be represented by a bounding box well. Do the authors think that this could be a weakness of this approach? If so, how can it be addressed? I notice that most of the objects being manipulated are spherical/cylindrical in shape which might be easy to grasp, were any other objects used to test the policy? \nAnother observation I had is that the grasping motion seems consistently similar regardless of the test scenario (be it different object, background), some objects might need grasping from the top, did the teacher policy ever learn this behavior?\n\nApologize if I missed this, but what is the history length of input observations for the LSTM student policy?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors tackle the challenge of spatial generalization and sim-2-real transfer of vision based control policies for robotic manipulation using a teacher-student reinforcement learning framework. The teacher policy, which is trained using privileged information about object location, etc.. is used to generate large scale robot trajectory data which is then used to distill a student policy which achieves sim-2-real transfer to real-world tasks. The authors also shed some light on the amount of robot trajectory data required for a given volume of reachable space of a robot."
+    },
+    {
+      "note_id": "eeB5Oheemy",
+      "replyto": "VEdeDd13gx",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 08:20:47.986000",
+      "modified": "2024-12-13 07:54:22.124000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14017/Reviewer_NsAU",
+      "actor": "Reviewer NsAU",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "1. Improvement over baseline in the given task of object grasping\n2. Insightful study on data scaling laws for robotic object grasping",
+      "weaknesses": "1. Lemma 2 is a well known result in 3D computer vision. Hartley, R. and Zisserman, A., 2003. Multiple view geometry in computer vision. Cambridge university press.\n2. Limited comparison to baseline. Baseline scores are simply 0 even though there are numerous object-grasping methods (learning & heuristic based) that can grasp objects in different 3D locations.",
+      "questions": "1. Line 492-493: Why does vision based ACT get a score of 0? Paper reports that vision based ACT \"experiences a visible drop on success rate when spatial range scales up\".  Is it because of the visual discrepancy between sim and real? \n\nPrior work has shown strong results of ACT with limited real world data.\nZhao, T.Z., Kumar, V., Levine, S. and Finn, C., 2023. Learning fine-grained bimanual manipulation with low-cost hardware. arXiv preprint arXiv:2304.13705.\n\n2. Line 265: \"ensure its dynamics are consistent with the real world\". How was it ensured?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper presents a method called ManiBox to train generalizable (to 3D location and object) grasping policies in simulation and successfully transfer them to the real world. The method works by:\n1. First, a teacher policy is trained in simulation to grasp objects using Reinforcement Learning\n2. A student policy is trained in simulation that uses as observation bounding boxes of the target object from multiple camera streams\n3. Bounding boxes provide a low dimensional representation that transfers reasonably well between sim and real. Sim has privileged information so it's easy to get bounding boxes. In real, the YOLO world object detection module is used.\n\nUsing this method, the authors show successful sim-to-real transfer and generalization to different objects, backgrounds & 3D locations. The authors also present a study on scaling laws of success rate vs training dataset size."
+    },
+    {
+      "note_id": "rnxBfX9WXr",
+      "replyto": "VEdeDd13gx",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-30 01:57:53.111000",
+      "modified": "2024-11-26 17:02:48.961000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14017/Reviewer_4x8i",
+      "actor": "Reviewer 4x8i",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "**Effective Sim2Real Transfer:**\n\nThe random masking strategy helps the system transfer successfully from simulation to real-world environments.\n\n**Background Generalization:**\n\nThe system maintains good performance across diverse backgrounds, which adds practical robustness.\n\n**Scaling Law Insight:**\n\nThe identified relationship between data volume and spatial generalization offers valuable guidance for data-driven models.",
+      "weaknesses": "**Limited Object Diversity:**\n\nThe experiments use similar and simple objects, which limits the demonstration of the full generalization potential. A wider variety of objects might better highlight the benefits of the approach.\n\n**Unclear Bounding Box Usage:**\n\nThe relationship between bounding boxes for object detection and manipulation is not clearly explained. This makes it hard to understand how they work together effectively.\n\n\n**Fixed Cubic Space Constraint:**\n\nThe use of fixed cubic spaces (b x b x b) seems arbitrary. It’s unclear if more flexible bounding volumes could improve results.\nComplex Camera Setup:\n\nThe use of three cameras raises questions, as stereo vision with two cameras is often sufficient for localization. The necessity of the third camera is unclear.\n\n**Fragmented Descriptions of Settings:**\n\nThe simulation, real-world, and policy setups are described separately, making it difficult to compare them. A more structured comparison would improve clarity.\n\n\n**Lack of Vertical Variations:**\n\nThe experiments seem limited to flat surfaces. It’s unclear if the system can handle objects with more Z-axis variation or bounding boxes placed in mid-air.\n\n**Formula 4 Confusion:**\n\n\nEquation 4 lacks clear explanations of some symbols and their meanings, making it harder to follow.",
+      "questions": "1. **Can Bounding Boxes Be Scaled or Combined?**\n    - Would it be possible to **scale or combine multiple bounding boxes** to handle more complex objects and improve generalization?\n2. **Why Use Fixed Cubic Spaces?**\n    - Is there a reason for using **b x b x b cubes** as operational spaces, or could other bounding volumes work better?\n3. **What Are the Camera Setups in Real-World Experiments?**\n    - Are cameras mounted on the **robot arm and the environment**? What role does each camera play?\n4. **Is the Bounding Box 2D or 3D?**\n    - Are the bounding boxes used **2D projections** or full **3D representations**?\n5. **Can Bounding Boxes Exist in Mid-Air?**\n    - Could the system define **floating bounding boxes**, or are they constrained to surfaces?\n6. **What Background Challenges Were Faced?**\n    - Could the paper clarify the **specific challenges** from changing backgrounds and how they were addressed?\n7. **What Are the Teacher Policy’s Hardware Requirements?**\n    - What specific **hardware resources** are needed for the teacher policy?\n8. **Where Are Random Points Placed?**\n    - Are the **random points** generated at the **object’s center or across its surface**?\n9. **What Are the Simulation Object Types and Task Settings?**\n    - A more detailed description of the **simulation tasks and object setups** would help understand the system’s scope.\n10. **How Is Trajectory Quality Linked to Rewards?**\n    - What criteria are used to **distinguish good trajectories** from bad ones in the reward function?\n11. **Need for Clearer Visuals**:\n    - Including **bounding box annotations in simulation screenshots** would help readers, especially those without robotics experience, better understand the process.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces ManiBox, a framework for improving the generalization of robotic grasping through bounding-box-guided manipulation. Using a teacher-student policy setup, the teacher generates data in simulation, and the student learns to transfer this knowledge to real-world scenarios. Objects are represented with bounding boxes, aiming to reduce complexity and enhance generalization. A key finding is the scaling law that shows data requirements grow non-linearly with spatial volume. While the system demonstrates strong Sim2Real performance, some design choices and experimental setups leave room for clarification."
+    },
+    {
+      "note_id": "ME10Uc5mo9",
+      "replyto": "VEdeDd13gx",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-15 16:38:13.289000",
+      "modified": "2024-11-12 16:26:11.496000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14017/Reviewer_rbGJ",
+      "actor": "Reviewer rbGJ",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 1,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "**General Idea**\n-  Leveraging vision-foundation models to train policies that can be deployed on real robots is an interesting and relevant approach for addressing many real-world manipulation tasks.\n\n**Real-robot Deployment** \n- The proposed method is tested on a real robot, verifying that the inputs from the open-vocabulary detection model can be used to transfer the learned behaviors.\n\n**Visual Presentation**\n- The overview figures, particularly Figure 2, effectively clarify the proposed model.",
+      "weaknesses": "**Low Novelty**\n- The paper does not introduce a novel method, but rather employs a specific student-teacher learning formulation, using bounding boxes in the student's input space. Additionally, the finding that the amount of expert data required to train a proficient student policy scales with the robot's workspace size is unsurprising.\n- The method trains on a single object (with randomization in its scale) using a parallel gripper in an uncluttered tabletop scenario, which is a very simple task configuration that has been addressed without the need for interactive RL policies (see e.g. https://inria.hal.science/inria-00325794/document)\n\n**Method Limitations**\n- Representing objects through 2D bounding boxes provides only a rough approximation of an object’s convex hull, which is likely insufficient for generalizing to objects with diverse shapes.\n- The method currently relies on multiple camera observations. Inferring object states from a single RGB-D camera or using the history of wrist-camera observations from different poses would make the approach easier to deploy.\n\n**Results and Research Claims**\n- The Abstract claims that the paper will demonstrate that most models’ spatial generalization challenges stem from high data requirements for spatial understanding. However, this is not substantiated, as dataset size is the only variable that is investigated in the experiments. Moreover, reformulating the problem from joint-space actions and observations to end-effector control, with object position relative to the robot's gripper, could reduce variability that is unnecessary for task completion.\n- Object generalization is evaluated by testing on items different from those encountered by the teacher policy. It is mentioned that two objects are out of distribution, yet since the teacher policy training does not cover these objects, there is no reason to expect it to generalize to this configuration. Furthermore, details on how this experiment was conducted—such as the number of trials and object positions—are missing. While it is possible to learn a grasping strategy that is sufficiently general to cover the tested items, this is not a feature of the method since the teacher policy is never incentivized to do so.\n- In the Background Generalization results section, the model's generalization ability is attributed to its integration of historical information, multi-camera data, and random masking, but none of these claims are verified.",
+      "questions": "- Why is the teacher policy used to generate a dataset of expert trajectories from which the student policy is learned, instead of using DAgger, given that the teacher policy could be queried for expert actions at each state?\n- Why does the teacher policy not have access to the ground-truth object size? If the student policy can infer the object size from detected bounding boxes, the teacher policy could also utilize this information to adapt its grasp for different object sizes.\n- Following line 255, it is mentioned that the state space dimensionality is high, while one of the motivations for using student-teacher learning was to formulate a compact input space for the teacher policy to facilitate efficient learning. Furthermore, it is claimed that this reduces the exploration space of the RL environment, but the details are missing in Appendix B.1. Could you explain how the exploration space was reduced and why?\n- In Figure 2, you state there is a bijective mapping between the privileged object representation and its bounding-box detections, implying that the inputs required to deploy the teacher policy could be computed directly from visual detections. If that is the case, why is the student-teacher framework necessary?\n- If the model controls the robot via joint commands, how are self-collisions and collisions with the tabletop avoided?\n- The data in Figure 3, showing the scaling relationship between spatial generalization and the amount of data, appears to deviate significantly from the expected trend, particularly in the 10cm x 10cm x 10cm workspace. Could you explain why this occurs, and whether the data points were reported for a single seed?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces a manipulation method called ManiBox, which operates using bounding-box inputs. The policy is trained using a student-teacher framework. Specifically, a teacher policy is trained with PPO using privileged information, such as the object's 3D position. A dataset of expert trajectories is then generated from this teacher policy, which is subsequently used to train a student policy through imitation learning. Isaac Lab is employed as the simulator to facilitate scalable data collection. The authors demonstrate that as the workspace size increases, a larger amount of expert data is required to train effective student policies. Finally, the trained student policies can be deployed on a real robot by using bounding boxes generated from an open-vocabulary object detection model."
+    }
+  ]
+}

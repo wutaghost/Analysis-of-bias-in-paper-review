@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "qK6U4Ahfms",
+    "forum": "qK6U4Ahfms",
+    "title": "OpenCity: A Scalable Platform to Simulate Urban Activities with Massive LLM Agents",
+    "authors": "Yuwei Yan, Qingbin Zeng, Zhiheng Zheng, Jingzhe Yuan, Jun Zhang, Jie Feng, Fengli Xu, Yong Li",
+    "keywords": "LLM Agent, Large Language Model, Urban Study",
+    "abstract": "Agent-based models (ABMs) have long been employed to explore how individual behaviors aggregate into complex societal phenomena in urban space. Unlike black-box predictive models, ABMs excel at explaining the micro-macro linkages that drive such emergent behaviors. The recent rise of Large Language Models (LLMs) has led to the development of LLM agents capable of simulating urban activities with unprecedented realism. However, scaling LLM agents to large city simulations presents significant challenges. Existing models are limited by the computational and communication costs of LLMs, compounded by the dynamic nature of urban environments that require continual updates to agent behavior. To address these limitations, we propose OpenCity, a scalable simulation platform optimized for both system and prompt efficiencies. Specifically, we propose a LLM request scheduler to reduce communication overhead by parallelizing requests through IO multiplexing. Besides, we deisgn a ``group-and-distill'' prompt optimization strategy minimizes redundancy by clustering agents with similar static attributes. Through experiments on six global cities, OpenCity achieves a 600-fold acceleration in simulation time per agent, a 70\\% reduction in LLM requests, and a 50\\% reduction in token usage. These improvements enable the simulation of 10,000 agents’ daily activities in 1 hour on commodity hardware. Additionally, OpenCity establishes a benchmark for LLM agents, comparing simulated mobility behaviors, origin-destination flows, and segregation indices against real-world data. We believe our OpenCity platform provides a critical infrastructure to harness the power of LLMs for interdisciplinary studies in urban space, fostering the collective efforts of broader research communities. Code repo is available at https://anonymous.4open.science/r/Anonymous-OpenCity-42BD.",
+    "pdf_link": "https://openreview.net/pdf/e4f2bbe9d411cd85f82f963fe7f97ac125c6f5e8.pdf",
+    "submission_date": "2024-09-28 11:52:16.208000"
+  },
+  "reviews": [
+    {
+      "note_id": "56hzcoPF98",
+      "replyto": "qK6U4Ahfms",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 03:18:25.099000",
+      "modified": "2024-11-12 16:13:34.703000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14253/Reviewer_2bbN",
+      "actor": "Reviewer 2bbN",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 1,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "The use of a LLM for the purpose of larger scale population modelling appears to be novel, and the suggested group-and-distill approach enables this idea, with relatively low hardware resources. \nOverall, considerable effort appears to have gone into development of the system. The system could be an interesting resource for research in complex systems.",
+      "weaknesses": "The paper has quite a broad focus, like an overall project report. For a venue like iclr, it would have been better to focus on the specific contributions in machine learning, and to provide more technical details rather than an overall description of architecture and usability aspects as the main contributions. In its current form, ICLR does not appear to be the right venue for the work as it is presented.\n\nThe work lacks depths in aspects that I would see essential for any ML paper: for example the group-and-distill concept is introduced, but the paper is very sparse in detail of the specific algorithms. Similarly it would have been interesting to see what are the initial prompts and the optimised prompts, in contrast. \nAny details comparing to the original approach without group-and-distill / ablation would have been an improvement too. \n\nMoreover it didn’t become clear to me what LLM has been used or how was it trained, and how do LLM outputs influence agents’ behaviours.\n\nFinally, the paper mentioned at the beginning the explainability of ABM as an advantage over black box neural network approaches. with the lack of detail on how the actions are influenced by the LLM or how the LLM are trained or fine tuned, the proposed model has the same disadvantage as any other neural network model.  \n\nMinor presentation issues:\n\n\"Agent-based models (ABMs) were first introduced to urban studies in the seminal work of Thomas Schelling about 50 years ago Schelling (2006)\"\n- if the work referenced was from approx 50 years ago, Schelling 2006 is the wrong reference. I believe the correct year would be 1978.\n- there are two\tkinds of citations, narrative (like the one in the sentence), and parenthetical (Schelling, 2006). It doesn't make sense to use\tnarrative style\twhen it doesn't fit into the sentence structure. In LaTeX with natbib, this is the difference between \\citet and \\citep. \nThe referencing is an issue throughout the paper.",
+      "questions": "While the approach and system are interesting, I don't see this paper as a good fit for ICLR, in its present form, and suggest it be rejected. \nSome of my questions:\n\n- What LLM model is used in the simulation, and how was it trained?\n- How do the prompts look before and after applying the group-and-distill approach?\n- What is the output of the LLM, and how does it influence agent behaviour?\n- To what extent is the group-and-distill technique generalisable beyond urban simulations?\n- How does the platform maintain long-term consistency in agent behaviour, given the variability in LLM responses?\n- What mechanisms are in place to manage or correct for inconsistencies in agent behaviour across prompts?\n- Is there an evaluation of the platform’s accuracy in simulating real-world behaviours compared to traditional ABMs?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper describes an approach\twhere LLM agents are used to simulate individual behaviour in large (city-scale) simulations of people.\tThe proposed platform uses LLM agents that can adapt their behaviour depending on context and memory. This is different to the classic agent based approach for this type of simulation where behaviours are static over time. \nThe development of the platform is one of the main contributions of the work, and the development of a user-friendly web interface is another contribution highlighted by the authors. From a machine learning perspective, the proposed “group-and-distill” approach to reduce LLM usage is the main contribution of the work, essentially a clustering approach before prompting the LLM for each cluster (as opposed to prompting an LLM for each individual)."
+    },
+    {
+      "note_id": "Heqz2SZnw2",
+      "replyto": "qK6U4Ahfms",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 03:42:06.041000",
+      "modified": "2024-11-12 16:13:34.657000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14253/Reviewer_bSG3",
+      "actor": "Reviewer bSG3",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "Strengths\n1.\tThis paper introduces a scalable platform for urban simulations using LLM agents, which addresses a growing need for realistic human behavior modeling in urban environments.\n2.\tThis paper shows a high quality of presentation. The paper is technically sound and the research question is clear. The optimizations, particularly the LLM request scheduler and prompt optimization strategies, demonstrate clear performance benefits. The experimental results showing a 600x speedup and significant resource savings are compelling.\n3.\tThe paper is generally clear and well-structured. It provides a clear problem statement, introduces the proposed framework, and highlights key findings.\n4.\tThe contribution of the paper is relevant for LLM agent. The results of this paper is interesting and significant in LLM agent simulation. The proposed OpenCity framework is relevant for urban planning and policy-making. The development of a web portal that allows researchers to configure and visualize simulations without requiring programming skills is a valuable addition, making the platform accessible to a broader audience.",
+      "weaknesses": "1.\tThe introduction part fails to convey to the reviewers what is the motivation and novelty in this paper. In fact, the authors should add more previous work on LLM agents based simulation platform. The problem this paper addresses and the reason why this paper uses system-level LLM request scheduler and prompt-level “group-and-distill” strategy to solve the problem of scalability should be further explained. Besides, the contribution the authors listed in the introduction section is inaccurate，the authors should focus on the system-level LLM request scheduler and prompt-level “group-and-distill” strategy. Thus, I would recommend a revision for the introduction section in this paper.\n2.\tThis paper utilizes Group-and-Distill Meta-Prompt Optimizer to classify similar agents to reduce computational complexity, which indeed improve efficiency. However, this may overlook differences between individuals, so the reason why this method can preserve the distinctive characteristics of the agents, as show in the experimental part, should be further explained in the method section。\n3.\tFigure 2 illustrates the principle of Group-and-Distill Meta-Prompt Optimizer. However, it seems difficult to follow. It is more intuitive to add an example to explain how IPL works. \n4.\tThere lacks explanation for the reason why the proposed method IPL is superior to conventional prototype learning. Moreover, the principles for setting the value of M and T in IPL should be further illustrated.\n5.\tExperimental part: the authors should add an explanation of the indicators including JSD, T1 and bold the important data in Table 2 . Similarly, Table 3 also requires revision. The metrics of RMSE of New York和San Franciscoin are not displayed in Table 3, which seems a little bit confusing, the authors need to provide explanations. \n6.\tThe authors should pay attention to the standardization of citations throughout the paper, especially in introduction and related works section. For example, “conventional prototype learning methods...”(line305), “the baseline represents the simulation time without optimization” (line 389), “we analyze the performance of the Generative Agent and EPR Agent ”(line 450).\n7.\tThe authors should carefully proofread the manuscript for typos and formatting issues. There exists some typos: in the abstract: “we deisgn a “group-anddistill” prompt optimization”, “where τqα is is the proportion”(line 687) , etc.",
+      "questions": "1.\tWhy did the authors conduct additional assessment on merely two cities: New York and Paris using the GPT-4o model in Table 2? Rather than conducting experiments in all six cities like 4o-mini?\n2.\tAs for the experimental setup, do the following parameters: exploration rate ρ= 0.6, exploration-return trade-off parameter γ = 0.21, waiting time distribution parameters τ = 17 affect the results？\n3.\tIn line 389，what does baseline mean? As the citation is missing, the reviewer guess whether it means the method in Park et al. (2023)？If not, comparative experiments on the Park et al. (2023) method should be added.\n4.\t Why the result of baseline method is 50s/agent when the number of agents is very small in Figure 3, such as merely a single agent?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The recent rise of Large Language Models (LLMs) has led to the development of LLM agents capable of simulating urban activities with unprecedented realism. Nevertheless, the extreme high computational cost of LLMs presents significant challenges for scaling up the simulations of LLM agents. With this motivation, this paper introduces OpenCity, a scalable simulation platform designed to efficiently simulate urban activities using a large number of LLM agents. The platform incorporates innovative techniques, including LLM request scheduler and a group-and-distill prompt optimization strategy, to reduce the computational overhead of simulating LLM agents significantly. OpenCity achieves a 600-fold speedup and reduces both LLM requests and token consumption. Extensive experiments on six global cities verify the platform's scalability and its capability to replicate real-world urban dynamics."
+    },
+    {
+      "note_id": "nWyZZYdbcP",
+      "replyto": "qK6U4Ahfms",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-26 00:17:36.951000",
+      "modified": "2024-11-12 16:13:34.634000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14253/Reviewer_WDiW",
+      "actor": "Reviewer WDiW",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "* The overall goals of the paper, of capitalizing on the abilities of LLMs to achieve a better ABM model of cities, as well as addressing the scaling problems, are laudable.",
+      "weaknesses": "* Achieving a more than 600 fold speed increase in terms of an improved process scheduler and I/O scheduler can be probably seen as \"debugging\", rather than research result, and very likely has nothing to do with the LLM. \n* It seems that the very considerable computational effort of an LLM can only achieve an approximate parity with the much cheaper rule based efforts. This is understandable, as description of the behavior of the agents described in the paper follows the same position based rules that the ABM models historically use. As there is no consideration of language or other type of reasoning, the paper does not make it clear what type of benefits one would expect from LLMs.\n* The only part of the paper that has a connection to the topic of this conference is the way in which the \"group-and-distill\" model is proposed to achieve the simulation of multiple agents with one prompt. However, there is very little about this technique in the paper proper, so it is difficult to form a judgement.",
+      "questions": "* The paper spends comparatively less effort on explaining what kind of benefits do we expect from an LLM-based ABM. For instance, we can try to model thought processes of the humans, or their communication. Does the choice of this modeling impact the proposed techniques?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper is considering the problem of agent-based modeling of environments such as cities. Such models had been previously used with the agents performing relatively simple behaviors. While LLMs open new opportunities for controlling the behaviors of the individual agents, their computational cost presents a significant scaling problem. \n\nThe paper describes an architecture that enables the parallelization of the agents, to allow the modeling the daily activities of a city with 10,000 agents. The architecture appears to be based on an efficient polling model of the LLM, as well as the development of a prompting model called \"group-and-distill\". The application of these models show a more than 600-fold increase."
+    },
+    {
+      "note_id": "dC6qme8e0B",
+      "replyto": "qK6U4Ahfms",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-21 08:43:29.744000",
+      "modified": "2024-11-12 16:13:34.953000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14253/Reviewer_eoM2",
+      "actor": "Reviewer eoM2",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "The paper give a detailed introduction of the novel methods and the real outcome.\n\n1. Originality: The paper presents a novel approach by integrating Large Language Models with agent-based modeling to simulate urban activities. There has been limited research on combining LLMs with agent-based models, and even less so in the context of large-scale urban activity simulations. By using IO multiplexing and the \"group-and-distill\" prompt optimization strategy to reduce the computational cost of simulations, this paper has made the application of LLMs in large-scale urban activity simulations possible.\n2. Quality: The research is well organized with a clear methodology and experiments conducted in real cities data. The results show notable improvements in both simulation efficiency and accuracy, confirming the effectiveness of the proposed platform.\n3. Clarity: The paper is written in a clear and concise manner; it is easy to understand through the explanation of figures\n4. Significance: This paper establishes a benchmark for LLM agent-based urban activity simulation research. This paper also provides a scalable framework for simulating urban dynamics.",
+      "weaknesses": "There is a lack of theoretical contribution, overall, rather it is an application tool development with leveraging well established tools. It may not fit ICLR the best though not out of scope at all. Further,\n\n1. Some parts of the main body text are not rigorous enough. For example, Equation 1 is missing a parenthesis, and the IPL method is mistakenly labeled as the LPL method in Figure 2.\n2. This research has high requirements for data quality. Additionally, despite significantly improving computational efficiency and reducing costs, the platform may still require substantial computational resources.\n3. When simulating cities in different countries, the dynamic properties to be considered should not be entirely the same, and some of the assumed static properties may also change during the simulation process.",
+      "questions": "1.\tIt seems that the formula in Equation 1 misses a parenthesis?  And it can also be split into two separate equations.\n2.\tIn Section 3.2, the content of Figure 1(b) is introduced, however, the Figure 1(a) is discussed in Section 4.1. Is this logical? It is suggested to swap the subtitles of the figures for better coherence.\n3.\tThis paper categorized the CPU task as ”local IO”, offload it to available cores for computation through a multi-core parallel scheme, and then return the result to the designated agent upon completion of the computation.\n4.\tIs there an increase in CPU task scheduling time? How does it compare to the time saved in saving#3?\n5.\tThe paper states that \"A conventional approach is to reuse the generated result of a single LLM request across multiple agents, and this approach presents two significant drawbacks.\" However, it only describes one drawback.\n6.\tThe paper introduces Figure 2(a) first, which prompts readers to check the content of Figure 2(a). However, they will encounter a series of unexplained equations, which could cause confusion. The paper cites Figure 2 only in the subsequent description, and the explanation of Figure 2(a) is found only in the explanation of the methodology of Figure 2 in the main text. Is it possible to optimize this part of the description?\n7.\tFrom the subsequent description in the main text, it is understood that Figure 2(a) is introducing the IPL method, but in the figure is labeled as the LPL method.\n8.\tHow is the threshold T in the IPL method of this paper determined?\n9.\tAre the baseline in Figure 3 increased simulation response time due to the load as the number of agents increases?\n10.\tIn Table 3, there is no explanation for the missing RMSE results for New York and San Francisco. According to Appendix A, the data for these two cities comes from Safegraph, and the number of users is aggregated. So how is the GROUP-AND-DISTILL performed in these two cities?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "ABM and LLM is leveraged to develop one platform for open city modeling and planning. It is a nice simulation platform and the paper provides application scenarios. Concretely, \n\n1. This paper combines agent-based models with large language models to develop the OpenCity platform for simulating urban activities. It reduces simulation computational costs through IO multiplexing and the \"group-and-distill\" prompt optimization strategy.\n2. Through experiments conducted in six major cities worldwide, OpenCity demonstrates a 635 plus increase in average simulation speed per agent, along with a 70% decrease in LLM requests and a 50% reduction in token usage. The time savings are mainly concentrated in the LLM response wait time and the CPU multiplexing process.\n3. The OpenCity platform proposed in this paper achieves the first benchmark testing for LLM agent-based urban activity simulation research."
+    }
+  ]
+}

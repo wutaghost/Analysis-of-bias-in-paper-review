@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "N0MnPLK6r7",
+    "forum": "N0MnPLK6r7",
+    "title": "Toward Human-Interpretable Explanations in a Unified Framework for GNNs",
+    "authors": "Kyeongrok Park, Hyunju Kang, Hogun Park",
+    "keywords": "eXplainable AI, Graph Neural Networks",
+    "abstract": "As Graph Neural Networks (GNNs) are increasingly applied across various domains, explainability has become a critical factor for real-world applications. Existing post-hoc explainability methods primarily focus on estimating the importance of edges, nodes, or subgraphs in the input graph to identify substructures crucial for predictions. However, these methods often lack human interpretability and do not provide a unified framework that incorporates both model-level and instance-level explanations. In this context, we propose leveraging a set of graphlets---small, connected, non-isomorphic induced subgraphs widely used in various scientific fields---and their associated orbits as human-interpretable units to decompose GNN predictions. Domain experts can select the most relevant graphlets as interpretable units and request unified explanations based on these units. To address this problem, we introduce UO-Explainer, the Unified and Orbit-based Explainer for GNNs, which utilizes predefined orbits that are generalizable and universal across graph domains as interpretable units. Our model decomposes GNN weights into orbit units to extract class-specific graph patterns (model-level) and to identify important subgraphs within individual data instances for prediction (instance-level). Extensive experimental results demonstrate that UO-Explainer outperforms existing baselines in providing meaningful and interpretable explanations across both synthetic and real-world datasets.",
+    "pdf_link": "https://openreview.net/pdf/07d4439f67ae137e0d5d4a924861e559b37dc639.pdf",
+    "submission_date": "2024-09-28 11:41:01.110000"
+  },
+  "reviews": [
+    {
+      "note_id": "Y5V6hpzFwg",
+      "replyto": "N0MnPLK6r7",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-05 06:14:23.227000",
+      "modified": "2024-11-12 16:31:02.624000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14225/Reviewer_oD7a",
+      "actor": "Reviewer oD7a",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 5,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "- The problem of explanations of GNN is relevant and timely as GNNs are being applied in many domains.\n\n- The unified framework of having both instance-level and model-level explanations is interesting.\n\n- The experiments have many different settings. The number of baselines and datasets is comprehensive.",
+      "weaknesses": "- The graphlets (orbit bases) as human interpretable units need justifications.\n\n- A strong assumption is that both the instance-level and model level explanations depend on these graphlets (orbit bases). This also needs justification.\n\n- Some experimental settings could be improved.",
+      "questions": "1. Why are the graphlets (orbit bases) important? Why are they human interpretable? One could actually perform a user study to justify this. Do you have such evidence? \n\n2. Why is the model-level explanation a linear combination of the orbit bases? What if the model-explanation depends on completely different factors? \n\n3. The method seems to be restricted to only node classification. How will it generalize to other tasks (e.g. graph classification)?\n\n4. Maybe I am missing something: how are you evaluating the baselines in the same framework especially for the model-level explanations?\n\n5. Could you emphasize on the sub-recall measure? The model-level explanations are being evaluated only on that. Why is it the case? Why aren't the measures of GLGExplainer being used? \n\n6. Using only synthetic data for the mode-level explanations needs justification.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper addresses the problem of explainability in (black-box) graph neural networks (GNNs). As the existing methods lack explanations that are human interpretable as well as a unified framework to perform both instance specific and model-level explanations, the paper proposes a framework based on graphlets (and orbit bases). These predefined graphlets and their associated orbits contribute to both instance and model-level explanations."
+    },
+    {
+      "note_id": "cvLM3mL4A4",
+      "replyto": "N0MnPLK6r7",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-05 04:57:23.741000",
+      "modified": "2024-11-12 16:31:02.147000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14225/Reviewer_cpes",
+      "actor": "Reviewer cpes",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "1. The idea of leveraging graphlets and orbits as units for interpretation is interesting\n\n2. The experimental results show UO-Explainer accurately provides explanations than baselines at both model-level and instance level.\n\n3. The source code is publicly available",
+      "weaknesses": "1. The paper aims to provide human interpretable explanations. However, there are no experiments asking human evaluators to evaluate the quality of the explanations. The authors should consider adding some experiments of human evaluation.\n\n2. The model-level explanation is only evaluated on synthetic datasets. It is unclear if such kind of model-level explanation really makes sense on real-world datasets. For example, does there really exist a model-level graphlet for each class for molecular graphs, which is able to explain the characteristics of each class captured by the target GNN model?\n\n3. Though the idea of leveraging graphlets and orbits as units for interpretation is interesting, the authors might need to give more explanations and real-world examples showing why they make sense in real-world.\n\n4. In lines 201-202, this paper introduces a model-level explanation by decomposing class weights into a linear combination of orbit bases. However, I think it will potentially lose some contextual information between the graphlets, because these bases only capture local information, and they might miss out on broader contextual patterns in the graph. For example, some predictions might depend on interactions between distant nodes or on the overall graph structure, which cannot be encapsulated by small, isolated graphlets.\n\n4. In line 259-261, the paper introduces the instance-level explanation by decomposing the prediction value of the target node into orbit units. But the motivation of the proposed method is not clearly introduced.\n\n5. I am concerned about the efficiency. To generate the instance-level explanations, the proposed method needs to go through all graphlets that include all 0-72 orbits with time complexity $O(|O||V| d^{k−1})$ based on Algorithm 3 and 4. This search method is too expensive to extend to large-scale graphs. Moreover, this paper lacks an experimental analysis of the time complexity. A running time comparison is highly suggested.",
+      "questions": "Please see above weaknesses",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces UO-Explainer, a framework for Graph Neural Networks (GNNs) that provides human-interpretable explanations at both model and instance levels. It utilizes graphlets and orbits as interpretable units to reveal the significance of specific graph structures for predictions. This unified approach aims to address limitations in previous GNN explainability methods, particularly in providing coherent, interpretable insights. The experiments on various synthetic and real-world datasets demonstrate its effectiveness."
+    },
+    {
+      "note_id": "We3yy1wUwL",
+      "replyto": "N0MnPLK6r7",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 18:13:07.878000",
+      "modified": "2024-11-12 16:31:02.427000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14225/Reviewer_J3Jj",
+      "actor": "Reviewer J3Jj",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 5,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "1. The idea is interesting and promising in unifying model-level and instance-level explanations for GNNs.\n2. The technical approach is novel, incorporating orbit basis learning and class-orbit score learning.\n3. The paper is well-organized, with self-contained figures that aid understanding.\n4. The experiments are comprehensive, covering 8 node classification datasets.",
+      "weaknesses": "1. The title and abstract overstate the scope, as the method can only explain node classification tasks.\n\n2. The method’s reliance on all subgraphs with up to 5 nodes as explanation units does not inherently ensure meaningful or domain-relevant structures. It is unclear how this improves human interpretability compared to subgraph-based methods that use constraints like connectivity.\n\n3. In real-world datasets such as Gene, linking small graphlets to functionally significant groups can be problematic. The approach does not consider node features or types, making it difficult to distinguish substructures with different real-world meanings or implications. For instance, C-C and CO substructures correspond to the same graphlet, which poses an issue.\n\n4. The notations need improvement, as the notation for the downstream layer does not consider activation functions.\n\n5. The reference paper mentions two fidelity measurements: Fidelity+ and Fidelity-. This submission uses Fidelity+, and I suggest that the authors specify this clearly.\n\n6. Add robust fidelity measurements. As recent studies [1, 2, 3] have shown, Fidelity in the graph domain suffers from out-of-distribution (OOD) issues. Specifically, in Eq. 10, $f_{\\text{prob}}()$ is trained on datasets containing entire graphs, whereas  $G_{vi} - G_{vi}^{\\text{ex}}$ is a smaller subgraph with a different distribution. Thus, the prediction  $f_{\\text{prob}}(G_{vi} - G_{vi}^{\\text{ex}})$ may not be reliable. I recommend that the authors consider robust fidelity measurements, such as Robust Fidelity [1], OAR, SimOAR[2], or GInX-Eval[3], or demonstrate that this distribution shift does not impact the main results.\n\n[1] Zheng, Xu, et al. \"Towards Robust Fidelity for Evaluating Explainability of Graph Neural Networks.\" The Twelfth International Conference on Learning Representations. (2024)  \n[2] Fang, Junfeng, et al. \"Evaluating post-hoc explanations for graph neural networks via robustness analysis.\" Advances in Neural Information Processing Systems 36 (2023).  \n[3] Amara, Kenza, Mennatallah El-Assady, and Rex Ying. \"GInX-Eval: Towards In-Distribution Evaluation of Graph Neural Network Explanations.\" XAI in Action: Past, Present, and Future Applications. 2023",
+      "questions": "See above.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This submission introduces a new l framework for explaining Graph Neural Networks (GNNs) that provides both model-level and instance-level explanations in a unified manner. UO-Explainer leverages graphlets and their orbits—small, connected, non-isomorphic subgraphs—as human-interpretable units to decompose GNN predictions. The framework enables users to utilize prior knowledge by selecting relevant graphlets for detailed, interpretable explanations. UO-Explainer decomposes class-specific model weights into orbit units, facilitating the identification of important substructures in both general and instance-specific contexts. Extensive experiments on synthetic and real-world datasets demonstrate that UO-Explainer outperforms existing methods in delivering high-quality explanations."
+    },
+    {
+      "note_id": "eorm59FTeF",
+      "replyto": "N0MnPLK6r7",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 23:29:56.505000",
+      "modified": "2024-11-12 16:31:02.415000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14225/Reviewer_CDc8",
+      "actor": "Reviewer CDc8",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "S1: Leverages orbits within small graphlets as human-interpretable units for explanations. This even allows users to define their own units of interest instead of orbits if desired.\nS2: Provides explanations in a unified framework at both the model and instance level",
+      "weaknesses": "C1: Lack of intuitive representation: what's orbits in graphlet? why orbits are used as explanation unit? What're unique property of graphlet and oribts? What's advantages of graphlet and orbit compared to existing methods? Why the proposed oribit-based explainer can unify both levels?\n\nC2: Limited to using orbits from 2-5 node graphlets, restricting the explanation patterns. There may be cases where important patterns in the data involve larger graphlets that cannot be captured by this restricted set of units. \n\n\nC3: As a follow-up, we need to predefine the graphlets/orbits, rather than learning them from data. Would it be possible to extend the base set of graphlet. For example, considering these 2-5 node graphlet as seeds, how to dynamically discover larger graphlet that might be more meaningful to exaplain the prediction ability of a GNN.",
+      "questions": "Please refer to weakness",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors propose an graphlet/orbits based GNN Explainer for providing human-interpretable explanations. UO-Explainer decomposes GNN weights into orbits and uses these orbits as explanatory units. It can provide both model-level explanations and instance-level explanations. Experiments on synthetic and real-world datasets show that UO-Explainer outperforms baseline explainability methods in providing meaningful, interpretable explanations."
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "ayT4e9C3Gd",
+    "forum": "ayT4e9C3Gd",
+    "title": "ROSARL: Reward-Only Safe Reinforcement Learning",
+    "authors": "Geraud Nangue Tasse, Tamlin Love, Mark Nemecek, Steven James, Benjamin Rosman",
+    "keywords": "Reinforcement Learning, Deep Reinforcement Learning, Safety, Safe AI, Safe RL",
+    "abstract": "An important problem in reinforcement learning is designing agents that learn to solve tasks safely in an environment. A common solution is to define either a penalty in the reward function or a cost to be minimised when reaching unsafe states. However, designing reward or cost functions is non-trivial and can increase with the complexity of the problem. To address this, we investigate the concept of a Minmax penalty, the smallest penalty for unsafe states that leads to safe optimal policies, regardless of task rewards. We derive an upper and lower bound on this penalty by considering both environment diameter and solvability. Additionally, we propose a simple algorithm for agents to estimate this penalty while learning task policies. Our experiments demonstrate the effectiveness of this approach in enabling agents to learn safe policies in high-dimensional continuous control environments.",
+    "pdf_link": "https://openreview.net/pdf/eee5786275d7d8be6da118f068d7e09fe9a76892.pdf",
+    "submission_date": "2024-09-28 11:05:26.030000"
+  },
+  "reviews": [
+    {
+      "note_id": "RNfEO0QXcf",
+      "replyto": "ayT4e9C3Gd",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 06:07:55.989000",
+      "modified": "2024-11-12 16:22:49.028000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14150/Reviewer_nDzJ",
+      "actor": "Reviewer nDzJ",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 4,
+      "presentation": 3,
+      "contribution": 4,
+      "strengths": "- well-motivated\n- extensive experimentation \n- good theoretical justification\n- good study of success/failure cases of proposed approach and baselines",
+      "weaknesses": "- consider adding up/down arrows to indicate if higher/lower values are good in the graphs (Average Returns(↑) and Failure Rate(↓))\n- consider citing some works on feasibility/reachability in RL\n\nMinor errors:\n-Definition 1 typo “sThen”",
+      "questions": "- what are the limitations of this approach?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper addresses the difficulty of reward/cost engineering in Safe RL by proposing a minimax penalty. Particularly, it uses notions of environment diameter and solvability to bound on both sides and estimate the minimum penalty for unsafe states that leads to optimally safe policies independent of task rewards."
+    },
+    {
+      "note_id": "Vql6S9MTee",
+      "replyto": "ayT4e9C3Gd",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 16:04:15.299000",
+      "modified": "2024-11-12 16:22:48.982000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14150/Reviewer_PeFw",
+      "actor": "Reviewer PeFw",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "- The theoretical proofs are clearly and correctly stated.\n- The motivation is clear and well-written.\n- The proposed practical algorithm is simple (in a good) that can be integrated with existing RL methods.",
+      "weaknesses": "- The practical algorithm uses a simplified estimate that does not explicitly consider solvability. Moreover, the algorithm leverages value function estimates as approximations without theoretical guarantees. More analysis for addressing the gap between the theoretically constructed objectives and the actual practical objective used would significantly improve the paper.\n- There are two main issues with the experimental study. Firstly, only two environments are used for empirical evaluation of the proposed algorithm, whilst one of them is grid world. Secondly, there are limited analysis of failure cases, which I believe might contain interesting insights. \n- Some minor issues. It would be useful to include some crucial baseline comparisons, such as PID-Lagrangian (Stooke et al. 2020). Also, there is no analysis or ablation studies on the computational complexity of the proposed algorithm, hindering its practical applicability.",
+      "questions": "- Why does the practical algorithm work despite ignoring solvability? What are the theoretical guarantees?\n- What happens when the environment has delayed consequences for unsafe actions rather than immediate terminal states?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces Reward-Only Safe RL (ROSARL), a novel safe RL agent that focuses on learning appropriate penalties for unsafe states rather than using explicitly constructed constraints or human-designed penalties. The key technical contribution is the concept of a \"Minmax penalty\" - the smallest penalty for unsafe states that guarantees safe optimal policies regardless of task rewards. The authors derive theoretical upper and lower bounds on this penalty based on environment diameter and solvability. A practical algorithm is designed for estimating the minimax penalties during under model-free RL setting. The authors empirically demonstrate that the resulting algorithm yields stronger and safer performance on grid world and PILLAR environments, compared to selected baseline methods like CPO and TRPO-Lagrangian."
+    },
+    {
+      "note_id": "jpoaDESGlQ",
+      "replyto": "ayT4e9C3Gd",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 13:15:56.043000",
+      "modified": "2024-11-12 16:22:49.012000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14150/Reviewer_SFyW",
+      "actor": "Reviewer SFyW",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "1. This is a different and possibly a new method to view safe RL \n2. The paper is quite well-written, however, I believe the algorithm is not described in the best way (see weaknesses) \n3. The authors present novel theoretical results and then discuss their strengths and limitations. In particular, they discuss convergence, computational complexity, applicability of the results",
+      "weaknesses": "1. The algorithm is not well-described. It’s hard to understand the mathematical formulation of the problem and the solution. \n2. Experimental results are limited in scope and some of the conclusions are slightly misleading. \n            a. For example, Saute RL solves a problem with probability one constraints and cannot be directly compared to TRPO Lagrangian which solves the problem with constraints on average. Especially, when the environment is highly stochastic.\n            b. There are other baselines that the authors could compare to, to make their case. I recommend looking into implementations in https://github.com/PKU-Alignment/safety-gymnasium\n            c. There’s no ablation study\n3. Presentation of the paper focuses on the theoretical results, which are hard to judge without an explicit mathematical problem formulation. \n4. The experimental part is hard to evaluate due to the lack of details, for example the algorithm is not even in the main paper (it’s in appendix).",
+      "questions": "1. The authors look for a minimax penalty. Could the authors comment on the similarities and the differences with Lagrangian methods, where the algorithm performs an automatic search for a Lagrangian coefficient that weighs the constraint violation values.\n2. What is the problem that this algorithm aims to solve? I would like to see a precise mathematical formulation.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper discusses a reward-only safe RL as an alternative to reward-shaping RL, and constraint-based RL for safe RL. The main idea is to compute the minmax penalty, which will be used to re-cast the problem so that a safe policy can be computed using standard RL methods. The method is evaluated on classical methods such as TRPO Lagrangian, CPO and a newer method called Saute RL with TRPO backbone. The environment is quite challenging and coming from the safety gym."
+    },
+    {
+      "note_id": "3i2E6J1eF3",
+      "replyto": "ayT4e9C3Gd",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 14:16:29.740000",
+      "modified": "2024-11-26 11:06:29.006000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14150/Reviewer_LXYE",
+      "actor": "Reviewer LXYE",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 4,
+      "contribution": 2,
+      "strengths": "The paper addresses an important challenge with an intriguing idea. Beyond supplying solely theoretical results, the paper provides a practical method suggested by the theoretical analysis. The results suggest that the method leads to a notable reduction in safety costs which is one of the main stated goals of the paper. \n\nThe intuition of the paper is largely clear and most of the non-technical parts are nicely written and overall the concepts well-explained. The authors have included a practical example midway through the paper which is useful for discussing the ideas in a concrete setting and explaining some of the concepts.",
+      "weaknesses": "===Analysis===\n\nA1. Some parts of the paper aren't written with a high level of rigour, for example, the experiments of Section 5 are divided into parts depending on whether the \"theoretical assumptions are satisfied\" but there is no clear statement as to what exact assumptions this refers to. Additionally, there are a few typos in the mathematical expressions e.g., the argument of the min and max operator should be $s_T$ not $s$. There are other examples and some more technical concerns I have such as the existence of $D$ - I have given more details of this concern below. Other more minor  points  are as follows:\n\n   **In Definition 2 the case of equality is not covered.\n\n   **Theorem 1 is a bit pointless - perhaps the authors could consider writing it as a note within the text.\n\nA2. I am finding it difficult to understand how the object in Definition 3 could be computed. Although the restriction to proper policies ensures the goal state is reached in a finite number of time-steps, in a given environment, for any deterministic policy I may be able to increase the number of time steps it takes to reach the goal by for example asking the agent to go back on itself before going forward again. In this case, it is unclear whether such a maximum exists (although the function T may be upper bounded on the set of proper policies, its image is not a closed set).\n\nA3. I found it slightly troubling that many of the key results and characterisations are derived using the solvability parameter $C$ an then because calculating this is impractical as the authors acknowledge, the algorithm put forward uses a replacement for $C$ without rigorous explanation as to whether the resulting calculations are good proxies. Indeed, although some intuition is provided as to why all is not lost by omitting $C$ in the calculation, the effect of this omission on the computations and overall behaviour is not properly studied.\n\n===Experiments===\n\nB1. A possible concern is that although from the empirical evaluation the method does reduce the total costs by an appreciable amount, this seems to come at a heavy price in the returns. Is there a configurable parameter that can control this trade-off. I would also like to see a comparison to the baselines that allow this trade-off to be configured, specifically considering a range of values for the parameter that controls this trade-off.\n\nB2. Overall, I did not find the experimental results to be extremely compelling, firstly the results themselves suggest that the method reduces costs at a significant price to the rewards but also, the environments are quite simple and the method has not been tested on a range of complex environments e.g. safety gym.",
+      "questions": "1. On lines 267-268, is the method considering proper policies, if so why do the expressions have $R_{\\rm MAX}$ and $R_{\\rm MIN}$ and not $DR_{\\rm MAX}$ and $DR_{\\rm MIN}$ respectively?\n\n2. How can we be sure that introducing the minmax penalty preserves the original solution of the MDP (and hence, we are still solving the original problem)?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper tackles the problem of solving tasks safely using reinforcement learning. The main idea of the paper is to introduce a term to appropriately penalise unsafe behaviour, the analysis of the paper seeks to bound the magnitude of this term to minimise the probability of arriving at an unsafe goal state while achieving the task. To develop this term, the authors establish several objects required to quantify the complexity and \"size\" of the problem. These two measures are then used to construct the additional reward term to adhere to the safety criterion. It is then shown theoretically that adding a reward term that adheres to certain inequality constraints ensures a high degree of safe behavior."
+    }
+  ]
+}

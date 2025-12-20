@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "49ti6LOUw5",
+    "forum": "49ti6LOUw5",
+    "title": "UnoLoRA: Single Low-Rank Adaptation for Efficient Multitask Fine-tuning",
+    "authors": "Anirudh Lakhotia, Akash Kamalesh, Prerana Sanjay Kulkarni, Nischal H S, Gowri Srinivasa",
+    "keywords": "lora, multi-task learning, peft",
+    "abstract": "Recent advances in Parameter-Efficient Fine-Tuning (PEFT) have shown Low- Rank Adaptation (LoRA) to be an effective implicit regularizer for large language models. Building on these findings, we propose UnoLoRA, a novel approach that leverages a single shared LoRA module for efficient multi-task learning. While existing methods typically use separate LoRA adaptations for each task, our approach demonstrates that a single shared adapter can effectively capture both task-specific and task-agnostic knowledge. We further introduce UnoLoRA*, an enhanced variant that employs a shared hypernetwork to generate task-specific embeddings, improving convergence and task adaptation. Our method significantly reduces trainable parameters to just 0.05% per task while maintaining competitive performance on the GLUE benchmark. Our analysis reveals that the A and B matrices in our shared LoRA adapter naturally develop complementary roles: A matrices capture generalizable features across tasks, while B matrices specialize in task-specific representations. Our results show that sharing a single LoRA adapter can achieve efficient multi-task learning while significantly reducing memory requirements, making it particularly valuable for resource-constrained applications.",
+    "pdf_link": "https://openreview.net/pdf/d5c75118ab81fd9f747fc6c2972d397aeb3087d5.pdf",
+    "submission_date": "2024-09-28 12:00:33.430000"
+  },
+  "reviews": [
+    {
+      "note_id": "xGbyMaxLKf",
+      "replyto": "49ti6LOUw5",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 09:20:51.573000",
+      "modified": "2024-11-12 16:41:01.394000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14293/Reviewer_zcEE",
+      "actor": "Reviewer zcEE",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "- The paper conducts comprehensive experiments and analysis to verify the proposed method.\n- The paper is well structured, proposing an architecture, UnoLoRA, which integrates a shared hypernetwork that generates task-specific scaling factors.",
+      "weaknesses": "- The experiments are conducted on T5-series models, which are from 4 years ago. Using a more recent model doesn't necessarily mean aiming for the current SOTA (state-of-the-art), but rather that the behaviors of stronger models might differ, making experiments on T5 impractical. For instance, current models, after instruction tuning, demonstrate strong zero-shot generalization across tasks, making multi-task learning less important.\n- In the first table, the method proposed in this paper does not outperform HyperFormer++, even though they have different amounts of training parameters, the average effectiveness is also quite lacking. Therefore, the experimental results of this paper are not very convincing.",
+      "questions": "- Why not use a self-implemented LoRA in both multi-task and single-task scenarios, since LoRA is relatively simple to implement?\n- Is there a detailed efficiency analysis available?\n-  How to acquire the task embeddings in the paper?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper presents UnoLoRA, an approach for parameter-efficient multitask learning in large language models (LLMs) using a single Low-Rank Adaptation (LoRA) module shared across multiple tasks. Building upon LoRA as an implicit regularizer, the authors explore its application in a multitasking context, aiming to reduce the number of trainable parameters while maintaining competitive performance. The paper introduces an architecture, UnoLoRA, which integrates a shared hypernetwork that generates task-specific scaling factors."
+    },
+    {
+      "note_id": "9shOQBE1lX",
+      "replyto": "49ti6LOUw5",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 13:55:14.197000",
+      "modified": "2024-11-12 16:41:01.374000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14293/Reviewer_JqKR",
+      "actor": "Reviewer JqKR",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "- The authors conduct in-depth analyses of LoRA matrices in both single-task and multitask settings, highlighting distinctions in their properties (like effective rank and Frobenius norm) and the roles of A and B matrices. Visualizations like PCA further illustrate how UnoLoRA efficiently manages task-shared and task-specific information.\n- The study’s experiments on the GLUE benchmark provide extensive evidence of UnoLoRA's effectiveness and competitive performance.",
+      "weaknesses": "- For the experiments on the GLUE benchmark, no repeated experiments with different random seeds were performed, and the experimental results are not completely convincing due to the randomness.\n- Only the T5-base model was used for the experiment. The effectiveness of the method was not verified on larger or smaller models, nor on decoder-only models.",
+      "questions": "- What is the relationship between Figure 2 and Figure 1? Which part of Figure 1 is the Shared Hypernetwork shown in Figure 2?\n- For different tasks, does UnoLoRA only change the task embedding and keep the other parts shared between different tasks?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces UnoLoRA, a method for parameter-efficient multitask fine-tuning of large language models (LLMs) through a shared Low-Rank Adaptation (LoRA) module. UnoLoRA leverages LoRA's implicit regularization properties to facilitate multitask learning by using a single adapter shared across all tasks, instead of separate adapters for each task. This approach drastically reduces trainable parameters to 0.05% per task while maintaining competitive performance with existing multitask methods. The model is evaluated on the GLUE benchmark and demonstrates parameter efficiency and improved generalization by capturing both shared and task-specific information. The authors further refine their method with UnoLoRA⋆, which converges faster and performs better in early training stages compared to the initial UnoLoRA."
+    },
+    {
+      "note_id": "MpZLd1jhMg",
+      "replyto": "49ti6LOUw5",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 21:07:09.342000",
+      "modified": "2024-11-12 16:41:01.380000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14293/Reviewer_7i5S",
+      "actor": "Reviewer 7i5S",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 1,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "- Simple and seemingly effective way of parameterizing low-rank adapters in the multitask setting. The idea is timely---there have been a lot of improvements in LoRA and related schemes in the last couple of years, and revisiting conditional computation + adapter combinations seems like a promising direction.",
+      "weaknesses": "- Comparatively minor tweak of an existing idea. This wouldn't be an issue on\n  its own, except for the fact that the various changes are not evaluated in\n  a way that enables direct comparison to HyperFormers, as described below.\n\n- Inconsistencies and missing details in the description of the method. Fig 1\n  makes reference to a \"Task-specific A\" parameter that is not mentioned\n  anywhere in the formal description of the method---is it used, and if so,\n  where? Additionally, the experiments make reference to a method called\n  UnoLoRA$^*$, which achieves slightly better performance than the base method\n  but does not appear to be described anywhere.\n\n- Major issues in evaluation. The paper's main results are summarized in Fig\n  6(a), which show that UnoLoRA and HyperFormers both pareto-dominate training\n  separate adapters for each task---UnoLoRA involves fewer parameters at the\n  same level of performance, while HyperFormers give increased accuracy but are\n  slightly less parameter-efficient than UnoLoRA. I have two concerns here.\n\n    - First, the individual differences between UnoLoRA and HyperFormers are\n      never individually evaluated, making it impossible to figure which (if any)\n      are responsible for the performance differences.\n\n    - Second, and more fundamentally---the whole point of adapter-based methods\n      is that they provide a tunable parameter (the adapter rank) that trades\n      off between accuracy and parameter count. So what we really need to see\n      is the entire accuracy / efficiency curve for both model classes, rather\n      than an arbitrary point on each. In fact, if I understand correctly,\n      even the size of the adapter is totally incomparable between the two\n      models being compared: this paper trains UnoLoRA with a rank of 8, while\n      the results copied from the HyperFormers paper appear to use a rank of 24.\n\n  Without a minimal comparison (or a complete frontier from each model), it is\n  possible that all observed differences between methods result from\n  incomparable hyperparameter choices.\n\n- Major formatting issues: nearly every citation in the paper is incorrectly formatted (using \\citet instead of \\citep). It seems likely that this paper didn't receive even a single round of proofreading, and should not have been submitted to ICLR in its current form.",
+      "questions": "- How does performance change as rank is varied?\n- How do individual components of the method affect performance?\n- What is UnoLoRA$^*$?\n- Is there a task-specific $A$ matrix or not?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper presents a method called UnoLoRA, a procedure for constructing\nlow-rank Transformer adapters in a multi-task setting by training a network to\napply task-specific transformations to a shared adapter. In particular, while\nstandard LoRA parameterizes weight matrices as $W + AB^\\top$ for low-rank\n$A$ and $B$, UnoLoRA parameterizes them as $W + A ~\\mathrm{diag}(H(t)) ~ B^\\top$,\nwhere $t$ is a task representation that includes both a discrete identifier\nand example data and positional embeddings, and $H$ is a hypernetwork. A similar recipe was previously\nexplored by Karimi Mahabadi et al. (2021) under the name of \"HyperFormers\"; as\nfar as I can tell, the main differences are that:\n\n- HyperFormers condition only on task IDs, while UnoLoRA conditions on example\n  input data\n\n- HyperFormers also modulate LayerNorm parameters, and not just adapters\n\n- HyperFormers use a slightly different adapter parameterization from the modern LoRA recipe, with\n  a nonlinearity in the middle"
+    },
+    {
+      "note_id": "VnckYEpMR8",
+      "replyto": "49ti6LOUw5",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 17:10:20.247000",
+      "modified": "2024-11-12 16:41:01.375000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14293/Reviewer_LP9b",
+      "actor": "Reviewer LP9b",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "- The method proposed by the authors is simple but effective.",
+      "weaknesses": "- The writing and presentation is not good, for example, the caption and figure of Figure 1 seems confusing. Also the font size in the figure is too small to understand.\n\n- The training of Shared Hypernetwork will introduce additional training cost.\n\n- The method is only evaluated on one model, without scaling up the model size/architecture.",
+      "questions": "- What is the difference between the UNOLora* and UNOLoRA? I haven't found the method difference in your paper?\n\n- It required a comparation to use LoRA to multi task training.\n\n- It is not clear why cross task relation is related to the capability of using LoRA to do multi-task learning.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This article proposes a new method called UNOLORA, which utilizes shared low-rank adaptation (LoRA) modules to achieve efficient multi-task learning for large language models, and has achieved outstanding performance on the GLUE benchmark."
+    }
+  ]
+}

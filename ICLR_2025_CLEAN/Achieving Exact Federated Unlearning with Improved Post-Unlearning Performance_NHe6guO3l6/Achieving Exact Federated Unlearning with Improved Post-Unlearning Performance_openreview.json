@@ -1,0 +1,92 @@
+{
+  "paper": {
+    "id": "NHe6guO3l6",
+    "forum": "NHe6guO3l6",
+    "title": "Achieving Exact Federated Unlearning with Improved Post-Unlearning Performance",
+    "authors": "Ze Yu Zhang, Bui Thi Cam Nhung, Arun Verma, Bolin Ding, Bryan Kian Hsiang Low",
+    "keywords": "Exact Federated Unlearning, Improved Post-Unlearning Performance, Multi-Models Training",
+    "abstract": "Federated learning is a machine learning paradigm that allows multiple clients to train aggregated model via sharing model updates to a central server without sharing their data. Even though the data is not shared, it can indirectly influence the aggregated model via the shared model updates. In many real-life scenarios, we need to completely remove a client's influence (unlearning) from the aggregated model, such as competitive clients who want to remove their influence from the aggregated model after leaving the coalition to ensure other clients do not benefit from their contributions. The influence removal is also needed when the adversarial client negatively affects the aggregated model. Though the aggregated model can be retrained from scratch to ensure exact unlearning (completely removing the client's influence from the aggregated model), it performs poorly just after the unlearning, which is undesirable during deployment. To overcome this challenge, this paper proposes federated unlearning algorithms that ensure exact unlearning while achieving better performance post-unlearning. Our experimental results on different real datasets validate the performance of the proposed algorithms.",
+    "pdf_link": "https://openreview.net/pdf/5cfac0dc471d8c3942e0ff7cb7a49b8c0bccc897.pdf",
+    "submission_date": "2024-09-28 11:58:15.457000"
+  },
+  "reviews": [
+    {
+      "note_id": "Al5TmbZsVN",
+      "replyto": "NHe6guO3l6",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 11:58:05.558000",
+      "modified": "2024-11-12 16:30:53.706000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14278/Reviewer_4u7k",
+      "actor": "Reviewer 4u7k",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "**S1**. The topic of how to simultaneously preserve the model performance while exactly removing one client's influence is an important problem in practice.\n\n**S2**. Both theoretical and empirical results were provided to verify the effectiveness of the proposed method.",
+      "weaknesses": "**W1**. The technical contributions of the proposed methods are limited. For BMT, it only re-initializes the global model with local models that are only trained once by remaining clients, which is only equal to saving one round's communication cost compared to the random initialization case. For MMT, it maintains multiple series of model training (e.g., global model training, sub-FL training, and local training) to increase the training process's robustness to clients' exclusion. The local computation and communication cost can be larger than restart training the model from the randomly initialized one.\n\n**W2**. Some claims are confusing. For example, the reasons for the new model's low accuracy need further clarification in line 161 \"the new model may have very low accuracy compared to the aggregated model before unlearning due to restarting the FL process with random initialization \", since restarting the FL process with remaining clients should not cause performance drop given unlimited the communication and computation resources. \n\n**W3**. The definition of *double influence* and its impact are also unclear. Please clarify this term in the response.",
+      "questions": "See the weakness.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper tackles the challenge of achieving exact federated unlearning while maintaining good post-unlearning performance. Existing methods, such as retraining the federated model from scratch, fail to provide satisfactory initial performance after unlearning. Therefore, the authors propose  Bi-Models Training (BMT) and Multi-Models Training (MMT) to address this issue. BMT preserves isolated copies of local models and reuses clients' existing knowledge during unlearning. MMT trains multiple sub-federated learning models on disjoint subsets of clients and aggregates the best sub-models upon unlearning. Both methods ensure exact federated unlearning while achieving improved performance compared to retraining from scratch."
+    },
+    {
+      "note_id": "5FWBCpMb3e",
+      "replyto": "NHe6guO3l6",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 08:19:04.126000",
+      "modified": "2024-11-28 14:15:39.001000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14278/Reviewer_XuT7",
+      "actor": "Reviewer XuT7",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 5,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "1. The federated unlearning studied in this paper is an important research problem.\n2. This paper is well-written and easy to follow.",
+      "weaknesses": "1. The academic findings found in this paper are not novel. \nThe main academic findings brought by this paper are that using the proposed initialization strategies (using some locally trained models) rather than random initialization can improve the efficiency of federated exact unlearning. However, it is straightforward that using some locally trained models can speed up the convergence of the federated exact unlearning.\n\n2. The proposed initialization algorithm, i.e., MMT, is not well-motivated. \n(1) In lines 241-253, the authors claim that we should capture the joint influence of multiple clients for better global model initialization. However, the authors do not give any clear definition of the client's joint influence. To the best of my knowledge, \"client joint influence\" is not common knowledge in the area of federated learning. \n(2) In lines 263-269, the authors claim that \"If the number of models to aggregate is less, it implies that the initialization of the global model contains the most joint influence of clients\". It is also difficult to understand this statement. If we only use a small part of local models for global model initialization, why can we better capture the client joint influence?\n\n3. The MMT method is inefficient in both computation and storage.\nIn the proposed MMT method, the authors introduce a lot of sub-models to memorize the historical training state. However, this will introduce many extra computation costs. For example, if there exists $n = 2^m$ clients, and we maintain an influence tree with $h$ levels (including the top level and the bottom level), the computation costs of the FL systems will increase $h$ times, which may be impractical in real-world applications.\n\n4. The experiments in this paper can be improved.\n(1) Only small-scale datasets are used for experiments, i.e., MNIST, FMNIST, and CIFAR. The authors should compare different methods on larger datasets to demonstrate the superiority of the proposed method.\n(2) Only small-scale models, i.e., two-layer MLPs and two-layer CNNs, are used for experiments. Can the proposed method be applied to large-scale models, especially for the LLMs?\n(3) The authors only compare a trivial baseline method, i.e. training from scratch. However, there are many SOTA federated unlearning methods, the authors should compare them in this paper.",
+      "questions": "Refer to weakness.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "In this paper, the authors propose an exact unlearning method for federated model training. The main idea behind this paper is to better initialize the global model and re-train the global model on the remaining clients in a federated way. The authors further propose two strategies for the global model initialization in federated unlearning, including using the first-round local models of remaining clients and using the first-round local models and the corresponding sub-FL models of the remaining clients. Experiments on several datasets show the proposed method can outperform a naive baseline."
+    },
+    {
+      "note_id": "phnqipiusU",
+      "replyto": "NHe6guO3l6",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 02:12:51.430000",
+      "modified": "2024-11-12 16:30:53.622000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14278/Reviewer_dvZG",
+      "actor": "Reviewer dvZG",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "1. The proposed algorithm effectively achieves exact unlearning by retraining from isolated local models instead of random reinitializations.\n2. The method maintains model performance post-unlearning, making it highly practical for deployment in real-world federated systems.\n3. The method is validated across multiple datasets, demonstrating its effectiveness in achieving better post-unlearning accuracy.",
+      "weaknesses": "1. The core idea of this paper stems from using local models instead of random initialization. This trick is quite common in regular federated learning.\n2. Definition 1 and theorem 1 seem redundant. Utilizing a disjoint binary tree structure to eliminate double influence is intuitive enough that it does not require additional justification or explanation.\n3. The paper assumes that each local client has the same amount of data. However, varying data quantities can lead to significant differences in the performance of local models, which may impact post-unlearning aggregation. The authors should investigate this realistic scenario.\n4. In figure 4(d), there seems to be a performance decline in BMT and MMT while the curve for retraining is still rising. Can the authors let the curve to converge and explain why this happens?",
+      "questions": "Weaknesses.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes an exact federated unlearning method which completely removes the influence of a particular client on the aggregated model. The traditional method for exact unlearning involves retraining the model from scratch. This is effective in removing influence, but also leads to degrading performance after unlearning. To address this issue, the authors propose to maintain a local model that is trained fully on local datasets. Instead of randomly reinitializing the model after unlearning, they use isolated local models for initialization. This method ensures exact unlearning while improving the post-unlearning performance."
+    }
+  ]
+}

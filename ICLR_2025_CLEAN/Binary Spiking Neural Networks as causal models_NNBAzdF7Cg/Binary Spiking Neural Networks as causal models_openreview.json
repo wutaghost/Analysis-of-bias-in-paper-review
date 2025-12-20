@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "NNBAzdF7Cg",
+    "forum": "NNBAzdF7Cg",
+    "title": "Binary Spiking Neural Networks as causal models",
+    "authors": "Aditya Kar, Emiliano Lorini, Timothée Masquelier",
+    "keywords": "Explainability, Causal reasoning, Spiking Neural Networks, White-box",
+    "abstract": "In this paper, we provide a causal analysis of  binary spiking neural networks (BSNNs)\naimed at explaining their behaviors. \nWe formally define a BSNN \nand   represent its  spiking activity\n  as a binary causal model.\nThanks to this causal  representation, \nwe are able to explain the output of the network\nby leveraging  logic-based  methods. \nIn particular,\nwe show that we  can successfully \nuse a SAT  (Boolean satisfiability) solver to  compute \n  abductive explanations from this  binary causal model. \nTo illustrate our approach, \nwe trained the BSNN on the standard MNIST\ndataset and applied our SAT-based  method  to\nfinding  abductive  explanations of  the network's classifications\nbased on pixel-level features. We also compared the found explanations against SHAP,  a popular \nmethod used in the area of explainable\nAI to explain ``black box'' classifiers.\nWe show that, unlike SHAP,\nour method guarantees that a found  explanation  does\nnot contain completely irrelevant features.",
+    "pdf_link": "https://openreview.net/pdf/1ee54d4fb16d3625681306398b2e06ee104c6e2a.pdf",
+    "submission_date": "2024-09-28 11:02:07.616000"
+  },
+  "reviews": [
+    {
+      "note_id": "a93B8Asfab",
+      "replyto": "NNBAzdF7Cg",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-09 04:51:55.924000",
+      "modified": "2024-11-12 16:30:50.496000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14144/Reviewer_UbVF",
+      "actor": "Reviewer UbVF",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 4,
+      "presentation": 3,
+      "contribution": 4,
+      "strengths": "Since I am not really into causal models but in spiking NNs, it is hard for me to judge about the originality of the contribution. To me, the paper seems to be original, applying binary causal models to BSNNs in a way that uniquely captures their temporal dynamics through Boolean logic, setting it apart from existing explainability methods, especially in comparison to SHAP. The approach is communicated clearly, with definitions and examples that effectively illustrate the novelty of causal explanations in BSNNs. Overall, the paper provides a robust, innovative framework that could influence future standards in model transparency and causal explainability, if the authors can show that the framework can be generalized to larger real-world networks and problems. (I did not check the proof in the Appendix).",
+      "weaknesses": "My main concern over this paper is the current presentation as a two-layer-only network (one hidden layer). It is hard to imagine all consequences when this approach is generalized to multiple hidden layers. My impression is that the computational effort of Algorithm 1 would increase exponentially, thus effectively excluding the possibility of applying the method to real-world problems.",
+      "questions": "I would appreciate to see more than one single sample (the digit 5) analysed. I have a hard time to judge intuitively the quality of those explanations, without further insights into the trained network, as this is just trained to discriminate the 5 against 1s and 9s. Are the yellow (negative) features part of the explanation of not? If yes, how comes, that so many off-center pixels appear in Figure 1 b) at time step 6.\n\nWhat would be the effort of constructing the same experiment with two hidden layers?\n\nMaybe the authors could briefly discuss the consequences for the algorithm (and the results) if the BSNN has multiple hidden layers.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces a novel approach to explaining Binary Spiking Neural Networks (BSNNs) by mapping their spiking activity into binary causal models (BCMs). The authors develop a SAT-based method for generating abductive explanations, ensuring only causally relevant input features are included, which advances interpretability and minimizes redundancy. This approach is unique in leveraging Boolean logic to capture the temporal dynamics of BSNNs, setting it apart from standard explainability methods like SHAP. Experimental results show that this method produces accurate and computationally efficient explanations, highlighting features that directly impact the model's decisions. Overall, the work provides a structured, logic-driven framework for enhancing transparency in spiking neural networks."
+    },
+    {
+      "note_id": "hhuai7m3nP",
+      "replyto": "NNBAzdF7Cg",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 12:49:12.447000",
+      "modified": "2024-11-12 16:30:50.837000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14144/Reviewer_LAns",
+      "actor": "Reviewer LAns",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 2,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "As the authors stated, this is the first time BSNNs have been interpreted as causal models. I believe this provides a new perspective for understanding BSNNs.",
+      "weaknesses": "1. This paper primarily relies on extensive formal language for its exposition. Adding some figures would be beneficial to enhance readers' understanding of the content.\n2. The experiments are limited to the MNIST dataset. It is recommended to include some other, more complex datasets for support.",
+      "questions": "Please see weaknesses.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a causal-based interpretability method by mapping Binary Spiking Neural Networks (BSNNs) into binary causal models. Using a SAT solver to compute abductive explanations. This provides a new perspective for interpreting BSNNs and advancing BSNN research further."
+    },
+    {
+      "note_id": "KJG5lz1lK5",
+      "replyto": "NNBAzdF7Cg",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 11:47:15.457000",
+      "modified": "2024-11-29 01:29:13.360000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14144/Reviewer_nbn8",
+      "actor": "Reviewer nbn8",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 5,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "1. The idea of bridging SNN and Causal Inference is interesting.\n\n2. The experiments related to SAT solver seem significant.",
+      "weaknesses": "1. This paper is hard to follow due to the poor presentation. Some symbols are confused.\n\n2. The motivation that employs BSNN rather than BNN is not clear. I cannot get the necessity of using spiking mechanism. Thus, it is better to explicitly compare the advantages of BSNNs over BNNs in the context of causal modeling.",
+      "questions": "Please show the advantages of BSNNs over BNNs in the context of causal modeling. The core question is why only employ BSNN rather than BNN as the causal model. In my view, one requires quantized input, weights, and outputs, which are satisfied by both BSNN introduced by this paper and BNN. The main difference between SNNs and conventional ANNs is the activation mechanism; however, I cannot find the connection between the integrate-and-fire mechanism and a causal computation, unless I missed something. Thus, it is better to explicitly compare the advantages of BSNNs over BNNs in the context of causal modeling. In detail, the authors are asked to answer the following questions.\n\n1. Explicitly compare the causal properties of BSNNs and BNNs.\n\n2. Clarify how the integrate-and-fire mechanism specifically contributes to or enhances the causal model.\n\n3. Explain any potential advantages of the temporal dynamics in BSNNs for causal reasoning that may not be present in BNNs.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper presents a causal analysis of binary spiking neural networks by representing the spiking activity as a binary causal model and applying this model to a SAT (Boolean satisfiability) solver.\n\n\n---\n\nAfter reading the reviews and the rebuttal, I tend to accept this paper."
+    },
+    {
+      "note_id": "GJoPqMEL3Q",
+      "replyto": "NNBAzdF7Cg",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-27 01:54:17.532000",
+      "modified": "2024-11-29 20:26:29.633000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14144/Reviewer_xXVG",
+      "actor": "Reviewer xXVG",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "- The idea of using binary causal models to explain binary spiking neural networks is novel\n- The technical aspects of the paper are precise and rigorous; the authors provide precise mathematical definitions and prove the proposition brought forth in the paper\n- The paper is written in an easy-to-follow manner",
+      "weaknesses": "- It is not clear to me how the explanation provided by the binary causal model is a \"good\" explanation. While the authors make the implication that their method provides a better explanation than SHAP as SHAP can select features that are irrelevant, I think the paper would be improved if it included some evaluation metrics for explainability and, if possible, other bechmark methods alongside SHAP.\n- The proposed method seems to take a long time in searching for an explanation using the SAT solver, ranging from 5-11 hours, and this is  just for MNIST limited to 3 classes. It seems unlikely that this method is scalable to larger scale problems.\n- The authors do not report the results (both accuracy and computational analysis) for the BCNN (binary, not ternary) on the 10-digit MNIST dataset.",
+      "questions": "- Related to weakness #1, it is not clear to me how a causal explanation at the pixel level would be useful for MNIST. I understand that this might just be for demonstration purposes. However, wouldn't a task of a more symbolic nature (e.g. language-related tasks) make more sense (I am aware that the authors have considered this in the conclusion)?\n- Is the analysis possible on regular non-spiking binary neural networks? If so, why not do it for that instead? While it is mentioned that spiking neural networks are more general, regular neural networks are more widely used, and it in the use cases considered by the authors, it seems to make more sense to use regular neural networks as opposed to their spiking variants.\n- What are the results (both accuracy and computational analysis) for the BCNN (binary, not ternary) on the 10-digit MNIST dataset?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors introduced a method mapping binary (or ternary) spiking neural networks to binary causal models, which can then be used to perform abductive explanations (via a SAT solver) for the network's behavior. They applied this method to the MNIST classification task (3 classes for the binary case and 10 classes for the ternary case). The authors claim that their method provides a better explanation compared to SHAP, another explainability method."
+    }
+  ]
+}

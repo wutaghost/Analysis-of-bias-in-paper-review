@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "GdXI5zCoAt",
+    "forum": "GdXI5zCoAt",
+    "title": "RaSA: Rank-Sharing Low-Rank Adaptation",
+    "authors": "Zhiwei He, Zhaopeng Tu, Xing Wang, Xingyu Chen, Zhijie Wang, Jiahao Xu, Tian Liang, Wenxiang Jiao, Zhuosheng Zhang, Rui Wang",
+    "keywords": "parameter-efficient fine-tuning, large language model, low-rank adaptation",
+    "abstract": "Low-rank adaptation (LoRA) has been prominently employed for parameter-efficient fine-tuning of large language models (LLMs). However, the limited expressive capacity of LoRA, stemming from the low-rank constraint, has been recognized as a bottleneck, particularly in rigorous tasks like code generation and mathematical reasoning. To address this limitation, we introduce Rank-Sharing Low-Rank Adaptation (RaSA), an innovative extension that enhances the expressive capacity of LoRA by leveraging partial rank sharing across layers. By forming a shared rank pool and applying layer-specific weighting, RaSA effectively increases the number of ranks without augmenting parameter overhead. Our theoretically grounded and empirically validated approach demonstrates that RaSA not only maintains the core advantages of LoRA but also significantly boosts performance in challenging code and math tasks. Code, data and scripts are available at: https://github.com/zwhe99/RaSA.",
+    "pdf_link": "https://openreview.net/pdf/26347c818217d5c434c3eab6d9f6aea95413ae38.pdf",
+    "submission_date": "2024-09-28 10:21:47.525000"
+  },
+  "reviews": [
+    {
+      "note_id": "NAGYOqjgMc",
+      "replyto": "GdXI5zCoAt",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 05:10:04.159000",
+      "modified": "2024-11-12 16:34:43.483000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14067/Reviewer_7i6n",
+      "actor": "Reviewer 7i6n",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "1. Technical Soundness: RaSA is a technically robust extension of LoRA, overcoming its expressive limitations through partial rank sharing. Theoretical and empirical results confirm its lower reconstruction error and improved task performance.\n\n2. Paper Presentation: The paper is clearly organized and easy to follow, with well-explained motivations, methods, and contributions, making RaSA's innovations accessible and engaging.\n\n3. Theoretical Analysis: Theoretical bounds and empirical evidence validate RaSA’s improved capacity over LoRA, providing a solid foundation for its enhanced performance in high-rank tasks.",
+      "weaknesses": "1. Lack of Baseline Comparisons:\nThe paper lacks a comprehensive comparison with other LoRA variations, such as EM-LoRA, AdaLoRA, and Orthonormal LoRA. Without these baselines, it’s difficult to fully assess the advantages of RaSA, as the performance improvements over the original LoRA may not necessarily hold when compared with these alternative methods.\n\n2. Efficiency Concerns:\nThe proposed method is considerably less efficient than the original LoRA, with a noticeable increase in computational time (at least 1.4 hours). Despite this added overhead, the performance gains are minimal, with PASS@1 improvements generally below 2%. This limited payoff questions the practical viability of RaSA, especially for real-world applications where computational efficiency is crucial.",
+      "questions": "1. Could the efficiency of the proposed method be further optimized to reduce computational time?\n\n2. The performance improvement appears to be notably greater on Mistral-0.3-7B compared to Llama-3.1-8B. Do you have any insights into the reasons behind this difference?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces an enhancement to existing fine-tuning methods for large language models (LLMs). It builds on Low-rank adaptation (LoRA), commonly used for efficient fine-tuning, but limited by its low-rank constraint in handling complex tasks like code generation and mathematical reasoning. To address this, the authors propose Rank-Sharing Low-Rank Adaptation (RaSA), a novel method that increases expressive capacity by sharing ranks across layers, allowing for more flexibility without adding parameter overhead. RaSA thus extends LoRA’s efficiency, achieving substantial performance gains in rigorous tasks. Code and data resources accompany the work."
+    },
+    {
+      "note_id": "EwvjwYntRh",
+      "replyto": "GdXI5zCoAt",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 13:39:12.555000",
+      "modified": "2024-11-12 16:34:43.447000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14067/Reviewer_SwqF",
+      "actor": "Reviewer SwqF",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "- RaSA can efficiently increase the rank of the original LoRA, and compared to directly expanding the rank, RaSA achieves this with almost no increase in parameter count.\n- The authors validate the better expressive capacity of RaSA through detailed reconstruction error analysis, empirical analysis shows that RaSA can achieve much lower reconstruction error and reveal the relationship between rank and the hyperparameter k.\n- Experiments on code and math tasks show that RaSA achieves much better performance with only a 10% increase in time, highlighting RaSA's promising advantages.",
+      "weaknesses": "- As written in Lines 30-31, LoRA still lags behind full fine-tuning, particularly on complex tasks, however, the authors only compare RaSA with existing peft methods, not including full fine-tuning.",
+      "questions": "- In line 103, the authors claim that introducing a trainable diagonal matrix enables layer-specific weighting, actually, I am confused about this, maybe it could be explained specifically.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper highlights that the low-rank constraint limits the expressive capacity of LoRA, and that LoRA’s parameters are not fully utilized. To address this, the authors propose RaSA, an approach enabling partial rank sharing across layers with minimal additional parameters. Theoretical and empirical analyses demonstrate that RaSA achieves a minimum reconstruction error bounded by LoRA, and can be easily optimized. Experiments show that RaSA achieves great performance in complex math and code tasks."
+    },
+    {
+      "note_id": "qjjMLuj604",
+      "replyto": "GdXI5zCoAt",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 05:49:29.310000",
+      "modified": "2024-11-12 16:34:43.457000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14067/Reviewer_bzbg",
+      "actor": "Reviewer bzbg",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 4,
+      "soundness": 4,
+      "presentation": 4,
+      "contribution": 4,
+      "strengths": "1. The problem studied in this paper is valuable. \n2. The proposed RaSA approach is interesting and effective.\n3. The paper is well organization. \n4. The theoretical and empirical analysis are insightful. \n5. The experiment is sufficient, including the study of Reconstruction error, the study of $k$, the performance comparison of parameters and time, the study of forgetable.",
+      "weaknesses": "A great paper with almost no weaknesses. A small suggestion, the distinction between the different methods in Figures 4, 5, and 7 is only based on different color (red and blue), as printing on paper cannot distinguish them.",
+      "questions": "I am curious why the performance is best when $k$ is around $r/8$ (line 249-250), and if possible, is there any theoretical explanation?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "Low-rank adaptation (LoRA) is limited in expression ability due to low rank constraints. This paper propose Rank-Sharing Low-Rank Adaption (RaSA) to enhance the expressive capacity of LoRA by leveraging partial rank sharing across layers. Specifically, RaSA shares $k$ ranks across all layers and assign $r-k$ for layer-specific parameters. After that, RaSA greatly increase the effective rank of the parameter update by $(L-1)\\times k$ without introducing additional parameters. The experimental results on multiple datasets with different model architectures validate the effectiveness of the proposed approach."
+    },
+    {
+      "note_id": "0vnYdUHN9O",
+      "replyto": "GdXI5zCoAt",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-16 10:18:25.283000",
+      "modified": "2024-11-12 16:34:43.417000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14067/Reviewer_tu4z",
+      "actor": "Reviewer tu4z",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 4,
+      "soundness": 4,
+      "presentation": 4,
+      "contribution": 4,
+      "strengths": "* The authors tackle an important and meaningful topic that would be of interest to the community. PEFT is gaining more and more attention as the size of language models continues to grow.\n* The description of the proposed method is clear and concise. Writing is easy to understand and follow.\n* The method is simple, effective, and easy to implement.",
+      "weaknesses": "* It seems that unlike vanilla LoRA, that acts independently on each layer, in RaSA there is an underlying assumption that all shared layers have the same dimension. If so, it is worth mentioning it explicitly in the paper.\n* There are LoRA extensions that allow allocating a different rank for each layer, according to its importance (for example PRILoRA and others). It seems that in RaSA the rank should be similar across layers. If so, it is worth mentioning this fact and citing the relevant papers that do allow different rank allocation.\n* There are no comparisons in Table 1 to other LoRA extensions (AdaLoRA, PRILoRA), which may be of importance to the reader. Furthermore, it is not clear why the VeRA method is compared against, when its number of parameters is x13 less.",
+      "questions": "* In Figure 1b, the name of matrices A,B are in the square, and the dimension is outside. However, in matrix D the name is outside and there are no shapes. Maybe you want to consider putting the name D_i inside, and adding shape, for readability.  \n* In line 208, it says: ‘actual weight updates from model fine-tuning’. Do you mean ‘full fine-tuning’ (FFT)?\n* In Table 1, why do you show both LAST and BEST? Why does BEST not suffice?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper presents a method to improve the expressivity of LoRA, while keeping the same number of parameters. This is by sharing a portion of each learnable adaptor across all layers."
+    }
+  ]
+}

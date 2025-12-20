@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "7jDv1RrNQX",
+    "forum": "7jDv1RrNQX",
+    "title": "Path Selection Makes BERT-family Good Generators",
+    "authors": "Yisheng Xiao, xiaobo liang, Juntao Li, Zechen Sun, Pei Guo, Wenpeng Hu, Min Zhang",
+    "keywords": "BERT-family, path selection, natural language generation",
+    "abstract": "The Mask-Predict decoding algorithm has been widely used to enhance the generation capacity of traditional non-autoregressive (NAR) models and provide a good recipe for adapting the pre-trained BERT-like masked language models (MLMs) to NAR generation scenarios.\nHowever, these models, which we denote as NAR-MLMs, are still regarded as inferior to competitive autoregressive (AR) models in terms of performance.\nIn this paper, we further explore the core problems leading to the performance gap of NAR-MLMs and delve into effective solutions for technological innovation.\nSpecifically, most related works neglect the impact of the training sequence decomposition format, i.e., \nUnlike the AR models which can naturally decompose the text sequence in a left-to-right manner for training and inference, NAR-MLMs are trained with a random decomposition but aim to find a determined optimal composition (denoted as decoding paths) during inference.\nTo alleviate this mismatching, we propose decoding path selection to increase the search space for finding a better \ncomposition, and path optimization methods to enable the model decoding path preference during the training process. \nResults on various zero-shot common sense reasoning and reading comprehension tasks and several task-specific generation tasks demonstrate that our NAR-MLM achieves significant performance improvements on common benchmarks with the methods mentioned above, reaching performance levels comparable to even outperforming AR pre-trained models. Our model and code will be available at Github.",
+    "pdf_link": "https://openreview.net/pdf/e81ff5b225f81bafc96cc4ff81a53fc702c463e7.pdf",
+    "submission_date": "2024-09-28 10:08:43.950000"
+  },
+  "reviews": [
+    {
+      "note_id": "Riiy5ZciLa",
+      "replyto": "7jDv1RrNQX",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 17:47:46.309000",
+      "modified": "2024-11-12 16:39:28.258000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14035/Reviewer_pJpu",
+      "actor": "Reviewer pJpu",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "-\tIn the context of the rising popularity of decoder-only architecture in large language models, this paper revisits the encoder-only architectures. This perspective may encourage the academic community to view generative models differently and inspire new thinking about model architecture.\n\n-\tThe method proposed by the author endows BERT-style models with zero-shot capabilities in common sense question answering tasks, while also offering a speed advantage over autoregressive models.",
+      "weaknesses": "-\tWhile I believe research on encoder-only models remains valuable, the motivation behind this paper is unclear to me. Given that autoregressive models have demonstrated excellent generative capabilities across various tasks, why do the authors choose to focus on BERT-style models instead of enhancing autoregressive models? I look forward to discussing this with the authors.\n\n-\tIf the authors aim to explore whether BERT-style models can achieve generative capabilities comparable to those of autoregressive models, then a broader range of generative tasks should be included in their experiments. The datasets used in the paper, such as ARC, primarily consist of multiple-choice questions and do not leverage generative capabilities.\n\n-\tIf the authors intend to demonstrate that BERT-style models can achieve faster generation speeds, they should compare their speeds with a broader range of non-autoregressive models. However, it is unclear why the authors only use the encoder-decoder model BART as the baseline for this speed comparison in Table 2.\n\n-\tThe experimental comparison does not seem to be fair. The author's pre-trained GeBERT uses advanced RoPE position encoding and sets the maximum length to 2048, but the maximum length of BART is 1024. More advanced generative models are recommended for comparison.\n\n-\tThe writing needs improvement. The path selection algorithm is not clearly articulated, and there are also several typos present as follows:\na)\tSection 3.1 discusses the path selection algorithm; however, the phrase “As shown on the left in Figure 2” in line 157 refers to the path selection-star illustrated in Figure 2.\nb)\tLine 372, “BART-largeGeBERT 124M” -> “BART-large”\nc)\tLine 535, “fron scratch” -> “from scratch”",
+      "questions": "-\tWhy is the speed of Large Version not compared in Table 2?\n-\tIn Table 1, how does GeBERT perform under fine-tuning as a traditional encoder-only model? This helps to judge the basic capabilities of GeBERT.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper investigates the application of BERT-style models as generators. It introduces two path selection strategies and trains a BERT-style model with instruction-following capabilities. The study demonstrates zero-shot performance in common sense question answering and reading comprehension, and achieves comparable autoregressive generation capabilities on the XSUM summary dataset."
+    },
+    {
+      "note_id": "657vBY7aOW",
+      "replyto": "7jDv1RrNQX",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 03:20:13.954000",
+      "modified": "2024-11-12 16:39:28.244000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14035/Reviewer_ddFt",
+      "actor": "Reviewer ddFt",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "1. With the rise of autoregressive models, research on BERT-family models for generative tasks has decreased, and few studies have explored their generative capabilities. This study takes a fresh approach to directly compare BERT models with AR models.\n\n2. Introduces a method to expand the search space during inference, allowing BERT models to select the optimal path for improved generation quality. and also incorporates path selection into the training process, enabling BERT models to learn and prefer certain paths over others, further enhancing output quality.\n\n3. Experimental results show substantial improvements in both zero-shot and fine-tuned settings, demonstrating that, with these modifications, BERT-family models can effectively compete with AR models.",
+      "weaknesses": "1. While this research is innovative and valuable, a fundamental question remains—why use BERT for generation tasks? Given scaling laws, AR models generally improve significantly with larger model sizes, while BERT-family models struggle to achieve similar gains. Moreover, as shown in Table 1, the performance improvements for GeBERT are limited compared to AR models.\n\n2. The path selection techniques introduce additional complexity, particularly in tuning hyperparameters for path selection*. This added complexity could hinder the practical application and usability of these methods.\n\n3. The experimental models are relatively small in scale. Larger models might address or clarify the first weakness I raise, providing a stronger case for BERT's use in generation tasks.",
+      "questions": "see above",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This work introduces GeBERT, a variant of BERT specifically pre-trained to leverage path selection, calming that it performs competitively, often on par with or surpassing traditional autoregressive models on various zero-shot and task-specific generation tasks."
+    },
+    {
+      "note_id": "60p3GTiQbm",
+      "replyto": "7jDv1RrNQX",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 13:34:16.639000",
+      "modified": "2024-11-12 16:39:28.163000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14035/Reviewer_g4ao",
+      "actor": "Reviewer g4ao",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "1. The proposed method select the positions to decode dynamically, which is suitable for BERT-like models. BERT-like models trained with masked language modeling objective can predict any positions in the target part, while autoregressive language models can only follow the left-to-right order.\n2. Experimental results show that the proposed method can effectively improve the generation quality of BERT-like models on various tasks.",
+      "weaknesses": "1. On Line 146 the authors aim to identify an optimal decoding path. In other parts the authors also state that previous methods cannot find the optimal paths. But the proposed method cannot guarantee to find the optimal decoding path. It is a form of beam search over the mask-predict algorithm, and beam search cannot guarantee to find the optimal solution.\n2. The description of the path selection algorithm in Section 3.1 is unclear. The example in Figure 2 is not enough since it didn't describe how the lowest-k total prediction probabilities are selected. The authors should give a pseudocode to describe the algorithm.\n3. In Section 5.1 the authors find that BERT-like models can achieve competitive performance with AR models when the model predicts one token in each decoding step. In that case it requires the same number of decoding steps as AR models, and the compute of each decoding step is much larger than that of AR models since BERT-like models cannot reuse kv cache during inference. There is not efficiency advantage compared with AR models. Therefore I challenge the motivation to apply BERT-like models to generation tasks.\n4. On Line 87 the authors claim that path selection* incorporates path selection into the training process. In fact neither the sampling methods to generate the pairs nor the computation of the probability considers the path selection method.",
+      "questions": "1. What does it mean that \"only one position in masked parts can be replaced by the one in unmasked parts to obtain the candidate decoding states\"? Does it mean that only one position is predicted at each decoding step?\n2. Is the algorithm equivalent to mask-predict when $k$ equals 1?\n3. What is $n_{\\text{new}}$ in Table 2? If it is equal to 1 as Table 1, how can the model achieves speeup over AR models?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper proposes a method to select the decoding paths of BERT-family to conduct generation tasks. They also propose a DPO method to optimize the preferences of the model over difference paths. Experimental results show that the decoding method and preference optimization method can effectively improve the generation quality of BERT-family on zero-shot commonsense reasoning, reading comprehension, summarization and question generation tasks."
+    },
+    {
+      "note_id": "7yvAwyKKyq",
+      "replyto": "7jDv1RrNQX",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-29 15:44:41.342000",
+      "modified": "2024-11-12 16:39:28.080000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14035/Reviewer_zyki",
+      "actor": "Reviewer zyki",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "This paper proposes innovative solutions - path selection to expand inference search space and path selection* to integrate path selection into training, which demonstrably elevate BERT's performance across multiple zero-shot tasks to match or exceed autoregressive models.",
+      "weaknesses": "The generation capabilities of BERT are investigated in previous paper, e.g. [1]. This paper aims to improve the performance of BERT by using path selection, a non-autoregressive variation for inference. However, the paper lacks details on path selection, especially about how to choose the position to predict if beam size > 2. There are other potential issues should be considered for Mask-Predict methods, e.g. the potential mode collapse with many iterations. More ablation studies about the designs and clear pseudo-codes are needed.\n\nPath selection* is an application of DPO, but the `Score' function is not defined in the paper, which diminishes the contribution of the paper.\n\n[1] Patel, Ajay, et al. \"Bidirectional Language Models Are Also Few-shot Learners.\" The Eleventh International Conference on Learning Representations.",
+      "questions": "How to choose the position to predict if beam size > 2? In your case (beam size = 2) , the masked position with the highest probability is choose, but if beam size > 2, both topk and one-by-one replacement is possible. So the necessary details are lacked.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper examines BERT-family models' generation capabilities. It proposes path selection to expand inference search space and path selection*, which is an application of DPO, to train the model for better path selection. The methods improve BERT's performance across multiple zero-shot tasks to match or exceed autoregressive models."
+    }
+  ]
+}

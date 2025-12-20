@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "CKqiQosLKc",
+    "forum": "CKqiQosLKc",
+    "title": "Sampling from Energy-based Policies using Diffusion",
+    "authors": "Vineet Jain, Tara Akhound-Sadegh, Siamak Ravanbakhsh",
+    "keywords": "Reinforcement learning, Diffusion models",
+    "abstract": "Energy-based policies offer a flexible framework for modeling complex, multimodal behaviors in reinforcement learning (RL). In maximum entropy RL, the optimal policy is a Boltzmann distribution derived from the soft Q-function, but direct sampling from this distribution in continuous action spaces is computationally intractable. As a result, existing methods typically use simpler parametric distributions, like Gaussians, for policy representation — limiting their ability to capture the full complexity of multimodal action distributions. In this paper, we introduce a diffusion-based approach for sampling from energy-based policies, where the negative Q-function defines the energy function. Based on this approach, we propose an actor-critic method called Diffusion Q-Sampling (DQS) that enables more expressive policy representations, allowing stable learning in diverse environments. We show that our approach enhances exploration and captures multimodal behavior in continuous control tasks, addressing key limitations of existing methods.",
+    "pdf_link": "https://openreview.net/pdf/8ebd6dbab98a93a5cd85cfefca6584e3a2695605.pdf",
+    "submission_date": "2024-09-28 10:42:20.613000"
+  },
+  "reviews": [
+    {
+      "note_id": "ctCqx6Z1hy",
+      "replyto": "CKqiQosLKc",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-06 10:30:21.868000",
+      "modified": "2024-11-12 16:37:01.403000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14109/Reviewer_zuam",
+      "actor": "Reviewer zuam",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "1. The novel approach is able to learn multimodal actions which is valuable especial when multiple optimal trajectory exists.\n2. By explicitly sampling from the Boltzmann distribution of the Q function, DQS is shown better abilities for balancing exploration and exploitation.\n3. Through experiments on maze tasks and Deepmind control suites benchmarks, results have confirmed the advantages of DQS.",
+      "weaknesses": "1. As pointed out by the authors, temperature of DQS needs to be manually tuned unlike SAC as it would be computationally very expensive to compute the likelihoods under diffusion model. \n2. No ablation study. Maybe beneficial to have some ablation studies, for example, how sensitive DQS is to different temperature values, K (number of monte carlo samples and how is it relates to computation cost)? or isolate the contribution of techniques introduced, etc.",
+      "questions": "For benchmark environments where DQS does not show clear advantages, is there any analysis/explanation? \nI think ablation study would be useful. Any justifications why u choose not to have ablations?\nI believe DQS is sample efficient as they perform better quicker at the early stage of training for some of the environments, I'm curious how would DQS perform at the late stage of training? Have you ever run the algorithm for longer training iterations (for example, 1m iterations)?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors have developed a new actor-critic algorithm called Diffusion Q-Sampling (DQS), which uses a diffusion-based model to sample from energy-based policies in actor-critic framework. The goal is to address current limitation of capturing complexity of multimodal action distributions in continuous action spaces. This novel algorithm is shown to be very effective for learning multimodal behaviors and improved sample efficiency."
+    },
+    {
+      "note_id": "aKhSuBX8Ir",
+      "replyto": "CKqiQosLKc",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 05:59:47.752000",
+      "modified": "2024-11-12 16:37:01.351000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14109/Reviewer_auFv",
+      "actor": "Reviewer auFv",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "Proposing a novel Boltzmann policy iteration which is more efficiency and still bound to recover the optical policy",
+      "weaknesses": "Lack of novelty：Simply integrating Diffusion into the traditional SAC which lacks innovation. \n\nBenchmark in a custom environment lacks persuasiveness and the test is not quantified to data.",
+      "questions": "How does the method compare to recent Diffusion RL algorithms that outperform QSM,such as\n\n1.Diffusion-based Reinforcement Learning via Q-weighted Variational Policy Optimization,https://arxiv.org/abs/2405.16173\n\n2.Policy Representation via Diffusion Probability Model for Reinforcement Learning,https://arxiv.org/abs/2305.13122\n\nCan the algorithm demonstrate its advantages in a broader range of test environments, rather\nthan just in a custom maze?\n\nCan the experiments be quantified into numbers or tables rather than presenting the results\nusing abstract images?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a novel framework for sequential decision-making using diffusion models for\nsampling from energy-based policies and a new actor-critic algorithm for training diffusion\npolicies based on that framework.This algorithm improves the high-cost issue of sampling from\ncontinuous action spaces in traditional maximum entropy reinforcement learning methods. It has\nbeen validated in the authors' custom maze navigation and DeepMind Control Suite tasks."
+    },
+    {
+      "note_id": "dNDQIsNxWK",
+      "replyto": "CKqiQosLKc",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-24 15:09:40.023000",
+      "modified": "2024-11-12 16:37:01.340000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14109/Reviewer_fgmh",
+      "actor": "Reviewer fgmh",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "- This article proposes sampling with a diffusion strategy obeying a Boltzmann distribution to balance exploration and exploitation, focusing on a very cutting-edge area;\n- This paper does a multimodal experiment to show that DQS has some multimodality, a point that may be of interest to the RL community;\n- The writing of the paper is easy to follow.",
+      "weaknesses": "- The related work is not presented carefully enough, and some are only cited. In particular, the related work under Online diffusion is particularly scarce, and each needs the author to summarise their approach, and where the flaws lie. In addition, **diffusion & online RL** related work also need you to expand, I found a recent paper accepted in NeurIPS24 is also under this setting Diffusion Actor-Critic with Entropy Regulator (Wang et al.). \n\n- You mention that the Q-score method does not have an exact distribution, but isn't Eq. (21) of the original paper a Boltzmann distribution? Is the representation in your paper not quite correct.  It's better to clarify your statement about the Q-score method and explain how it relates to Eq. (21) in the original paper. \n\n- The two proofs in 4.1 about policy improvement and policy iteration do not depend on the diffusion model, this is essentially a mathematical proof of a policy obeying a Boltzmann distribution. May I ask what is the essential difference between your proofs and the one in the Soft Actor-Critic Algorithms and Applications (Haarnoja et al.) paper? \n\n- With the experiments in 5.1, I remain sceptical about the results of QSM. I think with the addition of some tricks to fully learn the bias of Q with respect to a, the QSM can get the same results as you did (e.g., do some random sampling to update the bias of Q with respect to a to get it to school in full action space).\n\n- 5.2 There is too little BASELINE for experimental comparisons. To prove your excellent performance, add Proximal Policy Optimisation Algorithms (Schulman et al.), Diffusion Actor-Critic with Entropy Regulator (Wang et al.), Policy Representation via Diffusion Probability Model for Reinforcement Learning (Yang et al.). At least a few difficult scenarios are tested on MuJoCo environment (Humanoid, Ant) and compared with the above algorithms.\n\n### Minor note.\n- Please label all formulas in PRIMARY with the serial number, then you look at the expression for the Q function, where does the discount factor go?\n\n- Equation (4) has incorrect parentheses.",
+      "questions": "See suggestions and questions in the Weaknesses section.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a diffusion-based sampling method that uses a negative Q-function as an energy function for sampling, thus allowing for more expressive policy representations. Based on this approach, an actor-critic method called **Diffusion Q-Sampling (DQS)** is proposed that enables stable learning in diverse environments. Experiments show that the method enhances exploration in continuous control tasks and effectively captures multimodal behaviours, overcoming key limitations of existing methods. However, the core sampling method used in this paper is iDEM leading to a lack of innovation, and the experimental results are insufficient, the multimodal experiments may be problematic (results of the Q-score method), and the baseline algorithm is too few and too simple."
+    },
+    {
+      "note_id": "dnf53H0bJY",
+      "replyto": "CKqiQosLKc",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-24 10:54:15.615000",
+      "modified": "2024-11-12 16:37:01.239000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14109/Reviewer_hBVq",
+      "actor": "Reviewer hBVq",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 1,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "Originality - The application of iDEM is (to this reviewer's knowledge) novel; although other methods seek to use diffusion model policies, they typically use other methods for fitting the diffusion model. The application of iDEM is novel. \n\nQuality - The empirical results given are strong. The first set of results demonstrates well that DQS can indeed learn a policy which has support on multiple different solution types for problems. The second set of results shows that DQS can learn well, and outperform baseline methods in terms of sample efficiency. \n\nClarity - In general, the authors writing is clear. The method is well-explained, and seems reproducible.  \n\nSignificance - The authors propose an effective new algorithm for continuous control. This algorithm seems particularly useful for the setting where compute is not a bottleneck, and multimodal policies are explicitly desired.",
+      "weaknesses": "046 - The authors give methods of policy representations in the continuous setting. I would suggest that they mention SQL, which allows for the training of expressive policies which come from neither noise injection nor parametric family. These are trained via Stein-variational gradient descent. \n\n071 - The claim is made that \"[Diffusion models] have been extensively applied to solve sequential decision-making tasks, especially in offline settings where they can model multimodal datasets from suboptimal policies or diverse human demonstrations.\" No citations are given for these techniques - please include citations to the literature to which you are referring. \n\n191 - I would encourage the authors to say more about the role of the reverse SDE (3) in generation. Specifically, please be clear about how (3) is used to generate samples, rather than assuming this knowledge on the part of the reader. \n\n205 - Missing tildes over the x's in the expectations in Eq. (4). \n\n210 - Subscript below the S in equation (5) should be a capital K. \n\n260 - Lemma 1 is false, and its proof is invalid. Lemma 1 states that, for any action-value function, the policy which is Boltzmann with respect to that action-value function has a dominating action-value function. This statement is incorrect, and obviously so. Let $\\pi^*$ be the optimal policy, with action-value function $Q^*$. Then we know that $Q^*$ satisfies the Bellman optimality operator, $T^* Q(s,a) = r + \\gamma \\mathbb{E}[ \\max_{a'} Q(s',a') | s, a]$, where the expectation is taken over next-states $s'$ conditional on state-action pair $s,a$. If Lemma 1 were true, it would mean that the Boltzmann policy $\\pi_B$ with respect to $Q^*$ has an action-value function which dominates $Q^*$. But note that $T^* Q^*(s,a) \\geq T^{\\pi_B} Q^*(s,a)$, which can be seen by expanding definitions and using the fact that the maximum over $a'$ dominates any expectation with respect to $a'$, except if that expectation only places mass on the argmax actions. From this it also follows that this inequality is strict somewhere provided $Q^*$ is non-uniform somewhere. But since $T^* Q^* = Q^*$, it follows that $Q^* \\geq T^{\\pi_B} Q^*$. But monotonicity of the Bellman operator, it follows that, for all $n$, $Q^* \\geq [T^{\\pi_B}]^n Q^*$. Taking limits as $n \\to \\infty$, we obtain that, $Q^* \\geq Q^{\\pi_B}$, with strict inequality somewhere provided $Q^*$ is not flat. This contradicts the stated result. \n\nWe now turn to the proof given in A.1, and examine the error of reasoning. In the first two lines of  (10), the expectation of $\\log(\\pi_{new})$ is taken with respect to $\\pi_{new}$, and the expectation of $\\log(\\pi_{old})$ is taken with respect to $\\pi_{old}$. However, in the third line of (10), the expectation of both terms is taken with respect to $\\pi_{new}$. This allows the authors to express this term as a KL-divergence, a step critical to their proof. However, the term should instead be a difference of entropies, which in general is not non-negative (as the KL-divergence is).  \n\n265 - The proof of Theorem 1 is invalid. The proof relies heavily on the same argument as in Lemma 1, which is faulty. \n\nIn general, it seems like the authors fail to appreciate that results from the entropy regularised setting and the classical setting cannot be freely interchanged. The optimal policy is Boltzmann only if an entropy regularisation term is included in the Bellman backup, (7). When there is no such entropy term in the backup, the optimal policy will simply be the classical optimal policy, which in general is deterministic (or has support only on argmax actions). Similarly, the Boltzmann improvement map only gives improvement with entropy regularisation. Otherwise it can result in a strictly worse policy, as explained above.  \n\nI would suggest that the authors either cut their theoretical results entirely, or think about replacing the Bellman backup in (7) with the entropy regularized backup - however this would result in a substantial change to the algorithm, which may be too late at this stage.",
+      "questions": "074, 122 - The claim is made twice that for Q-Score Matching (Psenka et al. 2023), \"the exact form of the policy is unspecified and it is unknown what distribution the diffusion models sample from\". But this is equally true for your method. Both DQS and QSM train score functions which are used to generate samples of the policy. And both DQS and QSM aim for these score functions to allow for sampling from the Boltzmann distribution with respect to the current action-value function. So it is unclear what this comment is meant to mean, or what advantage you are supposing DQS has over QSM. Can the authors please clarify this?\n\n461 - You mention that diffusion based policies have an increased runtime compute requirement compared to parametric policy methods. Can you give an indication of the ratio of runtime for your method vs. SAC? Are there experiments you can run which demonstrate that DQS outperforms SAC when normalised for compute time? \n\nWill a codebase be made available to accompany the paper?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors introduce a new algorithm for continuous RL environments, Diffusion Q-Sampling (DQS). \nDQS makes use of an existing method, iterated Denoising Energy matching (iDEM). \nThe key idea is to use iDEM to learn a score function which can be used in a reverse diffusion process to sample actions. \nThe score function is trained such that the reverse diffusion process approximately samples from a Boltzmann distribution with respect to the Q-function of the current policy. \n\nThe authors give two theoretical results, corresponding to policy improvement and policy iteration respectively, to justify their choice of training rule for the action-value function and the diffusion model. \n\nThe authors then give experimental results for their method, DQS. \nIn the first set of results, they compare DQS to SAC (soft actor-critic) and QSM (Q-score matching) in terms of the diversity of behaviors learned. They demonstrate that, in a goal reaching maze environment, DQS can successfully learn a diverse set of solutions, while SAC and QSM learn a more concentrated set of solutions. \nIn the second set of results, they compare DQS to SAC and QSM on 8 tasks from the DeepMind control suite. They demonstrate that on many of these tasks, QSM dominates the other methods."
+    }
+  ]
+}

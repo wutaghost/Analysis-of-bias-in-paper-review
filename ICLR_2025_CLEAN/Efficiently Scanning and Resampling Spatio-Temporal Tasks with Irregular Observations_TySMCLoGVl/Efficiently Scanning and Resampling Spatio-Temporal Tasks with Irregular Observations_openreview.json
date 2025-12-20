@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "TySMCLoGVl",
+    "forum": "TySMCLoGVl",
+    "title": "Efficiently Scanning and Resampling Spatio-Temporal Tasks with Irregular Observations",
+    "authors": "Bryce Ferenczi, Michael Burke, Tom Drummond",
+    "keywords": "sequence modeling, efficient training, efficient inference, spatio-temporal, multi-agent task",
+    "abstract": "Various works have aimed at combining the inference efficiency of recurrent models and training parallelism of MHA for sequence modeling. However, most of these works focus on tasks with fixed-dimension observation spaces, such as individual tokens in language modeling or pixels in image completion. Variably sized, irregular observation spaces are relatively under-represented, yet they occur frequently in multi-agent domains such as autonomous driving and human-robot interaction. To handle an observation space of varying size, we propose a novel algorithm that alternates between cross-attention between a 2D latent state and observation, and a discounted cumulative sum over the sequence dimension to efficiently accumulate historical information. We find this resampling cycle is critical for performance. To evaluate efficient sequence modeling in this domain, we introduce two multi-agent intention tasks: simulated agents chasing bouncing particles and micromanagement analysis in professional StarCraft II games. Our algorithm achieves comparable accuracy with a lower parameter count, faster training and inference compared to existing methods.",
+    "pdf_link": "https://openreview.net/pdf/60aa39230761dfa3c2b0a9e3c039c157e84bfc7d.pdf",
+    "submission_date": "2024-09-28 11:09:16.255000"
+  },
+  "reviews": [
+    {
+      "note_id": "lmrYurDC79",
+      "replyto": "TySMCLoGVl",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-12 09:52:14.117000",
+      "modified": "2024-12-04 09:43:30.659000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14157/Reviewer_aVTi",
+      "actor": "Reviewer aVTi",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "The paper investigates the use of various encoders to encode irregular observations into a fixed dimensional latent, and corresponding sequence modelling approaches.",
+      "weaknesses": "- The model's efficiency enables its use in real-time applications with irregular observation space, but studying the effect on longer sequence durations as well as diversifying the tasks (i.e., conduct experiments on more tasks) would further validate its utility in long-term planning tasks.\n- There's some work in the literature like Temporal Latent Bottleneck (https://arxiv.org/abs/2205.14794) and Block Recurrent Transformers (https://arxiv.org/abs/2203.07852); which combines strengths of attention and recurrence.",
+      "questions": "See Weaknesses.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper discusses a approach to spatio-temporal modelling for tasks with irregular observation spaces. Experiments are conducted on multi-agent scenario's like robotic target-chasing simulations and StarCraft II gameplay analysis.\n\n\nMotivation: The paper aruges that current architectures like Transformers and LSTMs works well in scenarios with fixed observation spaces but struggle with tasks where observation spaces vary over time, such as multi-agent interactions. The paper aims to combine the efficiency of recurrent models with the parallelism of attention mechanisms, focusing on varying-dimension observation spaces.\n\nProposed Method:  The paper introduce an algorithm using a 2D latent state, alternating between cross-attention on observations and a discounted cumulative sum over time, capturing long context.  \n\nExperiments: Two benchmarks are used for evaluation: (a) Chasing Targets: Agents pursuing dynamic targets, evaluating the model's ability to infer intended goals in real-time; (b) StarCraft II: A environment with complex, temporally varying observations, where models infer combat unit assignments and predict unit movement.\n\nResults: The proposed model achieves competitive accuracy with fewer parameters and faster inference compared to standard methods (e.g., transformers). The \"resampling cycle,\" improves sequence modeling accuracy by conditioning observations on accumulated sequence data.\n\n===================\n\nAfter rebuttal: I've read the review by other reviewers as well as the rebuttal by the authors.\n\nThis statement by the authors summarizes the contribution of the paper well.\n\"Our results primarily set out to explore the trade-offs between efficiency and performance in the irregular observation case. This means results should be interpreted given the compute budget available to a practitioner. If only performance matters, practitioners should select a temporal transformer with sequential cross attention (X-Attn Sequential) for observation encoding. For efficiency and model parsimony, an inclusive scan should be selected with X-Attn Sequential.\"\n\nIt will be very helpful to revise the introduction and abstract accordingly."
+    },
+    {
+      "note_id": "YVbVKon9jD",
+      "replyto": "TySMCLoGVl",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 16:25:50.094000",
+      "modified": "2024-11-12 16:26:56.629000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14157/Reviewer_ttpp",
+      "actor": "Reviewer ttpp",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 4,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "The proposed method, especially integrating inclusive scan algorithm, is novel and is an effective way to accumulate history.\n\nThe experiment results are good. The proposed method improves the performance and reduce the computation overhead.",
+      "weaknesses": "Please refer to the Questions part.",
+      "questions": "I’m not very familiar with this topic, so my questions are mainly about the application settings.\n\n1.\tThe observations of Chasing-target and StarCraft2 are all low-dimensional. How to extend your method to more realistic and complex scenarios, e.g., vision-based navigation tasks?\n\n2.\tHow can this method be applied to longer-horizon tasks?\n\n3.\tI would like to see more ablation studies on the selection of hyperparameter $\\gamma$.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper investigates how to combine the inference efficiency of recurrent models and the training parallelism of multi-head attention transformers, especially for dealing with the varying size observation space. The authors propose a novel algorithm to cycle between cross-attention and inclusive scan to efficiently accumulate historical information. They evaluate their method on two benchmarks, Chasing-Targets gymnasium and StarCraft2."
+    },
+    {
+      "note_id": "he8UlCchWZ",
+      "replyto": "TySMCLoGVl",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 13:15:01.094000",
+      "modified": "2024-12-02 21:48:13.235000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14157/Reviewer_rRfx",
+      "actor": "Reviewer rRfx",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "- The contribution of the task based on StarCraft can be an interesting domain for future work to study\n- The writing is in general fairly clear to follow",
+      "weaknesses": "I should start off by pointing out that I'm not precisely acquainted with this literature, so that will affect my judgment.\n\n## Major points\n1. One large issue I see with the paper is that I'm not totally certain why these particular tasks are good ones in order to explore modeling arbitrary-sized observation spaces. I think StarCraft as a domain makes sense, but there has been much prior work in StarCraft (which is not cited in the paper) that has used it in a different way, and I don't understand why the decision was made to couple \"intention-prediction\" tasks with the method. It seems that some domains like sequential decision making in healthcare, or some kind of variable-sized text prediction task would be equally fine as a benchmark domain. This is further complicated by the relatively unclear definition of the exact input and output for each task in Section 3. Given the motivation of these tasks is that it shows up often in interactions, it would seem that a space like Shared Autonomy might provide some more common benchmarks.\n\n2. Another big issue that I see is that the paper does not make a strong enough case for the choice of baselines. I would expect there to be accompanying work in the domain previously with which to compare against, but because 4.1.2 does not cite any prior work, it's unclear to me that these choices are well-founded. Certainly I'm familiar with Mamba2, but the rest is unclear. Also the choice of encoders for the RNN methods feels somewhat unjustified.\n\n3. The last major issues I see is that the results in Figure 5 and Table 1 feel somewhat inconclusive. Because nothing is controlled (either parameter count, memory, or training time) between methods, and there is no clear winner across metrics, it's difficult to see the benefit. When coupling these mixed results with the choice of new bespoke domains, it's even harder to understand the longer-term contribution. I don't think it's the case that a new method needs to be always better than prior work, but the fact that it does not appear to have particular advantages in computation that was claimed as a contribution (\"efficiently address sequence modeling\" at the end of Section 1), makes it hard to understand the contribution.\n\n## Specific points\n\n1. Section 4.1.2 add a citation to Mamba2\n2. Section 4.2 it would be nice to have the problem written out mathematically as I find the current description a bit hard to follow\n3. Section 5 is missing comment on hyperparameter tuning, especially for baselines\n4. Fig 7 should be referenced in 5.1.1",
+      "questions": "1. Section 3.2 Where exactly does the StarCraft data come from? It would be nice to have a detailed description of the data collection and formatting process in the Appendix\n2. How different is this method of encoding observations from previous work on StarCraft (regardless of the exact task, the encoding stage should be similar).\n3. What is the \"learned initialization\" in Section 4.1.2\n4. Is there some reason why baselines couldn't be matched on some axis? (parameter count is probably easiest)\n5. What I understand in Section 3.2 is that the StarCraft task is a 3-class (idle, move to position, move to enemy) classification problem given sequential context, but still this doesn't exactly specify the setup for me, could you clarify what exactly is the task?\n6. Section 7 Given the related work (especially Sun et al. 2023) is there some reason why none of these were used as baselines?\n7. The limitations seem a bit unfortunate, but also foreseeable, is there some reason that the authors specifically designed their own benchmarks instead of working with something longer-term?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper proposes a method for sequential prediction tasks that can handle observations of varying sizes at different times. It also simultaneously introduces two intention-prediction tasks in which to test this method. Experiments are performed against a few baselines and components of the method are ablated."
+    },
+    {
+      "note_id": "e9VFNyguPK",
+      "replyto": "TySMCLoGVl",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 18:40:24.665000",
+      "modified": "2024-12-02 19:16:34.240000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14157/Reviewer_7WZF",
+      "actor": "Reviewer 7WZF",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "Overall the paper is interesting and approaches a very important problem I think in a comprehensive way, covering some benchmarks that seem well motivated to me as well as some methodologies for dealing with the variable observation problem. The experiments I think are clear enough and the conclusions drawn I think are sound, demonstrating that some methods perform better than others.",
+      "weaknesses": "There are places where the writing is good, and there are places where the writing and motivation is not so good. The introduction is very vague and lacks citations on some critical claims in the paper that make it difficult for readers who are not very familiar with the domain to understand well. The benchmarks are introduced well enough, but it's unclear why we need multi-player problems to address the core problem of variable observation spaces. Critically though when the methods come around the organization of the paper suffers, as it becomes extremely difficult to understand the motivation of different design choices, such as the scan operation (e.g., why was the scheme in figure 4 motivated, other than post-hoc performance?). The methods in Figure 3 seem interesting, but I had difficulty finding their consequence in the paper later on.\n\n(Many of these and questions below were addressed sufficiently in the rebuttal and revision)",
+      "questions": "1) Could you clarify the contributions of the paper in terms of the models introduced, notably wrt to SSMs. I read the related works, but they did not do a good job connecting to what was done in prior sections.\n2) Why is it important that the benchmarks include PvP / PvE games?\n3) Did you ablate over decoders when you decided on the final scheme to compare methods? Is it possible that some results are decoder dependent (ie there's a relationship between decoder and encoder results).\n4) Could you explain in more detail the motivation of the scan methods? What do you think is going on that makes this method work? What does this have to do with variable observation spaces?\n5) What is Lx in 4.1.1? What does the first subscript mean in L_xt?\n6) Does the model ever output observation predictions? You mention \"sample the current observation\" but it's unclear what you mean.\n7) What do you mean by \"learned initialization\" in 4.1.2?\n8) What is the consequence of those PvE encoders from Figure 3 on the results?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper tackles the issues of spatio-temporal modeling in the context of variable observation spaces, such as when there are variable objects across episodes / scenes, etc or when the object number varies within an episode (such as when entities enter and leave an arena). The authors introduce a few baseline tasks representative of this problem and cover various attention-based encoding and temporal aggregation schemes, some of which are advertised as being novel (such as some of the encoder methods). They perform various analysis on different methodologies, such as task performance, memory, speed, etc on these tasks which highlight some of the benefits of various methods (such as the scan-based one)."
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "GF1sRSBiwY",
+    "forum": "GF1sRSBiwY",
+    "title": "Physics-Informed Neural Networks with Message-Passing Weights",
+    "authors": "Hyunwoo Cho, Hwijae Son, Hyung Ju Hwang",
+    "keywords": "Physics-informed Neural Networks, Adaptive Loss-Balancing Algorithms, causal PINN, Belief Propagation",
+    "abstract": "Adaptive loss balancing algorithms play a crucial role in improving the performance of Physics-Informed Neural Networks (PINNs) by effectively managing the weights assigned to different loss components. Most notably,  Wang et al. (2022) introduced Causal Physics-Informed Neural Networks (Causal PINNs), which achieve superior performance by simply reformulating the loss function based on the causal structure that emerges from time dependency. However, despite their empirical success, a solid theoretical analysis for the effectiveness of Causal PINNs has not received adequate attention. This paper addresses this gap by providing a theoretical rationale for Causal PINNs through the Belief Propagation (BP) algorithm, which is commonly used for causal inference. In addition, motivated by this analysis, we propose a Message Passing PINNs (MP-PINNs), a novel adaptive weighting algorithm. Through extensive numerical experiments, we demonstrate that the proposed MP-PINNs significantly outperform existing adaptive weighting methods, exhibiting superior performance in solving complex PDEs. Our findings highlight the potential of MP-PINNs as a powerful tool to enhance both the accuracy \nand efficiency of PINNs.",
+    "pdf_link": "https://openreview.net/pdf/b82e099d3c1d3182a647f6a6c9d8d826f3b2981a.pdf",
+    "submission_date": "2024-09-28 10:07:39.720000"
+  },
+  "reviews": [
+    {
+      "note_id": "fVBYPSU1Mk",
+      "replyto": "GF1sRSBiwY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-07 01:10:47.230000",
+      "modified": "2024-11-12 16:34:55.296000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14033/Reviewer_einq",
+      "actor": "Reviewer einq",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "- Empirically demonstrates the proposed approach MP-PINNs outperform existing adaptive weighting methods for solving complex PDEs\n- Provides a novel theoretical understanding of Causal PINNs",
+      "weaknesses": "- The authors note that further theoretical analysis is required for the hyper parameter D (number of message-passing iterations). A proper ablation study to empirically understand performance w.r.t. this hyper parameter would be useful.",
+      "questions": "- The authors note a limitation of their method is the increase in computational cost for weight calculations; what is the specific computational costs required for this method relative to existing baselines?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "- Provides a theoretical understanding for Causal PINNs through the Belief Propagation algorithm. \n- Proposes a novel adaptive weighting algorithm termed Message Passing PINNs (MP-PINNs)\n- Empirically demonstrate that the proposed approach MP-PINNs outperform existing adaptive weighting methods for solving complex PDEs"
+    },
+    {
+      "note_id": "fR5B84BLWD",
+      "replyto": "GF1sRSBiwY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 05:51:46.098000",
+      "modified": "2024-11-12 16:34:55.628000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14033/Reviewer_Hv5w",
+      "actor": "Reviewer Hv5w",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 1,
+      "contribution": 3,
+      "strengths": "The empirical performance looks promising.",
+      "weaknesses": "The paper does not seem ready for publication; the clarity is lacking, and parts of the related work and formal justification for the theoretical analysis are missing.\n\n1. **Missing related work**: In line 80, “Despite the applicability of PINNs for solving various PDEs, there are still various problems to solve.” However, the paper does not cite any work here and later cites only one paper afterward. In line 90, “to address the failure mode of PINNs.” The paper does not describe what the failure mode of this algorithm is.\n\n2. **Insufficient background**: The paper has not defined the main goal or the notation used in section 2, which may make it difficult to read.\n\n3. **Theoretical analysis organization**: The paper does not present the results as theorems and proofs but rather writes the results in paragraph form, making it less formal.\n\nWhile the empirical performance looks good, I think the current version of this paper is not yet ready for ICLR.",
+      "questions": "see weakness",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper attempts to provide a theoretical analysis of the effectiveness of Causal PINNs with the Belief Propagation algorithm and proposes a new algorithm called Message Passing PINNs. It demonstrates the effectiveness of this approach in solving various PDEs."
+    },
+    {
+      "note_id": "3c0lPrej8V",
+      "replyto": "GF1sRSBiwY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 18:09:41.049000",
+      "modified": "2024-11-12 16:34:55.620000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14033/Reviewer_8bpG",
+      "actor": "Reviewer 8bpG",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 2,
+      "soundness": 2,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "The paper presents an alternative (iterative) algorithm for solving PDEs where the initial- and boundary-conditions serve as training points.",
+      "weaknesses": "I am not an expert in PDEs and found Section 2.1 incomprehensible: For example, isn't $\\partial_t u$ already a linear differential operator (first derivative). What is the role of $\\mathcal{R}$? Also, I was not able to follow the presentation of the main idea in Section 3; how does $v_i$ and resolve to $x$ and $t$ in Section 2? The experimental results seem convincing but I am not remotely able to understand the algorithmic idea that the authors are using. I would urge the authors to significantly improve the accessibility of their idea and algorithm.",
+      "questions": "* Line 108: It seems that the font of $N$ and $B$ differs from that in line 102 (where $\\mathcal{N}$ and $\\mathcal{B}$ is used)\n* Line 139: Shouldn't this be $\\propto$ rather than $=$?\n* Line 156: G should be $G$\n* Line 168: There is an extra comma after $N_t$",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper presents a message-passing algorithm for solving partial differential equations (PDEs). The main idea seems to be to discretize the input space and use the loss function of Physics-Informed Neural Networks (PINNs) for an exponential error propagation across time and space. Results for four different kind of PDEs are presented and show good results using the message passing scheme."
+    },
+    {
+      "note_id": "lI9hBaIW4m",
+      "replyto": "GF1sRSBiwY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-18 21:04:17.358000",
+      "modified": "2024-11-12 16:34:55.591000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14033/Reviewer_vW7j",
+      "actor": "Reviewer vW7j",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 2,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "1. The paper provides a new theoretical understanding of Causal PINNs.\n2. Experiments show that MP-PINNs outperform existing algorithms in handling time-dependent PDEs, especially with respect to spatial causality.",
+      "weaknesses": "1. The authors mention that a limitation of their paper is the lack of theoretical analysis on the hyperparameter D (the number of iterations of message passing). While I believe that theoretical analysis may not be necessary, I think that ablation studies could be run to empirically understand the impact of this hyperparameter on performance.",
+      "questions": "How are the L2 errors in Table 1 computed? Are these averaged over time t?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper analyzes the setting of Causal PINNs, which reformulates the standard PINN loss function to incorporate information about time dependencies into weights. The authors provide theoretical justification for Causal PINNs by analyzing the belief propagation algorithm. Specifically, they find that running BP over a Markov random field yields the weighting used in Causal PINNs. Next, the authors propose a message passing-based alternative form of PINNs that outperforms adaptive weighting methods for PDEs. Empirically, they demonstrate that these perform better than alternative PINN approaches on a variety of time-dependent PDEs."
+    }
+  ]
+}

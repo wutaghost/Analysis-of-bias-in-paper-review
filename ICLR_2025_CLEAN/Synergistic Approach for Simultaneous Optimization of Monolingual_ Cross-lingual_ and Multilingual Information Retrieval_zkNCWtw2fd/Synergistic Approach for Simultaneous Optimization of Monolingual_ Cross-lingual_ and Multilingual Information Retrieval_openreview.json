@@ -1,0 +1,92 @@
+{
+  "paper": {
+    "id": "zkNCWtw2fd",
+    "forum": "zkNCWtw2fd",
+    "title": "Synergistic Approach for Simultaneous Optimization of Monolingual, Cross-lingual, and Multilingual Information Retrieval",
+    "authors": "Adel Elmahdy, Sheng-Chieh Lin, Amin Ahmad",
+    "keywords": "Information Retrieval, Multilingualism and Cross-Lingual NLP, Question Answering",
+    "abstract": "Information retrieval across different languages is an increasingly important challenge in natural language processing. Recent approaches based on multilingual pre-trained language models have achieved remarkable success, yet they often optimize for either monolingual, cross-lingual, or multilingual retrieval performance at the expense of others. This paper proposes a novel hybrid batch training strategy to simultaneously improve zero-shot retrieval performance across monolingual, cross-lingual, and multilingual settings while mitigating language bias. The approach fine-tunes multilingual language models using a mix of monolingual and cross-lingual question-answer pair batches sampled based on dataset size. Experiments on XQuAD-R, MLQA-R, and MIRACL benchmark datasets show that the proposed method consistently achieves comparable or superior results in zero-shot retrieval across various languages and retrieval tasks compared to monolingual-only or cross-lingual-only training. Hybrid batch training also substantially reduces language bias in multilingual retrieval compared to monolingual training. These results demonstrate the effectiveness of the proposed approach for learning language-agnostic representations that enable strong zero-shot retrieval performance across diverse languages.",
+    "pdf_link": "https://openreview.net/pdf/957319c99ea3b1b1f56edec0f51ef0515f25e466.pdf",
+    "submission_date": "2024-09-28 11:59:41.961000"
+  },
+  "reviews": [
+    {
+      "note_id": "UXJcl5skaD",
+      "replyto": "zkNCWtw2fd",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 10:03:21.969000",
+      "modified": "2024-11-12 16:07:55.074000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14290/Reviewer_AJBm",
+      "actor": "Reviewer AJBm",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "1. Addresses a relevant challenge in multilingual information retrieval.\n2. Provides comprehensive experimental validation across multiple benchmark datasets (XQuAD-R, MLQA-R, MIRACL).",
+      "weaknesses": "1. The primary contribution merely combines two existing training approaches with probability weights, presenting a straightforward and obvious solution.\n2. The paper employs translated QA pairs as data augmentation, creating an unfair comparison with baseline methods that do not utilize this advantage.",
+      "questions": "None.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces a hybrid batch training approach for multilingual information retrieval by combining monolingual and cross-lingual training data. The core methodology relies on mixing different types of training data using probability weights α and β. While the implementation is straightforward, the novelty of the contribution is limited."
+    },
+    {
+      "note_id": "bXNaEp660n",
+      "replyto": "zkNCWtw2fd",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 09:58:43.874000",
+      "modified": "2024-11-12 16:07:55.088000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14290/Reviewer_Xsrq",
+      "actor": "Reviewer Xsrq",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "The paper shows that two standard batching strategies are complementary for information retrieval tasks, as the combination of them shows improvements.",
+      "weaknesses": "1. Limited evaluations are only QA datasets (e.g., the main text only shows XLM-R and LaBSE). Also, the main text consists of many large tables where each does not present as much information as the space it takes, e.g., the authors could summarize how many languages/scenarios the proposed method shows improvements instead of providing large tables like Table 3, Table 4, Table 5, etc.\n\n2. It is not clear if the proposed method is actually effective. In many cases, the improvements appear rather small. For example, in Table 1, on XQuAD-R for XLM-R (0.792 vs 0.798; 0.705 vs 0.700; 0.593 vs 0.593). Are they even statistically significant?\n\n3. As this paper mainly provides empirical observations, it would be stronger if the paper provides insights on which scenario (e.g., what kind of base model or dataset) where hybrid batching is expected to show significant improvements and when it does not. The current paper pretty much reports experimental findings which could limit its usefulness. Several questions remain, for example, what is the size and mixed of training data does one need to see the impact of this hybrid batching? I expect that if there is limited training data, the impact would be marginal.",
+      "questions": "1. Related to weakness1, could this proposed method be extended to other tasks in addition to QA?\n2. Can you discuss my weakness 2.\n3. Can you discuss my weakness 3.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper studies information retrieval tasks where monolingual, cross-lingual, and multilingual setups are examined. The paper studies different batch sampling approaches at the training time without modifying existing training loss (e.g., contrastive learning loss) or model architectures. Specifically, the paper argues that existing approaches either use (i) monolingual batching where the languages of query and documents are matched, but they can be of different languages, or (ii) cross-lingual batching where the languages of query and documents are different. Based on this, the paper proposes hybrid batching, which is the mixing of these two batching methods.\n\nExperiments are conducted on two base models (XLM-R and LaBSE) and evaluated on two tasks (XQuAD-R, MLQA-R, MIRACL). To train systems with data in various languages, the paper employs in-house machine translation to translate existing training corpora (described in Section 3.1). The experimental results show that hybrid batching, generally, outperforms monolingual-only and cross-lingual-only in a range of setups, including monolingual, cross-lingual, and multilingual."
+    },
+    {
+      "note_id": "StqC0eIZkb",
+      "replyto": "zkNCWtw2fd",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-20 07:46:59.529000",
+      "modified": "2024-11-12 16:07:55.389000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14290/Reviewer_V4Ew",
+      "actor": "Reviewer V4Ew",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "1.  This paper proposes a hybrid batch training strategy to simultaneously improve zero-shot retrieval performance across monolingual, cross-lingual, and multilingual settings while mitigating language bias.\n2.  The hybrid batch training strategy simply modifies the training data batches without necessitating the introduction of loss functions or new architectural components.",
+      "weaknesses": "1. The proposed hybrid batch training strategy only modifies the input training data, which lacks novelty.\n2. This paper lacks sufficient analysis to the field of multilingual information retrieval. It does not adequately demonstrate the shortcomings of existing work nor the importance and necessity of this study.\n3. The experiments only compare the performance of different input strategies but not various multilingual information retrieval methods.",
+      "questions": "1. What are the advantages of hybrid batch training strategy in terms of convenience, overall efficiency, and experimental effectiveness compared to existing multilingual information retrieval methods?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces a simple method called hybrid batch training, which involves translating to obtain parallel data in multiple languages, and sampling these data to construct a multilingual training dataset. The model is trained by inputting monolingual or multilingual training data with a certain probability, thereby balancing its performance in both scenarios."
+    }
+  ]
+}

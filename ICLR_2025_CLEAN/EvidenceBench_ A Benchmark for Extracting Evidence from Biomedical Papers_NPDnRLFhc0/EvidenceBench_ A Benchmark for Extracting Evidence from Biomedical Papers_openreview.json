@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "NPDnRLFhc0",
+    "forum": "NPDnRLFhc0",
+    "title": "EvidenceBench: A Benchmark for Extracting Evidence from Biomedical Papers",
+    "authors": "Jianyou Wang, Weili Cao, Kaicheng Wang, Xiaoyue Wang, Ashish Dalvi, Gino Prasad, Qishan Liang, Hsuan-lin Her, Mingwang, Qin Yang, Gene W. Yeo, David E Neal, Maxim Khan, Christopher D. Rosin, Ramamohan Paturi, Leon Bergen",
+    "keywords": "Biomedical Benchmark, Scientific Information Retrieval, Scientific Information Extraction, Large Language Models, BioNLP",
+    "abstract": "We study the task of automatically finding evidence relevant to hypotheses in biomedical papers. Finding relevant evidence is an important stage when humans write systematic reviews about certain scientific hypotheses. We introduce EvidenceBench to measure models performance on this task, which is created by a novel pipeline that consists of hypothesis generation and sentence-by-sentence annotation of biomedical papers for relevant evidence, completely guided by and faithfully following existing human experts judgment. Our pipeline's value and accuracy is validated by teams of human experts. We evaluate a diverse set of language models and retrieval systems on the benchmark and find the performance of the best models still falls significantly short of expert-level on this task. To show the scalability of our proposed pipeline, we create a larger EvidenceBench-100k with 107,461 fully annotated papers with hypotheses to faciliate model training and development. Both datasets are available at https://github.com/EvidenceBench/EvidenceBench",
+    "pdf_link": "https://openreview.net/pdf/e9908c30c284420a1cbc5eb0b29d900a5b015f0c.pdf",
+    "submission_date": "2024-09-28 09:46:17.514000"
+  },
+  "reviews": [
+    {
+      "note_id": "PE1Ge91qIK",
+      "replyto": "NPDnRLFhc0",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 14:31:51.642000",
+      "modified": "2024-12-02 12:01:38.912000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13995/Reviewer_1P2K",
+      "actor": "Reviewer 1P2K",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "1. Identifying arguments supporting or against an argument is an important task.\n2. This paper proposes an annotation pipeline, which might be helpful for future tasks.",
+      "weaknesses": "1. The paper spends too much effort on constructing the benchmark, but not many insights are provided through the experiment section.\n2. The writing can be largely improved. There's many places in the writing that are vague and not clear. \nFor example, the second paragraph in the introduction section: \n\"We consider the goal of understanding what is known in the literature about a scientific hypothesis.\nThis can be broken into several stages: searching for relevant papers; extracting information from\nthese papers; and aggregating this information. Our work focuses on the second stage.\"\nMy questions are:\na). what is precisely the research goal in terms of \"understanding what is known in the literature about a scientific hypothesis\"?\nb). why it can be broken into these three stages?\n\nIn line 047~048: \"These annotations are judgments which are ordinarily made by domain experts, and the benchmark should be faithful to these judgments\": what does it mean by \"the benchmark should be faithful to these judgements\"?\n\nIn line 048~050: \"Third, despite the complexity of annotation, the benchmark construction process should be scalable, providing a sufficient number of examples to accurately measure system performance\": what does it mean by \"should be scalable\"? what does it mean by \"providing a sufficient number of examples to accurately measure system performance\"? what is the relation between these two arguments?\n\nI found it very hard to read through the paper. I would suggest the authors for a major revision at least in terms of the writing.",
+      "questions": "Can you provide more insights or knowledge that we can learn?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper presents EvidenceBench, which is a benchmark for finding arguments supporting or against a hypothesis. They find hypotheses inside survey, and find supporting arguments from the same survey, and the original paper. \nThis paper also proposes metrics for the task and compares many LLMs' performance on the task. In addition, this paper also provides the fine-tuning results on the benchmark."
+    },
+    {
+      "note_id": "lfcnBcyiJi",
+      "replyto": "NPDnRLFhc0",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 09:00:41.450000",
+      "modified": "2024-11-12 16:30:49.274000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13995/Reviewer_D5dw",
+      "actor": "Reviewer D5dw",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "* The authors propose a practical task and evaluate the effectiveness of existing approaches to the task\n* A useful resource for benchmarking LLMs on the proposed task\n* The paper is well-structured and easy to follow, although some presentations can be further improved",
+      "weaknesses": "There is no strong reason to reject the paper, although some issues related to clarity and presentation need to be improved.\n\n* The concept of `study aspect` is confusing, and I am unsure how the evaluation procedure considers it. For example, if a sentence is retrieved for the wrong aspect or multiple aspects.\n* Based on the task definition, the hypothesis is given. However, this may not be the case in the real world. It would be nice to see these tested models' sensitivity to the modified (paraphrasing) hypothesis.\n* The difference between `EvidenceBench` and `EvidenceBench-100k` is unclear (seems with or without human validation?)\n* The authors exclude figure and table, which might be very relevant and important for the proposed task.",
+      "questions": "N/A",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper studies the task of finding evidence for a hypothesis. The authors develop a pipeline for annotating biomedical papers for this task. Using the annotation pipeline, the authors build a benchmark of more than 400 papers. Additionally, the authors create a larger dataset containing 100K papers.\nThe authors also run experiments to evaluate the effectiveness of different approaches to the proposed task."
+    },
+    {
+      "note_id": "6ObA8yFCo6",
+      "replyto": "NPDnRLFhc0",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-28 20:07:36.551000",
+      "modified": "2024-11-12 16:30:49.259000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13995/Reviewer_YWQR",
+      "actor": "Reviewer YWQR",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "o\tThe original EvidenceBench evaluated the performance of selected LLMs and embedding models on evidence retrieval tasks and compared different prompting strategies, which revealed that GPT-4o is the SOTA LLM, and that embedding models underperform due to a lack of context awareness.\n\no\tThe EvidenceBench-100k fine-tuned E5-v2 model and Llama3-8B significantly improved on the result evidence retrieval task but trailed behind larger models, validating the effectiveness of the benchmark dataset.\n\no\tThe author presented the topic and their framework well, with detailed descriptions and clear figures illustrating the overall problem and their area.\n\no\tThis paper innovatively developed the pipeline for evidence retrieval for a given hypothesis and further annotated biomedical papers at the sentence level for better meta-analysis.\n\no\tThe authors conducted comprehensive experiments with both open-sourced and closed-sourced LLMs, and a small language model. Human experts were involved to validate study aspects generation and automate sentence annotation to enhance trustworthiness.",
+      "weaknesses": "o\tThe authors claimed that their method using the SOTA LLMs reduces construction time from over 3,000 human hours for EvidenceBench to 3 hours. However, there is no evidence provided regarding how the 3 hours were concluded. Additionally, GPT4-0125, GPT4-o-mini, and Claude3-Opus are used during data generation without explanations of when to choose which.\n\no\tNo ablation study regarding how topics can influence the study aspect and hypothesis extraction is provided. The subsets used for experiments are randomly selected without considering the distribution of topics.\n\no\tThe experiments are conducted on a subset of the test dataset. Although EventBench-100K is comprehensive and large, only 300 data points are used to evaluate LLMs, which is a very small portion.",
+      "questions": "o\tHow is the 3 human hour for construction using this pipeline concluded? Why are different LLMs (GPT4-0125, GPT4-o-mini, and Claude3-Opus) selected as the tool at different stage of benchmark data creation?\n\no\tThe summary extraction from study monographs is performed by LLMs, without human inspection. The summaries are used as input to LLMs for the recovery of hypotheses and decomposition of aspects. Although the aspect decomposition is inspected by humans, how is the summary extraction validated to avoid error propagation?\n\no\tIn Task Definition, both versions of the task define the desired sentences as evidence for or against a hypothesis. It is difficult to discern whether sentences classified as counter-evidence in relation to one hypothesis might be more appropriately considered as supportive of an alternative hypothesis. Given the structured nature of the tasks, are there any experiments or human validations conducted to address and clarify these categorizations?",
+      "ethics_flag": [
+        "Yes, Responsible research practice (e.g., human subjects, data release)"
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces EvidenceBench, a scalable annotation pipeline designed for extracting and aligning evidence with specific hypotheses in biomedical literature. Study aspects and hypotheses are initially extracted from systematic reviews. A specialized alignment annotator then performs sentence-level annotations to link each piece of evidence directly to the corresponding hypothesis. To validate this approach, the authors use the pipeline to generate the expansive EvidenceBench-100k benchmark. Fine-tuned on this benchmark dataset, embedding models showed improved performance in the 'Result ER@Optimal' task, showing this standardized benchmark and evaluation framework will support the development of tools for automate evidence synthesis and hypothesis testing."
+    },
+    {
+      "note_id": "QliFHOAnOv",
+      "replyto": "NPDnRLFhc0",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-28 06:21:46.249000",
+      "modified": "2024-11-12 16:30:49.560000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13995/Reviewer_FodM",
+      "actor": "Reviewer FodM",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "- The large-scale datasets are constructed using LLMs with fewer budgets.\n- Several evaluations of existing and fine-tuned models are provided and compared, showing the usefulness of the benchmark dataset for evaluating current LLMs' abilities.",
+      "weaknesses": "- It needs to be clarified how the hypotheses from survey monographs are generally helpful.\n- The authors expect to provide immediate value to scientists as the first desiderate of the benchmark (lines 44-45), and the dataset creation involves several experts. Still, no manual analyses are provided for the results, so whether the results benefit scientists is unclear. \n- The proposed task focuses on the limited part of the practical problem; the task expects the candidate pool and needs to consider cases with evidence and with (the retrieval results of) the considerable paper pool (e.g., the entire PubMed database).\n\nTypo:\n- Line 509, Figure 3 should be Table 6.",
+      "questions": "- Hypotheses are taken from survey monographs, so they can differ from natural hypotheses the experts consider. Is there any evaluation of the dataset that evaluates the suitableness of the instances for evidence retrieval?\n- What happens if the experts think of the hypotheses with no evidence?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a new task of finding evidence for a hypothesis. The authors built a large-scale dataset with reasonable costs using existing survey monographs and LLMs."
+    }
+  ]
+}

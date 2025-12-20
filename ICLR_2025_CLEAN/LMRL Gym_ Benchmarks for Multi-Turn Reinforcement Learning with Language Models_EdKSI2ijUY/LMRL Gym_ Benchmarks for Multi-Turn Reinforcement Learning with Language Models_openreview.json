@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "EdKSI2ijUY",
+    "forum": "EdKSI2ijUY",
+    "title": "LMRL Gym: Benchmarks for Multi-Turn Reinforcement Learning with Language Models",
+    "authors": "Marwa Abdulhai, Isadora White, Charlie Victor Snell, Charles Sun, Joey Hong, Yuexiang Zhai, Kelvin Xu, Sergey Levine",
+    "keywords": "benchmarks, LLMs, RL",
+    "abstract": "Large language models (LLMs) provide excellent text-generation capabilities, but standard prompting and generation methods generally do not lead to intentional or goal-directed agents and might necessitate considerable prompt tuning. Even the best current LLMs rarely ask clarifying questions, engage in explicit information gathering, or take actions that lead to better decisions after multiple turns. Reinforcement learning has the potential to leverage the powerful modeling capabilities of LLMs, as well as their internal representation of textual interactions, to create capable goal-directed language agents. This can enable intentional and temporally extended interactions, such as with humans, the emergence of complex skills such as persuasion, and long-horizon strategic behavior, such as in the context of games. Enabling this requires the community to develop reliable reinforcement learning algorithms for training LLMs. Developing such algorithms requires tasks that can gauge progress on algorithm design, provide accessible and reproducible evaluations for multi-turn interactions, and cover a range of task properties and challenges in improving reinforcement learning algorithms. Our paper introduces the LMRL-Gym benchmark for evaluating multi-turn RL for LLMs, together with an open-source research framework for getting started on multi-turn RL with offline value-based and online policy-based RL methods. Our benchmark consists of 3 Interactive Dialogue tasks and 5 RL Capability tests for a total of 8 tasks, which require multiple rounds of language interaction and cover a range of tasks in open-ended dialogue and text games.",
+    "pdf_link": "https://openreview.net/pdf/fd7c1acb337c51f21e6ba067733885b098d527d9.pdf",
+    "submission_date": "2024-09-28 11:19:36.091000"
+  },
+  "reviews": [
+    {
+      "note_id": "B136wRgEp1",
+      "replyto": "EdKSI2ijUY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 04:31:45.685000",
+      "modified": "2024-12-03 07:21:46.168000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14185/Reviewer_9eFK",
+      "actor": "Reviewer 9eFK",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 4,
+      "contribution": 3,
+      "strengths": "Originality: The paper presents one of the first published benchmarks for evaluating multi-turn RL methods. While it's likely frontier labs have such data internally and chosen not to publish it, this is the first paper I've seen making these types of results and code public.\n\nQuality: The paper uses a GPT-4 few shot baseline which provides a strong comparison against several other implemented baseline methods (PPO, ILQL, MC Returns, etc). The authors do a laudable job of using ablation studies to validate their use of LLM simulators which could be exploitable. In general, the authors tend to substantiate their claims thoroughly and explain potential weaknesses transparently. \n\nClarity: The writing is clear and straight forward with illustrative figures and an extensive appendix.\n\nSignificance: This benchmark and task-set addresses a current gap in publicly available benchmarks for multi-turn RL. This could be useful towards benchmarking novel RL methods and informing future research directions to optimise for both textual and strategic/planning performance. However, there is also a risk of this work being used to fine-tune more agentic, persuasive and thus potentially dangerous systems.",
+      "weaknesses": "1. Scaling of Results \nThis one might be hard to fix without having computational budget: however one weakness of the paper is that the majority of the experiments are conducted on GPT-2 variants, leaving it unclear how these results may scale to larger models. For instance, it would be quite interesting to see whether the same findings regarding offline and online method differences in textual and strategic task performance remain when considering multimodal models or larger models with longer context windows. \n\n2. Failure Analysis\nIt would be interesting to see a few more examples (qualitative would be fine) of some of the observed failure modes, and some further analysis on where and why specific methods fail. The current results regarding online and offline are quite interesting and it'd be helpful for future work to understand more what might be causing this.\n\n3. Capabilities Coverage of Tasks\nThe current tasks don't require very complex reasoning or long-term memory. It's unclear whether the benchmark may become saturated by larger models who already are often used multi-turn. It could be interesting to look into whether language is increasing the performance relative to exclusively symbolic approaches. \n\n4. Evaluation Methods\nWhile it is said that human evaluators looked into the naturalness of the text, there is limited discussion of how consistent the simulated content would be with natural text. It's unclear how much variance there was across runs and different hyperparameters.\n\nThe paper is already quite extensive and the authors do acknowledge some of these limitations.",
+      "questions": "How well would these results generalize to larger language models?\n\nIn the impact statement, you mention dual-use implications of your work including \"persuasion, manipulation and addictive engagement of users at a large scale\". You then mention that you \"have designed [y]our datasets and reward functions such that [they] prioritize fairness and human-aligned outcomes\". Can you please elaborate which design steps you have taken to achieve this prioritization? \n\nYou also express the intent to make public the code, datasets, hyperparameters as well as training procedure. What makes you confident that you sufficiently mitigate the stated implications and risks such that it is safe to publicly release the benchmark and open-source framework, instead of pursuing a different path such as making these more sensitive aspects of the results available only to trusted audiences (ie. known and trusted researchers, US AI Safety Institute, etc)?",
+      "ethics_flag": [
+        "Yes, Potentially harmful insights, methodologies and applications"
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors introduce a novel benchmark called LMRL-Gym to evaluate multi-turn RL capabilities through 8 tasks. The tasks include 3 Interactive Dialogue Tasks (ex. persuading a user to buy a car) and 5 RL Capability tasks (ex. navigating a maze). The paper evaluates a series of online and offline methods across these tasks. On many of the RL tasks, Implicit Language Q-Learning (ILQL) performed best including 99.9 on one of the maze tasks. However, on the Interactive Dialogue tasks, simpler methods such as Monte Carlo Returns achieved a higher score than ILQL. This suggests that perhaps these TD-learning approaches may to scale poorly to more complex textual tasks. While the GPT-4 few-shot baseline performed well on Interactive Dialogue Tasks, it struggled with game tasks like Chess or Endgames. PPO had strong performance on some tasks, but showed training instabilities. Interestingly, different RL methods did well on different tasks, leaving open potential for further research to optimise for both linguistically and strategically complex tasks. The majority of experiments were conducted on GPT-2 variants for benchmark accessibility to researchers will small compute budgets. When generating synthetic data for the dialogue tasks, the authors used GPT-3.5 and validated the naturalness of data with human evaluation. This work overall contributes a benchmark and research framework with which to develop better RL algorithms for LLMs."
+    },
+    {
+      "note_id": "bB408ZhuSe",
+      "replyto": "EdKSI2ijUY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 21:42:11.455000",
+      "modified": "2024-11-12 16:35:45.145000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14185/Reviewer_j29V",
+      "actor": "Reviewer j29V",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "1) The paper does address an important gap in the current literature. As the authors state, most work applying reinforcement learning on language models centers on single turn interactions while work on multi-turn interactions often requires humans in the loop, which is expensive, slows down iteration and is challenging to replicate. The proposed collection of tasks, while synthetic and inspired by already existing scenarios, can therefore act as a useful test bed for reinforcement learning algorithms for multi-turn language-based tasks.\n2) I also appreciate the inclusion of offline data from sub-optimal policies, allowing for the development of both offline and online RL algorithms.",
+      "weaknesses": "1) My main concern, and my reason for giving a 2 on soundness, is whether the human evaluation on Appendix A is sufficient to show the correctness of the LLM simulator for the interactive dialogue tasks. There is no provided definition of \"naturalness\" and also no examples of the instructions given to the annotators. As a result, it is unclear whether the annotators were focused, for instance, on fluency or whether the simulator was accurate.\n\nIt would help, for instance, to conduct a separate experiment on the self-consistency of the LLM oracle. For the information seeking tasks, for example, this can involve taking a random sample of conversations and checking, either via human annotation or by prompting an LLM, if the oracle's answers to questions are consistent with the object they have in mind. \n\n2) My second concern is the choice of tasks for the RL capability component of the benchmark. Barring the Text-Nav and to a lesser extent Wordle settings, the tasks are regular reinforcement learning tasks that are presented in natural language but do not really test language understanding or use. While I recognize that these are intended to be unit-tests for various RL capabilities in language models, I do not have good intuition on how well algorithm success on these would generalize to multi-turn dialogue or tool use.",
+      "questions": "I would like some more detail on the Car Dealer setting. I checked the paper and the appendix but could not find details on the reward function or the success condition. Specifically:\n1. Does the model need to act in accordance with a particular seller archetype or were the three different types there to generate diverse data?\n2. Is success dependent on simply selling a car (at which point a degenerate strategy of selling a car for $0 would succeed) or are there other conditions that determine success or reward? How are these implemented?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors propose the LMRL-Gym benchmark, a collection of tasks and an open-source framework inspired by the lack of standardized multi-turn language-based tasks to evaluate reinforcement learning algorithms on. The benchmark consists of two types of tasks: three \"interactive dialogue\" tasks involving dialogue partners simulated by finetuned language models that stress information seeking behavior and persuasion and five \"RL capability\" tasks that are intended to test general RL challenges such as credit assignment and trajectory stitching. Each task provides offline data by suboptimal policies to perform offline RL with as well simulators to conduct online RL on. The authors benchmark various behavior cloning, offline RL and online RL algorithms on all proposed tasks."
+    },
+    {
+      "note_id": "EhbIzv38Ua",
+      "replyto": "EdKSI2ijUY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 02:50:28.849000",
+      "modified": "2024-11-12 16:35:45.948000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14185/Reviewer_WagK",
+      "actor": "Reviewer WagK",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "A benchmark LMRL-Gym highlighting the importance of multi-turn RL for LLMs has been proposed in the paper. Evaluating multi-turn RL is important for LLMs, and offers future introspection whether RL can generalize for LLMs.\n\nA research toolkit has been proposed for multi-turn RL for LLMs with offline value-based and online policy-based RL. This can be useful to practitioners in the field as an engineering guide.",
+      "weaknesses": "Lines numbers have been abbreviated as L# in the points below e.g. L100 means Line 100. Observations have been given quoting paper lines. Some observations are general where no line numbers have been quoted.\n\n1. L074-L075 Multi-turn reinforcement learning (RL) (Sutton&Barto,2018) in principle offers a path to enable LLMs to do just that.\n\nObservation: Sutton & Barto can be cited for general reinforcement learning algorithms and not for Multi-turn reinforcement learning algorithms specifically.\nThere are other papers which define multi-turn reinforcement learning which have not been cited like \"Multi-turn Reinforcement Learning from Preference Human Feedback\" https://arxiv.org/abs/2405.14655\n\n2. L086 – L089 While some works have sought to apply RL for multi-turn tasks (Singh et al.,1999;Li et al.,2016; Shah et al.,2016;Kwan et al.,2022), particularly for goal-directed dialogue (Lewis et al.,2017; Verma et al.,2022), there has been comparatively little research on improving the underlying RL algorithms and very little head-to-head comparison on same sets of tasks.\n\nObservation: What does ‘comparatively little research’ and ‘very little head-to-head comparison’ refer to? It should be mentioned why the comparisons in existing multi-turn tasks is not enough\n\n3. Observation: What contribution and value addition does the present work make? It seems that already published papers cover the paper's goals.\n\n4. L100 – L103: In this paper, we use an LLM to simulate a conversation partner in dialogue tasks. While the behaviour of the LLM may deviate from human behavior, we verify in a human study in Appendix A that our LLM simulators produce natural text reflecting human norms of conversation.\n\nObservation: The human study with 40 participants and 18 natural text examples does not statistically justify that the simulation results reflect human norms of conversation. What is the basis of the simulation results reflecting human norms of conversation on a very small sample size of participants and likewise very small number of examples?  \n\n5. L105 – …. to test RL algorithms with datasets that are sufficiently difficult and complex to gauge how effective ….\n\nObservation: How do you define datasets that are sufficiently difficult and complex to gauge? Is there any metric or any qualitative decision making? The phrasing \"sufficiently difficult and complex\" needs to be justified\n\n6. L117 - L118: This framework includes implementations of PPO (Schulman et al.,2017), ILQL(Snell et al.,2022a), and several baseline methods, ….\n\nObservation: What other baseline methods? It should be mentioned in the appendix at least\n\n7. L129 – L130: Some works have proposed text games for evaluating language-based agents and interactive dialogue.\n\nObservation: If other research papers have already proposed text games for evaluating language-based agents and interactive dialogue, please justify why this paper using RL algorithms for such tasks is a novel or a major contribution. Is there any engineering benefit? Please share that as other papers have covered this direction of research.\n\n8.. L205 – L206: We have provided example trials for each task are shown in Figure 4, and a concise summary of the data set and task statistics in Table 1.\n\nObservation: Please correct Grammatical errors like \"are shown\" should be \"as shown\". Please note that clicking Figure 4 leads to Figure 1. The source tex file needs to be corrected. Also please mention that Figure 4 is in Appendix B.\n\n10. L321-L322: We have selected these algorithms have they are currently the state-of-the-art methods RL methods for LLMs\n\nObservation: Please revise the sentence construction. The paper needs edits and revisions before publication. \n\n11. L441-L442: Our objective is enable the iteration and development of more effective methods for language based, multi-turn interaction tasks.\n\nObservation: Correction of the phrase ‘is enable’ to ‘is to enable’ should be done",
+      "questions": "Lines numbers have been abbreviated as L# in the points below e.g. L028 means Line 28. Questions have been given quoting paper lines. Some observations are general where no line numbers have been quoted.\n\n1. L 028 L031 Our benchmark consists of 3 Interactive Dialogue tasks and 5 RL Capability tests for a total of 8 tasks, which require multiple rounds of language interaction and cover tasks in open-ended dialogue and text games.\n\nQuestion: How does the Benchmark cover tasks in open-ended dialogue and text games is not described in the paper?\n\nThere can be many notions of open-endedness be it in dialogue https://begrijpelijkeformulieren.org/sites/begrijpelijkeformulieren/files/Reja_e.a._Open-ended_vs._Close-ended_Questions_in_Web.pdf or Reinforcement Learning https://proceedings.mlr.press/v119/wang20l.html\n\nPlease specify with examples what form of open-endedness has been discussed here.\n\n2. L 047 L049 This challenge is apparent in solving temporally extended tasks, such as multi-turn dialogue (Irvine et al.,2023;,FAIR), complex tool use (Wang et al.,2022a), multi-step games (Hendrycksetal.,2021b), and other interactive applications.\n\nQuestion: If existing research papers have already covered multi-turn dialogues, complex tool use and multi-step games, then \n\nWhat is the contribution of this paper by using RL algorithms for multi-turn dialogues, multi-step games? Please share any research or engineering benefits?\n \n3. Question: What are the other interactive applications that has been mentioned in the above L047-L049 lines?\n\n4. Question: How important are RL capability tests for multi-turn RL? How are challenges of RL (generalizability, sample complexity etc) affecting the LLM interaction?\n\n5. Question: Policy Gradients in RL algorithms can be unstable for which different seeds have to be selected. What seeds were selected for the policy-gradient algorithms supported in this work like PPO and other algorithms?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "1. The paper introduces the LMRL-Gym benchmark for evaluating multi-turn Reinforcement Learning (RL) for Large Language Models (LLMs).\n2. The benchmark consists of 3 Interactive Dialogue tasks and 5 RL Capability tests which require multiple rounds of language interaction.\n3. A research toolkit for practitioners has been provided to get started with multi-turn RL for LLMs with offline value-based and online policy-based RL methods."
+    },
+    {
+      "note_id": "JrOorL2RZ6",
+      "replyto": "EdKSI2ijUY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 08:40:08.415000",
+      "modified": "2024-11-12 16:35:45.029000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14185/Reviewer_KbFz",
+      "actor": "Reviewer KbFz",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "The paper raises a significant question regarding the benchmarking of different RL algorithms in multi-turn scenarios and introduces the LMRL-GYM benchmark, which consists of several tasks designed for evaluation. It assesses a diverse range of RL algorithms while also providing a comprehensive evaluation framework.",
+      "weaknesses": "1. The real-world tasks included in the benchmark are not sufficiently representative, as they only incorporate three tasks that focus on abilities such as persuasion and information gathering.\n2. The dataset construction appears somewhat unconvincing. For the interactive dialogue tasks, authors initially use two GPT-3.5 models to generate the dataset and then train two FLAN-T5-XL models to imitate the guesser and oracle roles. Since these are relatively small models, the resulting dialogues may lack diversity and representativeness. The reliability of the benchmarking results for various RL algorithms raises concerns. While the authors conducted a user study to assess the naturalness of the synthesized datasets, I remain skeptical about the benchmark's overall naturalness.\n3. The RL ability benchmark, which consists of five tasks, has a limited action space, deviating from real-world scenarios that utilize RL with much larger action spaces, such as step-wise scoring for tasks like math or code generation.\n4. The experiments are conducted with small models; is the benchmark applicable to larger models? Since small models can achieve nearly 100 rewards on some tasks (as shown in Table 2), this may impact the significance of the benchmark.\n5. In Table 2, the performance of GPT-4 prompting is significantly worse than that of the RL algorithms on the RL capability tasks, despite GPT-4 also being trained using RL methods. Can you comment on this?\n6. The right side of Table 1 extends beyond the page margin, and some tables in the appendix exhibit the same issue.",
+      "questions": "The questions are outlined in the weaknesses section above.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper highlights that current LLMs are trained to imitate golden responses rather than genuinely learning to reason and solve single-turn tasks. Additionally, there is a lack of benchmarking for multi-turn RL tasks, along with the absence of established evaluation protocols, which can be costly. To address this, the authors synthesize a benchmark that leverages the imitation capabilities of language models in conjunction with simulators, such as chess engines. They propose the LMRL-GYM benchmark, which comprises three interactive dialogue tasks and five RL capability tests, benchmarking existing RL methods, including offline methods like ILQL and online methods like PPO, among others."
+    }
+  ]
+}

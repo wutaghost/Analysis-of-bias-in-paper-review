@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "NtwFghsJne",
+    "forum": "NtwFghsJne",
+    "title": "From Search to Sampling: Generative Models for Robust Algorithmic Recourse",
+    "authors": "Prateek Garg, Lokesh Nagalapatti, Sunita Sarawagi",
+    "keywords": "Algorithmic recourse, explainability, generative modelling",
+    "abstract": "Algorithmic Recourse provides recommendations to individuals who are adversely impacted by automated model decisions, on how to alter their profiles to achieve a favorable outcome. Effective recourse methods must balance three conflicting goals: proximity to the original profile to minimize cost, plausibility for realistic recourse, and validity to ensure the desired outcome. We show that existing methods train for these objectives separately and then search for recourse through a joint optimization over the recourse goals during inference, leading to poor recourse recommendations. We introduce GenRe, a generative recourse model designed to train the three recourse objectives jointly. Training such generative models is non-trivial due to lack of direct recourse supervision. We propose efficient ways to synthesize such supervision and further show that GenRe's training leads to a consistent estimator. Unlike most prior methods, that employ non-robust gradient descent based search during inference, GenRe simply performs a forward sampling over the generative model to produce minimum cost recourse, leading to superior performance across multiple metrics. We also demonstrate GenRe provides the best trade-off between cost, plausibility and validity, compared to state-of-art baselines. Our code is available at: https://github.com/prateekgargX/genre",
+    "pdf_link": "https://openreview.net/pdf/fcce4ead07ac9d558bf045dbc62907d1308dd399.pdf",
+    "submission_date": "2024-09-28 10:16:50.755000"
+  },
+  "reviews": [
+    {
+      "note_id": "nDn6CxudtT",
+      "replyto": "NtwFghsJne",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 10:52:26.793000",
+      "modified": "2024-11-26 15:56:37.608000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14050/Reviewer_92zH",
+      "actor": "Reviewer 92zH",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "Some strengths of this work include:\n\n- The development of a single generative model that converts negative examples into positive samples suitable for addressing the algorithmic recourse problem.\n- The model enhances the overall performance of recourse mechanisms.\n- The authors have anonymously open-sourced their codebase, allowing others to reproduce their approach.",
+      "weaknesses": "## Clarity\nThe notation, definitions, and equations should be carefully rechecked. In the current form of the paper, the following points severely reduce the paper's readability, and the reader has to guess what is most likely implied.\n\n- Quantities are not properly defined.\n\n     1. In Eq. (2), the cost function employed in this work is not defined. What is the cost? Did the authors provide clarifications regarding its final form?\n     2. Line 251, $N^+$ is not defined.\n     3. Eq (6) what is $\\lambda$ values? \n     4. Algorithm 1, Line 290: what is $\\mathbf{x}$\n     5. Algorithm 2: Where is the projectCategoricals defined? What is $m_c$?\n     2. Algorithm 2: Line 5, is $k$ sampled? If yes, how?\n\n- Notation Consistency\n     1. Are the bin scales the same as bin widths? If yes, please be consistent.\n     2. Is $D_1$ the same as $N^+$\n     3. Alg. 1: Line 290: $\\mathbf{x}$ is not defined.\n     3. Alg. 2: Step 1: $\\mathbf{x}$ is not defined.\n     4. Eq (7) and (8) seem to have different K.\n     5. I suggest to limit the notation to $\\mathbf{x}^+$ and $\\mathbf{x}^-$ whenever possible.\n\n\n- Are you using a random forest or an MLP for the classifier? If you use both, in which case do you use the first and the second? What is the accuracy of each classifier?\n\n- For the baselines, how are the final checkpoints selected?\n\n- Something is weird; why do you select variance equal to zero (line 376)? This choice makes step 2 of Algorithm 2 redundant.\n\n## Experiments\n\n### Efficiency analysis\n- How does the proposed approach differ from prior work regarding the number of parameters, training time, and GPU/time requirements (during training/inference)?\n\n### Ablations\n- What is the benefit of using an autoregressive model for generation compared to other architectures? Did the author try a different setup? What is the models' performance for different generative architectures (non-autoregressive)?\n\n## Minor\n- Lines 557-560 double entry for the same paper.\n- Steps can be added to Alg. 1 similarly to Alg. 2.\n- Proofs can be moved to the appendix.",
+      "questions": "1. What is the purpose of \"TopK\" in Line 290? What does \"Top\" refer to? Is this clarified in the main text? I was unable to find any explanation.  \n2. How does the model determine which dimensions of $\\mathbf{x}^-$ to freeze? Are these dimensions predefined by the dataset? How is the loss function formulated in practice?  \n3. Have you started training the generative model from scratch, or are you using pre-trained weights?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "In this work, the authors propose a generative model designed for algorithmic recourse, which transforms a negative sample $\\mathbf{x}^-$ into a positive sample $\\mathbf{x}^+$. The resulting positive sample must satisfy the following criteria:\n\n- $\\mathbf{x}^+$ is a high-quality sample that adheres to the underlying data distribution.\n- $\\mathbf{x}^+$ is classified with a high probability as belonging to the positive class by a pre-trained classifier.\n- $\\mathbf{x}^+$ should be close to $\\mathbf{x}^-$ in the feature space.\n\nThe authors demonstrate that training a single model to simultaneously meet these objectives leads to improved overall performance compared to previous approaches."
+    },
+    {
+      "note_id": "KdNloUbe3H",
+      "replyto": "NtwFghsJne",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 00:12:01.861000",
+      "modified": "2024-11-25 00:05:03.207000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14050/Reviewer_m8hr",
+      "actor": "Reviewer m8hr",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "- First of all, the paper is well-written and organized, making it easily followed. The problem definition and motivation are presented clearly, allowing readers to understand the contribution.\n- Undoubtedly, the problem of recourse via AI is an important and open problem. It is also closely related to conditional generation, and consequently, the technical discussion (if useful) can be apply to a wide range of problems beyond.\n- I appreciate that the authors analyze their proposed method on various tasks, helping us to understand the performance of GenRe.",
+      "weaknesses": "I think the major weaknesses are a lack of careful motivation of the proposed method, as well as a more direct comparison with methods beyond the field of algorithmic recourse (but can be directly applied). Specifically,\n\n- From the aspect of this specific problem (algorithmic recourse), if I understand correctly, the major improvement in the training process is the goal of Eq (4), which includes all properties that users care about (as well as the empirical distribution $Q(x^+|x)$ for sampling). However, to me, this task is different from sampling over $P(x|y=1)$ only because the additional cost function, $C(x,x')$ should be imposed. As a result, a very clear derivation is to sample from the distribution of $P(x|y=1)\\exp^{-\\lambda C(x,x')}$. The introduction of $V(x')$ seems to break the probabilistic explanation of the distribution, because $P(y=1|x)$ is naturally contained in $P(x|y=1)$ by the Bayesian law. In addition, the reason for choosing an auto-regressive model for sampling is also left unjustified, as sequential sampling is not a major concern in the problem. More justification (both intuitively and experimentally, and ideally, theoretically) of the technique selection is unavoidable. \n- From a more general sense of conditional generation, the problem of cost-aware sampling is not a novel problem and has been studied both in a general scenario and for specific generative models such as AR models or diffusion models. For instance, a direct method if to train a classifier-free diffusion model that allows sampling from $P(X,Y)$, and use a standard guidance technique (such that the $L_2$ norm like the CLIP score) to guide the diffusion process using $e^{-\\lambda C(X, X')}$. The proposed training technique for unpair data (Sec 4.1) is, in fact, a very standard processing technique that has been widely used, and the choice of AR model seems to be more strange than another generative model such as VAE and diffusion. Therefore, while I admit that joint training is a new approach (in this field, maybe), the author should compare with the above alternatives to see if the proposed method can outperform existing baselines. One paper for reference: [Learning from Invalid Data: On Constraint Satisfaction in Generative Models]. In addition, [Classifier-Free Diffusion Guidance] is a straight-forward go-to method to compare with.",
+      "questions": "No additional question beyond the weaknesses above.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces GenRe, a generative-based approach to algorithmic recourse that seeks to optimize three core recourse objectives via joint training, including validity, proximity, and plausibility. The authors claim that previous method fail to unify all objectives into the training and instead use a gradient-based inference time searching technique that could lead to unsatisfying performance. GenRe uses an auto-regressive generative model to sample recourse solutions directly, with a hand-craft training objective defined with the cost function and the vanilla data distribution. The authors validate GenRe's performance through comprehensive experiments on synthetic and real-world datasets."
+    },
+    {
+      "note_id": "oNOB0Q4fu8",
+      "replyto": "NtwFghsJne",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 02:42:44.903000",
+      "modified": "2024-11-12 16:30:28.774000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14050/Reviewer_sL8f",
+      "actor": "Reviewer sL8f",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "GenRe effectively integrates proximity, plausibility, and validity into a single generative model, addressing the core challenges of algorithmic recourse in a unified way. This contrasts with traditional methods that optimize these objectives separately, offering a more balanced solution.\n\nBy using forward sampling instead of gradient-based search, GenRe reduces computational costs during inference. This makes the model more scalable and applicable to real-world scenarios where speed is crucial.\n\nThe paper demonstrates that GenRe achieves better trade-offs between cost, plausibility, and validity compared to existing methods, providing evidence of its effectiveness across multiple datasets and scenarios.\n\nThe authors have made their code available, promoting transparency and enabling other researchers to build on their work, which helps advance the field of algorithmic recourse.",
+      "weaknesses": "While GenRe shows improvements in the tested scenarios, its generalizability to highly diverse datasets or domains with different types of constraints might require additional adjustments or fine-tuning.\n\nThe paper acknowledges the challenge of synthesizing recourse supervision for training, which may introduce assumptions or heuristics that could impact the model's robustness in practice.\n\nThe success of GenRe heavily depends on the quality of the generative model and the training data. If the data is biased or limited, the recourse recommendations might be less effective or skewed.",
+      "questions": "Are there particular large-scale use cases you envision as especially suited for GenRe's capabilities? Can you implement GenRe in a modern generative model, such as a pretrained one?\n\nHow does it handle biased or limited datasets? \n\nAs GenRe integrates multiple complex objectives, how do you ensure interpretability in the generated recommendations?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces **GenRe**, a generative model that provides actionable, realistic recourse for individuals affected by automated decisions. By jointly optimizing for **proximity** (low cost), **plausibility** (realistic changes), and **validity** (desired outcomes), GenRe outperforms traditional methods that address these goals separately. Rather than using gradient-based search, GenRe generates recommendations through efficient sampling, offering robust, balanced recourse. The model's code is publicly available to support further research and applications."
+    },
+    {
+      "note_id": "qVHIdPHzwL",
+      "replyto": "NtwFghsJne",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-29 09:40:05.820000",
+      "modified": "2024-12-10 08:37:50.492000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14050/Reviewer_SyMJ",
+      "actor": "Reviewer SyMJ",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 2,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "* This paper provides a thorough analysis of the limitations in current algorithmic recourse methods, highlighting the challenges of separately optimizing proximity, plausibility, and validity, which often leads to suboptimal results. This establishes a solid foundation and motivation for the proposed method.\n* The GenRe method is intuitive and easy to implement and consistently providing more effective trade-offs among different factors.",
+      "weaknesses": "1. **Advantage beyond Nearest neighbor**: The biggest issue is the neccessity of involving a complicated auto-regressive method. Essentially, this method uses a model to learn a smoothly-mixed version of nearest-neighbor search in positive samples. It lacks detailed analysis and ablation study for its advantage beyond simple KNN. Why should we bother to train a huge transformer instead of just finding the nearest valid sample and imitate it? I believe there are subtleties here because it requires some generalization stuff. But all these aspects are absent in the paper.\n2. **Interpretability Issue**: While GenRe is effective in balancing recourse objectives, the generative approach may lead to less interpretable outputs, especially for stakeholders who require clear, actionable insights. The model could benefit from an analysis of interpretability or user-friendliness of the generated recourse.",
+      "questions": "See weakness.\n\nAlso, after reading the original definition of LOF, it is higher when the data point is more abnormal (out of distribution). Why is there a upper arrow in table2?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper addresses the problem of algorithmic recourse for individuals adversely impacted by automated model decisions. It proposes a generative model based method to finish recourse task by directly sampling without optimization at inference. The main goal is to balance three objectives: proximity to the original profile to minimize cost, plausibility to ensure realistic changes, and validity to achieve the desired result. Experimental results shows its effectiveness."
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "gyTkfVYL45",
+    "forum": "gyTkfVYL45",
+    "title": "ICAM: Rethinking Instance-Conditioned Adaptation in Neural Vehicle Routing Solver",
+    "authors": "Changliang Zhou, Xi Lin, Zhenkun Wang, Tong Xialiang, Mingxuan Yuan, Qingfu Zhang",
+    "keywords": "Vehicle Routing Problem, Reinforcement Learning, Instance-Conditioned Adaptation, Neural Combinatorial Optimization, Large-scale Generalization",
+    "abstract": "The neural combinatorial optimization (NCO) has shown great potential for solving routing problems without requiring expert knowledge. However, existing constructive NCO methods still struggle to directly solve large-scale instances, which significantly limits their application prospects. To address these crucial shortcomings, this work proposes a novel Instance-Conditioned Adaptation Model (ICAM) for better large-scale generalization of neural routing solvers. In particular, we design a simple yet efficient instance-conditioned adaptation function to significantly improve the generalization performance of existing NCO models with a very small time and memory overhead. In addition, with a systematic investigation on the performance of information incorporation between different attention mechanisms, we further propose a powerful yet low-complexity instance-conditioned adaptation module to generate better solutions for instances across different scales. Experimental results show that our proposed method is capable of obtaining promising results with a very fast inference time in solving Traveling Salesman Problems (TSPs), Capacitated Vehicle Routing Problems (CVRPs) and Asymmetric Traveling Salesman Problems (ATSPs). To the best of our knowledge, our model achieves state-of-the-art performance among all RL-based constructive methods for TSPs and ATSPs with up to 1,000 nodes and extends state-of-the-art performance to 5,000 nodes on CVRP instances, and our method also generalizes well to solve cross-distribution instances.",
+    "pdf_link": "https://openreview.net/pdf/f0d0dcecf07f90065e32b15d3bdae732667129ba.pdf",
+    "submission_date": "2024-09-28 10:15:15.498000"
+  },
+  "reviews": [
+    {
+      "note_id": "Mh4INMwiX4",
+      "replyto": "gyTkfVYL45",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 09:21:07.725000",
+      "modified": "2024-11-12 16:19:13.782000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14049/Reviewer_Rd2k",
+      "actor": "Reviewer Rd2k",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "- The overall presentation and writing are good.\n- The reported results show that ICAM is capable of obtaining promising results with a reasonable inference time in solving TSP, CVRP, and ATSP.\n- This method can improve the performance of RL-based constructive neural solver, i.e., POMO, for TSP and ATSP up to 1000 nodes and 5000 nodes on CVRP instances.",
+      "weaknesses": "- In the Introduction (lines 84-91), the authors state that all the previous methods that utilize the node-to-node distances to bias the output score in the decoding phase or refine the information via a complex policy fail to achieve satisfactory generalization performance on large-scale instances. This statement appears inaccurate, as these methods, e.g., ELG [1], are known to achieve state-of-the-art generalization performance on large-scale TSP and CVRP instances.\n- In the adaption function, the learnable parameter $\\alpha$ plays important role in this function. This paper lacks clarity on how this parameter is learned during training, and a detailed analysis is necessary to assess its impact.\n- In experiments, this paper uses a three-stage training scheme for the proposed model. Stages 1 and 2 are not new and are similar to the training techniques in DAR [2]. In stage 3, there are two additional parameters, i.e., $\\beta$ and $k$. The authors claimed that there is no significant performance variation among different models with various $k$ values. This raises a concern about the impact of the best $k$ trajectories among all $N$ trajectories on the performance of the model.\n- Furthermore, additional training may make the results unfair to compare the performance with other existing baseline models. The results of baseline models with expanding training should be reported and compared.\n- The author only reported the results of baseline models, e.g., LEHD [3] and BQ [4], with greedy search inference for TSP and CVRP with scale <=1000 (Table 3). However, these models achieve their best performance with the RRC strategy and beam search, respectively. According to these works, the results obtained from these baselines can surpass the ICAM results. The authors should report these results for comprehensive comparisons.\n- With scales >1000 (Table 5), the results of the baseline ELG are lacking, while ELG demonstrated superior performance on large-scale CVRP instances up to 7000 nodes. However, the best results obtained by ICAM do not seem much better than those obtained by LEHD with greedy inference. It makes the results of ICAM on CVRP instances with a scale range from 1000 to 5000 not persuasive.\n- In the results on the benchmark dataset, this paper just evaluates the performance on a small-scale dataset of CVRPLIB Set-X (scale <=1000). The performance on larger scale datasets, such as CVRPLIB Set-XXL with larger scales (1000 to 7000 nodes) should be evaluated and analyzed.\n- The same concern about results for TSPLIB, the author only reported the results on instances with scale <=1000, which limits the large-scale generalization performance on larger scales (>1000) in the TSPLIB. This evaluation is important to verify the good generalization of the proposed method on large-scale Routing problems, e.g., TSP and CVRP.\n- In the ablation study on the effects of larger training scales, the authors only report the results for TSP and not for CVRP. The proposed varying scale training on CVRP should be carefully designed and investigated because CVRP has more complex features than TSP, such as varying demand at each node, which may destabilize the learning model when exposed to multiple sizes and demand distributions simultaneously.\n- No code is available.\n\n\n**References:**\n[1] Chengrui Gao, Haopu Shang, Ke Xue, Dong Li, and Chao Qian. Towards generalizable neural solvers for vehicle routing problems via ensemble with transferrable local policy. In International Joint Conference on Artificial Intelligence, 2024.\n\n[2] Yang Wang, Ya-Hui Jia, Wei-Neng Chen, and Yi Mei. Distance-aware attention reshaping: En- hance generalization of neural solver for large-scale vehicle routing problems. arXiv preprint arXiv:2401.06979, 2024.\n\n[3] Neural combinatorial optimization with heavy decoder: Toward large scale generalization. In Thirty-seventh Conference on Neural Information Processing Systems, 2023.\n\n[4] Darko Drakulic, Sofia Michel, Florian Mai, Arnaud Sors, and Jean-Marc Andreoli. Bq-nco: Bisim- ulation quotienting for efficient neural combinatorial optimization. In Thirty-seventh Conference on Neural Information Processing Systems, 2023.",
+      "questions": "The questions are mentioned in the weaknesses. Please refer to the weakness.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper presents ICAM, a simple, efficient instance-conditioned adaption function to improve the generalization performance of existing NCO models for solving routing problems. They further propose a low-complexity instance-conditioned adaption module to generate better solutions for different scale instances. The authors claim and demonstrate that it achieves state-of-the-art performance among all RL-based constructive methods for TSPs, ATSPs (up to 1000 nodes), and CVRPs (up to 5000 nodes)."
+    },
+    {
+      "note_id": "QIGlkHNobx",
+      "replyto": "gyTkfVYL45",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 05:42:13.665000",
+      "modified": "2024-11-12 16:19:13.733000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14049/Reviewer_VxpP",
+      "actor": "Reviewer VxpP",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "1. The proposed ICAM shows promising results on VRPs with larger scales, successfully extending the capability of RL-based NCO methods to tackle instances with up to 5,000 nodes, which contributes positively to the ongoing effort of solving large-scale combinatorial optimization problems.\n2. Introducing an adaptation function to incorporate instance-specific information into the optimization process is an interesting idea that can potentially improve the solution quality for diverse problem scales.",
+      "weaknesses": "1. While the paper presents a new model named ICAM, its innovative contributions appear limited in scope. Specifically, the proposed modifications primarily target the adaptation function and attention mechanism, and these incremental changes might not be sufficient to demonstrate a significant advancement over existing RL-based NCO methods.\n2. The term \"comprehensive instance-conditioned information\" is not clearly defined. The paper states that using only \"node-to-node distances or scale information is insufficient.\" However, in the proposed adaptation function, these are the only two types of information used. There is no addition of new forms of instance-specific information beyond these, which seems to contradict the paper's claims of comprehensive information usage.\n3. The design choices for both the adaptation function and the attention mechanism lack rigorous theoretical analysis.\nIn the \"Results on Benchmark Dataset\" section, the performance on TSPLIB is not particularly competitive compared to some of the state-of-the-art methods. The reasons for this subpar performance should be further analyzed.\n4. The writing, particularly in the contribution section and the motivation (Section 2.1), includes several redundant explanations. A more concise presentation of the contributions and key ideas would improve readability.",
+      "questions": "1. ICAM is presented as an instance-conditioned model, the datasets used for validation, however, consist only of uniformly distributed nodes. Demonstrating its performance on datasets with diverse distributions would make the 'instance-conditioned' claim more convincing.\n2. As an \"instance-conditioned\" model, ICAM should be capable of capturing deeper feature relationships. How does the paper reflect the capture of instance features?\n3. Although the authors state that AAFM has a lower computational complexity compared to MHA, the paper does not provide a quantitative analysis of the model’s overall complexity and memory usage.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper proposes the Instance-Conditioned Adaptation Model (ICAM) to enhance the generalization performance of reinforcement learning-based neural combinatorial optimization (NCO) models, particularly for vehicle routing problems (VRPs). The model leverages a novel instance-conditioned adaptation function and replaces the traditional multi-head attention (MHA) with the Adaptation Attention Free Module (AAFM). While ICAM demonstrates competitive empirical results and scalability, several aspects remain insufficiently explored."
+    },
+    {
+      "note_id": "TlEHUurVFw",
+      "replyto": "gyTkfVYL45",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 08:11:35.587000",
+      "modified": "2024-11-12 16:19:14",
+      "signatures": "ICLR.cc/2025/Conference/Submission14049/Reviewer_Y1Wi",
+      "actor": "Reviewer Y1Wi",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 4,
+      "contribution": 4,
+      "strengths": "1. This paper is well-written and easy to follow.\n\n2. The proposed ICAM is a novel approach  for improving the generalization of RL-based neural routing solvers across different scales. This is an important advancement in tackling the challenges faced by current methods when dealing with large-scale instances. \n\n3. The proposed adaptation function and model structure are both well-motivated and very useful for solving large-scale routing problems.\n\n4. The experiments are comprehensive, demonstrating its good generalization properties.",
+      "weaknesses": "1. According to Table 2, the proposed adaptation function can effectively improve the generalization of POMO with a small time and memory overhead.  Obviously, just depending on node-to-node distances is not enough, but I am curious which has a greater effect, the scale information or the learnable parameter? It would be interesting to compare the effects if either the scale information or the learnable parameter is removed.\n\n2. This paper uses the proposed adaptation function for the proposed AAFM and subsequent compatibility calculation. Considering that there is already some works on incorporating auxiliary information into the compatibility calculation (as shown in Table 1), it would be beneficial to evaluate the performance of this function when it is only used in AAFM.\n\n3. This paper adopts a three-stage training scheme, what is the effect of each stage on the performance?",
+      "questions": "Please refer to the weaknesses section.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes an instance-conditioned adaptation method for large-scale generalization of RL-based neural routing solvers. ICAM introduces a simple yet efficient adaptation function to improve the generalization of existing NCO models with a very small time and memory overhead. Additionally, a lightweight Adaptation Attention Free Module (AAFM) is integrated into the encoder-decoder structure for better incorporation of instance-conditioned information, replacing the Multi-Head Attention (MHA). Extensive experimental results show that the proposed ICAM achieves promising performance on large-scale TSP, CVRP, and ATSP instances, offering a fast inference time and significant improvement over existing methods."
+    },
+    {
+      "note_id": "yNot1N4Cs4",
+      "replyto": "gyTkfVYL45",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-28 10:43:21.466000",
+      "modified": "2024-11-26 13:05:22.531000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14049/Reviewer_pvDd",
+      "actor": "Reviewer pvDd",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "The paper is well-written and easy to follow. Compared with previous methods, the proposed method ICAM demonstrates better optimality gap and efficiency on TSP and CVRP.",
+      "weaknesses": "1. As previous works have already demonstrated that integrating node-to-node distances and instance scales into neural solvers can improve generalization performance on large-scale instances, the novelty of the proposed instance-conditioned adaptation function is very limited. Meanwhile, the proposed AAFM is also a simple adaptation from previous method AFT. Given these considerations, I am concerned that this paper may not provide valuable insights to the NCO community. \n2. The three-stage training scheme seems to be crucial for achieving the experimental results reported in this paper. However, it is notable that the results from competing methods are typically obtained under much simpler settings. Although the ablation studies in Table 19 demonstrate that ICAM can outperform POMO-ThreeStage, it is also evident that three-stage training significantly enhances POMO's performance on large-scale instances. This raises a concern regarding whether other competing methods might similarly benefit from a three-stage training approach. A direct comparison using consistent training settings can make the reported experimental results much more convincing.",
+      "questions": "The paper is clear and I have no questions.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a new method, ICAM, which aims to enhance the generalization capabilities of neural solvers on large-scale vehicle routing problem instances. Specifically, it designs an instance-conditioned adaptation function that considers both the node-to-node distances and instance scales simultaneously, and integrates it into the proposed ICAM to enrich it with auxiliary information. Furthermore, it adapts the Attention Free Transformer (AFT) and proposes the Adaptation Attention Free Module (AAFM), aiming to achieve better efficiency in handling large-scale instances. Experimental results in this paper show that the proposed ICAM can outperform prevailing competing methods."
+    }
+  ]
+}

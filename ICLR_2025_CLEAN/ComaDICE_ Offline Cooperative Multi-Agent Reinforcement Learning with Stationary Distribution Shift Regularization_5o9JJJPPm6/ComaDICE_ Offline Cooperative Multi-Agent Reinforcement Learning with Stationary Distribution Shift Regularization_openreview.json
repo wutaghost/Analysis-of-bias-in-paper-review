@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "5o9JJJPPm6",
+    "forum": "5o9JJJPPm6",
+    "title": "ComaDICE: Offline Cooperative Multi-Agent Reinforcement Learning with Stationary Distribution Shift Regularization",
+    "authors": "The Viet Bui, Thanh Hong Nguyen, Tien Anh Mai",
+    "keywords": "Offline Reinforcement Learning, Multi-Agent Reinforcement Learning, Stationary Distribution Correction Estimation",
+    "abstract": "Offline reinforcement learning (RL) has garnered significant attention for its ability to learn effective policies from pre-collected datasets without the need for further environmental interactions. While promising results have been demonstrated in single-agent settings, offline multi-agent reinforcement learning (MARL) presents additional challenges due to the large joint state-action space and the complexity of multi-agent behaviors. A key issue in offline RL is the distributional shift, which arises when the target policy being optimized deviates from the behavior policy that generated the data. This problem is exacerbated in MARL due to the interdependence between agents' local policies and the expansive joint state-action space. Prior approaches have primarily addressed this challenge by incorporating regularization in the space of either Q-functions or policies. In this work, we propose a novel type of regularizer in the space of stationary distributions to address the distributional shift more effectively. Our algorithm, ComaDICE, provides a principled framework for offline cooperative MARL to correct the stationary distribution of the global policy, which is then leveraged to derive local policies for individual agents. Through extensive experiments on the offline multi-agent MuJoCo and StarCraft II benchmarks, we demonstrate that ComaDICE achieves superior performance compared to state-of-the-art offline MARL methods across nearly all tasks.",
+    "pdf_link": "https://openreview.net/pdf/47b6e4f77893ddc057541ed679a8725a2d346ae7.pdf",
+    "submission_date": "2024-09-28 10:12:50.402000"
+  },
+  "reviews": [
+    {
+      "note_id": "oGBt47piUj",
+      "replyto": "5o9JJJPPm6",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 14:58:41.690000",
+      "modified": "2024-11-12 16:40:19.578000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14042/Reviewer_RYfn",
+      "actor": "Reviewer RYfn",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "- Effective Distribution Correction in Multi-Agent Settings: ComaDICE improves upon traditional DICE by extending stationary distribution correction to multi-agent environments. Through f-divergence-based alignment between behavior and target policies, it effectively handles the complex distributional shifts unique to multi-agent interactions, enhancing policy reliability and performance.\n- Theoretical Foundation: A thorough mathematical analysis provides convergence and stability proofs through f-divergence correction, reinforcing the algorithm’s reliability in multi-agent scenarios.\n- Stable Value Decomposition: ComaDICE decomposes global values into convex local objectives, enhancing training stability and aligning local agent optimization with the global objective to address coordination and stability challenges specific to multi-agent environments.",
+      "weaknesses": "- ComaDICE’s theoretical analysis relies on non-negative weights and convex activations in the mixing network for stability. While this aids convergence, it may limit the model’s ability to capture complex inter-agent dynamics. In the practical algorithm, this limitation is intensified by the use of a single-layer linear mixing network, which further restricts representational capacity in highly interactive environments.\n- High Computational Cost: ComaDICE incurs a significant computational cost due to the precise f-divergence-based adjustments needed for each agent’s local policy in stationary distribution correction. This can lead to reduced efficiency, especially in environments with a large number of agents.",
+      "questions": "The ablation study shows that performance decreases when using a more complex network. Why is that the case? If more data were available or the model was improved, could the results potentially differ?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes an algorithm introducing stationary distribution correction to address the distributional shift problem in offline cooperative multi-agent reinforcement learning (MARL). In multi-agent environments, this issue is intensified due to the large joint state-action space and the interdependencies among agents. To tackle this, ComaDICE minimizes the f-divergence between the stationary distributions of the learning and behavior policies. Additionally, by leveraging the Centralized Training with Decentralized Execution (CTDE) framework, it decomposes the global value functions into local values for each agent, ensuring that the optimization of each agent’s local policy is consistent with the global learning objective."
+    },
+    {
+      "note_id": "UdNt5ojj0y",
+      "replyto": "5o9JJJPPm6",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 10:14:57.387000",
+      "modified": "2024-11-27 06:25:56.607000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14042/Reviewer_kymz",
+      "actor": "Reviewer kymz",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 5,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "It is known that every MDP has a deterministic optimal policy, which, if extended to the multi-agent setting, can be factorized into independent policies. A very optimistic reading of the paper would interpret that the decomposition procedure is actually learning optimal value functions over decentralized policies. If this interpretation is correct, the ComaDICE presents a very scalable and principled offline MARL algorithm for learning decentralized value functions and policies without any restrictive IGM assumption as in previous work such as ICQ. However, it is worth noting that this is more of a statement of the potential of the paper rather than a strength of its current version, as these points are not specifically addressed in the current draft.\n\nFurthermore, ComaDICE can be more scalable in comparison to AlberDICE [1] which requires alternating optimization.",
+      "weaknesses": "### Problem Statement\nIt is not clear what the main problem is that ComaDICE is solving. It is briefly mentioned in the introduction that OOD states and actions are a problem in offline MARL. However, this was addressed in detail by other work such as CFCQL/OMIGA/AlberDICE mentioned in the Related Work (especially AlberDICE [1] which is the most similar). For instance, AlberDICE considers some coordination problems (XOR/Bridge/etc.) where OOD joint actions may be common, these is no consideration of these settings as well as comparison to AlberDICE both algorithmically and empirically. Thus, it is not entirely clear from the current draft of the paper what the main problem is that ComaDICE is solving, and if it is indeed OOD actions, which part of the algorithm in particular is alleviating this.\n\n### Novelty\nThe derivation is based on OptiDICE [2] but this is not explicitly mentioned, which is misleading. \nFor instance, Proposition 4.1 seems equivalent to Proposition 1 of OptiDICE. Furthermore, an extension of OptiDICE to solve Offline MARL was considered in AlberDICE [1] so it is not clear why ComaDICE should be preferred over AlberDICE. Furthermore, the final algorithm closely resembles OMIGA [3].\n\n### Algorithm\nIt is unclear what the purpose of value decomposition in learning the Q functions is. It seems the advantage can be computed by the learned state-value function $\\nu$ and run WBC (as mentioned in Appendix C of AlberDICE[1]). Also, Line 346 defines $A_\\nu^{tot}$ as the sum of reward and state-value functions.\n\n### Lack of Relevant Baselines\nAlberDICE and OptiDICE are missing as the main baselines, as well as CFCQL which addresses OOD actions but in a different manner. These are all mentioned in the Related Work section but not compared.\n\n### Writing\nThe paper is generally not well-written. All of the aforementioned weaknesses of the paper should be addressed in detail and the writing should not raise any of these concerns.",
+      "questions": "1. What is the main purpose for the value decomposition and learning individual Q-functions? \n\n1. Related to the first question, what is the purpose of Theorem 4.2, if the original loss is also concave? If we use the mixing functions, does $ \\mathcal{\\tilde L}$ still find the global optimum?\n\n1. Can ComaDICE solve the XOR game and Bridge mentioned in AlberDICE? \n\n1. Related to “Strengths”, can solving ComaDICE learn the global optimum in the underlying MDP even with the mixing network?\n\n\n1. Is the Individual Global Max (IGM) assumption required in order to introduce the mixing network? In other words, does ComaDICE assume that the underlying optimal Q function assume IGM?\n\n1. What is the main difference in the final algorithm with OMIGA [3] ?\n\n1. Why are the notations mixed between using joint observations $\\mathbf{o}$ and $s$? Is the setting a Dec-POMDP or a specialized setting where the joint observations constitute the state?\n\n1. Please write in a different color during the rebuttal which part is the novel part. In particular, which part of the proofs are a novel contribution and which part is coming from OptiDICE [2]\n\n1. Please address both my comments in the Strengths and Weaknesses section in detail.\n\n\n### References\n[1] AlberDICE: Addressing Out-Of-Distribution Joint Actions in Offline Multi-Agent RL via Alternating Stationary Distribution Correction Estimation (Matsunaga et, al. NeurIPS 2023)\n\n[2] OptiDICE: Offline Policy Optimization via Stationary Distribution Correction Estimation (Lee et, al. ICML 2021)\n\n[3] Offline Multi-Agent Reinforcement Learning with Implicit Global-to-Local Value Regularization (Wang et, al. NeurIPS 2023)\n\n----------------------------------------------------------------------------------------------------------------------\nPost-Rebuttal\n----------------------------------------------------------------------------------------------------------------------\n\nDuring the rebuttal, the authors worked hard to address my concerns, namely (1) additional baselines (AlberDICE and OptiDICE) on all 3 environments, (2) additional toy example (XOR Game), (3) a re-interpretation of the method as learning the optimal policy implicitly in factorized policy space and (4) detailed analysis on how ComaDICE works based on the XOR Game which is a toy domain. \n\nThe reason why my initial score was low was because a lot of these points were not explicit in the original draft, and it was unclear what the contribution was. After the rebuttal and some discussion, these points were made clear and the authors demonstrated that (1) using a factorized approach to decomposing stationary distributions is implicitly searching for optimal factorized policies (2) ComaDICE is able to approximate a global optimum as opposed to Nash policies (AlberDICE), (3) ComaDICE outperforms all baselines in all environments including AlberDICE and OptiDICE, which are most closely related, (4) the algorithm is more scalable and simple compared to AlberDICE.\n\nAs it currently stands, these contributions of the paper are scattered and it would take some effort by the reader to appreciate the paper, without some background in both DICE-based approaches in MARL. I would recommend a re-write of the storyline of the paper, highlighting the fact that ComaDICE pushes the cooperative Offline MARL field forward beyond IGM as well as AlberDICE.  \n\nAs a result, I've increased my score as follows:\n\nSoundness: 2-->3\n\nPresentation: 1-->2\n\nContribution: 1--> 3\n\nOverall Score: 3: reject, not good enough --> 6: marginally above the acceptance threshold\n\nI can't quite give an 8 (Strong Accept) due to the writing, but I would have given 7 if that option was available.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper proposes ComaDICE, a stationary distribution correction estimation approach to addressing OOD states and actions in Offline MARL. The derivation starts with the LP formulation of RL in the joint state-action space, which results in a concave objective for learning state-value functions similar to OptiDICE [2]. The objective also uses value decomposition with a monotonic mixing network for the advantage function similar to OMIGA [3]. ComaDICE is evaluated on SMACv2 and MaMuJoCo and shows comparable performance with baselines such as BC and OMIGA."
+    },
+    {
+      "note_id": "qLsj7E5Y7h",
+      "replyto": "5o9JJJPPm6",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 04:17:27.650000",
+      "modified": "2024-11-12 16:40:19.530000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14042/Reviewer_3fo7",
+      "actor": "Reviewer 3fo7",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "* The introduction of the DICE algorithm within the domain of multi-agent reinforcement learning represents a significant contribution characterized by its novelty and innovative approach.\n* The experimental settings are comprehensive, demonstrating the potential of the proposed algorithm effectively.",
+      "weaknesses": "* The contribution emphasizes the value decomposition and claims to prove the equivalence of the local policy product to the globally optimal policy, but the paper is too repetitive and superficial in its exposition of the decomposition method, neither explicitly defining the local subtasks and their corresponding policies, nor the relationship between them, nor providing a complete proof of this equivalence.\n* The experimental results for hybrid networks contradict mainstream research findings (single-layer outperforms double-layers), a phenomenon that hints at a possible fundamental flaw in the application of the DICE methodology to MARL, but the paper lacks an in-depth discussion of this.",
+      "questions": "* The discussion of the DICE method and its goals in the Related Work and Preliminary Knowledge section is not sufficiently in-depth to clearly locate the innovations of this paper with respect to existing work.\n* The proof section of DICE skips some key steps,  has a confusingly organized derivation and notation that does not clearly state the purpose and rationale for each step of mathematical transformation. Interpretation between Lagrange functions and offline reinforcement learning problem formulation is in lack.\n* The paper fails to explore the common sparse reward scenario in offline reinforcement learning, and the analysis of the quality requirements of behavioral strategies is insufficient, limiting the feasibility of the method in practical applications.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "In this paper, ComaDICE algorithm is proposed for offline multi-agent reinforcement learning, extending the DICE method to multi-agent scenarios and using value function decomposition and policy extraction methods, the idea is novel and the experimental results show the potential of the method."
+    },
+    {
+      "note_id": "dkESPrdGU7",
+      "replyto": "5o9JJJPPm6",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 10:29:44.302000",
+      "modified": "2024-11-28 01:03:46.010000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14042/Reviewer_XXjk",
+      "actor": "Reviewer XXjk",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "This work provides a comprehensive performance evaluation through experiments conducted on an extensive set of benchmarks, including the challenging multi-agent RL benchmark SMAC-v2. The experimental results indicate that the proposed approach shows superior performance relative to the baselines considered in the manuscript.",
+      "weaknesses": "The primary concern regarding this work is its novelty compared to previous work.\n\nSpecifically, AlberDICE by Matsunaga et al. (2023) [A] conveys a similar idea, i.e. adoption of DICE for offline cooperative multi-agent RL. The key difference of ComaDICE from AlberDICE appears to be employing individual Langrangian multipliers $\\nu_i$ and the mixing network for value function decomposition: while AlberDICE utilizes a simple yet principled resampling method for obtaining $\\nu_i$, ComaDICE employs the value factorization as discussed in Section 4.2, which requires the reliance on the additional mixing network $\\mathcal{M}_\\theta$ further necessitates additional training.\n\nAlthough AlberDICE is briefly mentioned in Section 2, the paper does not adequately discuss the theoretical or empirical advantages of adopting the value decomposition instead of the resampling approach. In addition, the AlberDICE paper presents a simple multi-agent task where value function decomposition leads to a substantial performance loss.\n \nThe absence of such a comparison significantly weakens the perceived contribution of this study, as it fails to establish a clear improvement of differentiation from previous work. In this sense,\n(1) A detailed discussion comparing ComaDICE and AlberDICE should be added,\n(2) AlberDICE should be included as a baseline in all experiments,\n(3) ComaDICE should be tested on the XOR game in the AlberDICE paper  \n\n\n[A] Matsunaga et al., “AlberDICE: Addressing Out-Of-Distribution Joint Actions in Offline Multi-Agent RL via Alternating Stationary Distribution Correction Estimation.”, NeurIPS 2023.\n\n[Minor comments]\nIn Sections 6.1 and 6.3, SMACv1 environment is discussed; however, corresponding experimental results for SMACv1 are not included in the main manuscript. It would be more appropriate to relocate these discussions to the appendix and direct readers there for further details, or incorporate the result on SMACv1 to the main manuscript, potentially replacing some of the redundant results on SMACv2 in Table 1 or Figure 1.",
+      "questions": "Q1. Do the authors assume that $s$ can be sufficiently represented from $o$?\nNotations for states and observation are confusingly used. For example, in line 234 and 237, $\\nu(s)$ and $q(s,a)$ are defined as a collection of functions that requires individual observations,$\\nu_i(o_i)$ and $q(o_i,a_i)$ respectively If so, the assumption should be explicitly clarified in the POMDP description.\n\nQ2. Figure 2 lacks information on which task was selected for each benchmark. (e.g. 5_vs_5 or 10_vs_10 in protoss, or expert or medium data quality in Hopper) Could you clarify?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This work introduces ComaDICE (offline Cooperative MARL with DICE), an approach for offline cooperative multi-agent reinforcement learning (RL) that leverages the DICE method. ComaDICE formulates the offline cooperative multi-agent RL problem as a constrained optimization and employs a DICE-based method to compute a global Lagrangian multiplier, $\\nu^{tot}$. Given the large state and action spaces typical in multi-agent RL, practical optimization of $\\nu^{tot}$ may not be feasible. To address this challenge, ComaDICE employs value function decomposition to decompose the global Lagrangian multiplier into individual Lagrangian multipliers for each agent."
+    }
+  ]
+}

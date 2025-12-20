@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "qotIZREPZf",
+    "forum": "qotIZREPZf",
+    "title": "CGD: Modifying the Loss Landscape by Gradient Regularization",
+    "authors": "Shikhar Saxena, Tejas Bodas, Arti Yardi",
+    "keywords": "optimization, gradient regularization",
+    "abstract": "Line-search methods are commonly used to solve optimization problems. The simplest line search method is the steepest descent where we always move in the direction of the negative gradient. Newton’s method on the other hand is a second-order method that uses the curvature information in the Hessian to pick the descent direction. In this work, we propose a new line-search method called Constrained Gradient Descent (CGD) that implicitly changes the landscape of the objective function for efficient optimization. CGD is formulated as a solution to the constrained version of the original problem where the constraint is on a function of the gradient. We optimize the corresponding Lagrangian function thereby favourably changing the landscape of the objective function. This results in a line search procedure where the Lagrangian penalty acts as a control over the descent direction and can therefore be used to iterate over points that have smaller gradient values, compared to iterates of vanilla steepest descent. We reinterpret and draw parallels with the Explicit Gradient Regularization (EGR) method, discussing its drawbacks and potential enhancements. Numerical experiments are conducted on synthetic test functions to illustrate the performance of CGD and its variants.",
+    "pdf_link": "https://openreview.net/pdf/9f705e6aecc6c94e2cf4b4ffd1aa514723625610.pdf",
+    "submission_date": "2024-09-28 11:07:37.765000"
+  },
+  "reviews": [
+    {
+      "note_id": "uxH1PzzSyu",
+      "replyto": "qotIZREPZf",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-30 11:11:18.191000",
+      "modified": "2024-11-12 16:13:19.312000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14152/Reviewer_TPeE",
+      "actor": "Reviewer TPeE",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "The paper is well written, and the method is well described.",
+      "weaknesses": "* The statement in Section 3, especially the Lemma 1, is quiet confusing. Lemma 1 shows that the set of minimizers for the problem you defined in Equation (8) includes the set of minimizers for the original problem, which raises a convergence issue: where exactly will your defined algorithm converge to? The final convergence result might be inferior to the original gradient descent. This is also reflected in the results shown in Figure 2. Even with corrections made in the Algorithm 1, the convergence result is still not guaranteed.\n\n*  Your algorithm 2, CGD-FD, is quiet similar with traditional nesterov momentum gradient descent, except that the momentum term in the Nesterov algorithm has been replaced with the gradient at the current point. However, this article does not compare with any momentum-based methods, and it is not necessarily superior to these methods, because the Nesterov algorithm theoretically has a convergence rate of $O(1/k^2)$.",
+      "questions": "* How does your method compare in terms of effectiveness with momentum-based methods (such as the Nesterov method)?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces Constrained Gradient Descent (CGD), a new line-search method that alters the objective function landscape for better optimization. CGD is based on a constrained version of the problem, optimizing the Lagrangian to control descent direction, potentially targeting points with smaller gradients than steepest descent. The authors relate CGD to Explicit Gradient Regularization (EGR), discussing its pros and cons, and validate CGD's performance through numerical tests on synthetic functions."
+    },
+    {
+      "note_id": "7J5FRlUU4M",
+      "replyto": "qotIZREPZf",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-30 08:40:25.714000",
+      "modified": "2024-11-12 16:13:19.280000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14152/Reviewer_edUM",
+      "actor": "Reviewer edUM",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "This paper study an important research issue and this paper is generally well written.",
+      "weaknesses": "see questions.",
+      "questions": "1. I think the major issue is that, for such a theoretical paper, the theoretical results are just too weak. This is just a simple Lemma for that. \n\n2. Besides, the proposed constrained strategy seems very easy to think of, is it really novel?\n\n3. What is the difference with mirror gradient descent?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes Constraint Gradient Descent (CGD) and its first-order variant CGD-FD, which use gradient regularization and finite-difference approximations for efficient optimization, and compare their performance against standard methods, while also re-evaluating Explicit Gradient Regularization techniques."
+    },
+    {
+      "note_id": "G8cdiFFVdg",
+      "replyto": "qotIZREPZf",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-29 02:20:09.680000",
+      "modified": "2024-11-12 16:13:19.573000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14152/Reviewer_yHLq",
+      "actor": "Reviewer yHLq",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 1,
+      "confidence": 5,
+      "soundness": 1,
+      "presentation": 1,
+      "contribution": 1,
+      "strengths": "A simple approach to accelerate the gradient descent.",
+      "weaknesses": "Evaluation. The proposed approach is only compared with a naive GD with a constant step-size. It is definitely not enough to show the advantages of the proposed approach. It should be compared with momentum-based approaches such as NAG, quasi-Newton approaches such as BFGS and L-BFGS, and conjugate gradient methods. For the line search part, comparison with other line search methods based on Armijo condition or Wolf condition should be performed. Comparison with some commercial software such as Matlab optimization toolbox as a baseline is also helpful to show the advantage.\n\nThe search space dimensionality is also limited. Though the authors mention about DNN  at the beginning of this paper, the performance was tested only on 6 test problems up to 10 dimensions. Using benchmarking testbed with wider coverage such as CUTEst is recommended.\n\nNo theoretical justification is given. I am curious to know whether this approach improves the convergence rate.",
+      "questions": "See the weaknesses above.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a gradient norm penalty to the original objective function and follows the gradient of the penalized objective, resulting in multiplying (I + lambda * Hessian) to the gradient step. This modification basically does not change the global optimum of the original optimization problem. While the original proposal requires the Hessian computation, its finite difference approximation is also proposed. The performance is compared to the standard GD on 6 test problems up to 10 dimensions."
+    },
+    {
+      "note_id": "S8gsCdh6vy",
+      "replyto": "qotIZREPZf",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-25 05:03:56.633000",
+      "modified": "2024-11-12 16:13:19.218000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14152/Reviewer_tBPs",
+      "actor": "Reviewer tBPs",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 1,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "The motivation is clear with nice visualization.",
+      "weaknesses": "1. The introduction uses deep learning as a motivation but it should be others since the work is focusing on deterministic optimization. \n2. lacks literature review many other related algorithms. \n3. The contribution lacks novelty. The algorithm basically does the following: when the normalized Newton step is a descent direction, use that; Otherwise, just employ gradient descent. When $\\lambda$ is sufficiently small, it is guaranteed to employ a normalized Newton step. \n4. The authors misunderstands the line search method. Line search should be an adaptive step size scheme but the algorithm doesn't have such property. \n5. The algorithm introduces another hyperparameter $\\lambda$ to the algorithm. Compared to gradient descent, the tuning effort for CGD is greater.  \n6. lacks convergence result\n7. It's not enough for comparing the algorithms over 6 problems, and it is not fair to tune  $\\lambda$ for the CGD algorithm in the comparison with GD.",
+      "questions": "See weaknesses",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces Constrained Gradient Descent (CGD), an optimization technique that modifies the loss landscape by imposing constraints on the gradient's norm. A first-order variant, CGD-FD, is proposed by using finite-difference approximations of the Hessian to avoid computational cost. The work also highlights limitations of existing Explicit Gradient Regularization (EGR) methods."
+    }
+  ]
+}

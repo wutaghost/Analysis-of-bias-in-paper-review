@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "VNMJfBBUd5",
+    "forum": "VNMJfBBUd5",
+    "title": "Activation Gradient based Poisoned Sample Detection Against Backdoor Attacks",
+    "authors": "Danni Yuan, Mingda Zhang, Shaokui Wei, Li Liu, Baoyuan Wu",
+    "keywords": "Backdoor Defense, Poisoned Sample Detection, AI security",
+    "abstract": "This work studies the task of poisoned sample detection for defending against data poisoning based backdoor attacks. Its core challenge is finding a generalizable and discriminative metric to distinguish between clean and various types of poisoned samples (e.g., various triggers, various poisoning ratios). Inspired by a common phenomenon in backdoor attacks that the backdoored model tend to map significantly different poisoned and clean samples within the target class to similar activation areas, we introduce a novel perspective of the circular distribution of the gradients w.r.t. sample activation, dubbed gradient circular distribution (GCD). And, we find two interesting observations based on GCD. One is that the GCD of samples in the target class is much more dispersed than that in the clean class. The other is that in the GCD of target class, poisoned and clean samples are clearly separated. Inspired by above two observations, we develop an innovative three-stage poisoned sample detection approach, called Activation Gradient based Poisoned sample Detection (AGPD). First, we calculate GCDs of all classes from the model trained on the untrustworthy dataset. Then, we identify the target class(es) based on the difference on GCD dispersion between target and clean classes. Last, we filter out poisoned samples within the identified target class(es) based on the clear separation between poisoned and clean samples. Extensive experiments under various settings of backdoor attacks demonstrate the superior detection performance of the proposed method to existing poisoned detection approaches according to sample activation-based metrics.",
+    "pdf_link": "https://openreview.net/pdf/862f925d14d471e86052a094d95c2e43d154199a.pdf",
+    "submission_date": "2024-09-28 11:08:54.316000"
+  },
+  "reviews": [
+    {
+      "note_id": "oGnrfoVTR4",
+      "replyto": "VNMJfBBUd5",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-11 16:56:14.025000",
+      "modified": "2024-11-26 18:36:22.510000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14155/Reviewer_nov3",
+      "actor": "Reviewer nov3",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "1. The paper identifies a previously unexplored phenomenon in backdoor samples, highlighting greater dispersion in activation gradient angles within the target class compared to clean samples.\n2. The authors provide extensive experiments on various backdoor attacks across two architectures (PreAct ResNet18 and VGG-18 BN),\n3. Some initial analysis on adaptive attacks is presented, though further exploration could strengthen the findings.\n4. The writing is clear and well-structured, making the main arguments easy to follow.",
+      "weaknesses": "1. I am giving low scores to soundness due to the reported  low performance of ASSET, AC. The performance in the original paper of ASSET is close to 90% for all attacks. Additionally, 0 F1 scores for AC also does not look right. For example, in the aforementioned paper, the average TPR of AC is around 50%. \n\n2.  Please provide sensitivity of various thresholds like $\\tau_z$ , $w, \\beta$ (Stage 3). What is the rationale behind the choice of $\\tau_z$ ? \n\n3.  Please comment on or provide results for these additonal adaptive attacks: \na. Can an adversary add  perturbations to the clean samples (different perturbations to different samples) such that their dispersion increases ? \nb. Given a clean set with 100 images, the adversary adds the same noise to 50 images and keeps the other images the same. Will the  dispersion increases of clean sample increase ? \nc. The backdoor trigger is optimized such that the dispersion of the target class decreases.",
+      "questions": "1. Can you please elaborate on this : \"It is inspired by phenomenon that a backdoored model tends to map both poisoned and clean samples within the target class to similar areas in its activation space\" ? - I believe this is true only for self-supervised training, whereas the current paper focuses on supervised training.\n\n2. At which h,w is the activation getting sliced for calculating the activation gradient ? Is it the same for all layers considered ? Why ?\n\n3. Can we simply use the difference in the angles from 0 in the distribution $\\rho$ instead of the sample closeness metric ? Why do we need to use it ?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors present an approach for backdoor sample detection based on the angle of the activation gradients between samples and a reference clean sample for each class.\nThe paper observes that, within the target class, the activation gradient angles exhibit greater dispersion compared to samples from the clean class. Furthermore, the distribution of angles of backdoor and clean samples within the target class are somewhat distinct, providing a basis for differentiating between clean and poisoned samples.\n\nBuilding on this observation, the authors introduce the concept of the Gradient Circular Distribution (GCD), a distribution of angles between the activation gradient of samples and that of a reference sample. They propose two key metrics based on this distribution:\nCVBT: A metric designed to measure the dispersion of the GCD.\nSample Closeness: A metric that evaluates how close a given sample is to  reference clean sample.\n\nThese metrics are then utilized to develop a filtering algorithm, which first identifies the target class and subsequently filters out the poisoned samples. The paper validates the proposed method through experiments on a range of backdoor attack scenarios."
+    },
+    {
+      "note_id": "9Dje4WDcs1",
+      "replyto": "VNMJfBBUd5",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-08 16:35:23.580000",
+      "modified": "2024-11-23 01:41:44.060000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14155/Reviewer_bpNy",
+      "actor": "Reviewer bpNy",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "(1) Understanding the activation gradient of poisoned examples with circular distribution is interesting. The two observations of GCD are novel.\n\n(2) The algorithm shows strong performance within the evaluation setting of this paper.\n\n(3) The paper is overall well written and the logic is easy to follow. The empirical experiments are mostly comprehensive and valid.",
+      "weaknesses": "(1) My main concern about the proposed algorithm is its scalability. It requires training on the entire dataset to determine the detection state, which might be too expensive given web-scale data and the extreme probability of the data being poisoned. Also, it takes nearly $O(n2) $ to compute the GCD, which is infeasible for large datasets. \n\n(2) The defense algorithm appears to be highly correlated with the specific class labels, potentially limiting its applicability. In the real world, the attackers can adopt a different set of labels than the defenders. The attackers could label the dataset more fine-grained/coarse-grained than the defender. (e.g. Imagine there is a dataset consisting of snacks and drinks and the target class of the attacker is Coca-Cola. However, the defenders just want to classify the images as soft drinks no matter whether it is Coca-Cola or Pepsi. Or the reverse situation can also happen.) Will the observations about GCD hold under such misalignment?\n\n(3) Table 7 is not organized well, please have a double-check.",
+      "questions": "Please see the weakness.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors propose to detect poisoned examples from an activation-gradient circular distribution perspective. The authors draw two novel observations by studying the GCD of poisoned/clean examples, based on which they introduce an algorithm named AGPD to do backdoor example detection."
+    },
+    {
+      "note_id": "3s9pI1cEc0",
+      "replyto": "VNMJfBBUd5",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-29 06:38:47.071000",
+      "modified": "2024-11-25 02:48:53.993000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14155/Reviewer_pwS4",
+      "actor": "Reviewer pwS4",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "(1) Introducing GCD as a novel measure adds a unique, technical depth to the approach, potentially applicable to various attack scenarios.\n\n(2)  AGPD shows high detection performance with minimal additional clean data, a notable advantage for real-world applicability, where such data may be limited.",
+      "weaknesses": "(1) The proposed method is founded on two core observations: (i) the Gradient Circular Distribution (GCD) of the target class exhibits greater dispersion than those of clean classes, and (ii) poisoned and clean samples are distinguishable by their clear clustering in separate regions. However, it remains unclear whether these observations hold consistently for clean-label attacks, where the mapping directions of poisoned and benign samples could exhibit higher similarity given their similar input-space characteristics. Further discussion on this aspect would strengthen the paper’s analysis.\n\n(2) The choice of baseline methods appears limited to older techniques. A broader comparison with more recent, state-of-the-art defense methods would provide a more thorough assessment of the proposed method’s performance relative to the latest advances in poisoned sample detection.\n\n(3) Attack Success Rate (ASR) is a key metric commonly used in backdoor detection evaluations. Its omission from Table 1 raises questions about the comprehensiveness of the evaluation metrics chosen. Including ASR would provide a clearer view of the method's efficacy against backdoor attacks.\n\n(4)   In the main evaluation, a poisoning ratio of 10% is used for non-clean label attacks and 5% for clean-label attacks. Since clean-label attacks are generally more challenging, lower poisoning ratios are typically applied to non-clean label attacks in real-world scenarios. This discrepancy between the paper’s experimental setup and actual attack contexts calls for further clarification. Additionally, practical attack scenarios often employ very low poisoning ratios (1% or 0.5%), feature separability-based defenses tend to be less effective in this setting. More discussion should be included.",
+      "questions": "(1) The proposed method is founded on two core observations: (i) the Gradient Circular Distribution (GCD) of the target class exhibits greater dispersion than those of clean classes, and (ii) poisoned and clean samples are distinguishable by their clear clustering in separate regions. However, it remains unclear whether these observations hold consistently for clean-label attacks, where the mapping directions of poisoned and benign samples could exhibit higher similarity given their similar input-space characteristics. Further discussion on this aspect would strengthen the paper’s analysis.\n\n(2) The choice of baseline methods appears limited to older techniques. A broader comparison with more recent, state-of-the-art defense methods would provide a more thorough assessment of the proposed method’s performance relative to the latest advances in poisoned sample detection.\n\n(3) Attack Success Rate (ASR) is a key metric commonly used in backdoor detection evaluations. Its omission from Table 1 raises questions about the comprehensiveness of the evaluation metrics chosen. Including ASR would provide a clearer view of the method's efficacy against backdoor attacks.\n\n(4)   In the main evaluation, a poisoning ratio of 10% is used for non-clean label attacks and 5% for clean-label attacks. Since clean-label attacks are generally more challenging, lower poisoning ratios are typically applied to non-clean label attacks in real-world scenarios. This discrepancy between the paper’s experimental setup and actual attack contexts calls for further clarification. Additionally, practical attack scenarios often employ very low poisoning ratios (1% or 0.5%), feature separability-based defenses tend to be less effective in this setting. More discussion should be included.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper presents a new approach to identifying poisoned samples in datasets used for deep neural network training. The core proposal, termed Activation Gradient-Based Poisoned Sample Detection (AGPD), leverages a novel metric called Gradient Circular Distribution (GCD) to detect discrepancies between clean and poisoned samples. Key insights include observing that in backdoor attacks, models often map poisoned samples and clean samples to similar activation regions, which AGPD detects by analyzing gradient direction distributions. This method involves three main steps: calculating GCD for each class, identifying target classes based on dispersion, and filtering out poisoned samples."
+    },
+    {
+      "note_id": "KVBnOuUbWL",
+      "replyto": "VNMJfBBUd5",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-28 15:05:09.347000",
+      "modified": "2024-11-12 16:26:07.860000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14155/Reviewer_AHKK",
+      "actor": "Reviewer AHKK",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "- This paper proposes a novel measurement to show the dispersion of poisoned and clean samples in the model's activations\n\n- This paper is well-written and enforces a high readability with variant and helpful illustrations \n\n- This paper comprehensively evaluates AGPD's performance by considering diverse poisoning attacks, comparing with different related defenses, and conducting experiments on variant datasets.\n\n- This paper considers the ablation study on different hyper-settings of APGD and involves two reasonable adaptive attacks that have considered APGD's defense w.r.t the GCD distribution.",
+      "weaknesses": "(1) The use of $arccos(\\cdot)$ in Eq.(2) is ambigious as $cos\\(\\cdot\\)$ is used in Eq.(3) and Eq.(4) as well.\n\n(2) The calculation of GCD across all model layers is not clearly formulated for each sample.\n\n(3) The influence of the clean sample by random sampling for the basic sample pair is not studied.\n\n(4) There is lacking the rationale for setting the hyper-parameter $\\tau_z = e^2$.\n\n(5) For all-to-all attacks, a better explanation of how the dataset separation by APGD is achieved is required.\n\n(6) The description of Adpative-Blend in Appendix B is incomplete and different from the default attack setting.\n\n(7) It is unclear how the noisy and poisoned samples are separated against WaNet and Adaptive-Blend attacks.\n\n---\nIn the following, further questions related to the above points are detailed with the notion of \"Q-#\".",
+      "questions": "Q-(1): The calculation of $\\rho_{x_0}\\(\\mathcal{D}\\)$ in Eq.(3) and $s_{x_0}\\(x_i\\)$ in Eq.(4) basically transforms e.g. $\\theta_{x_0}\\(x_i\\)$ back to $\\frac{g\\(x_i\\) \\cdot g\\(x_0\\)}{||g\\(x_i\\)|| ||g\\(x_0\\)||}$. By simplifying the formulation in Eq.(3) and Eq.(4), does this mean it is essentially calculating the cosine similarity of the gradients between the basis pair and each input sample? If this is indeed the case, is the calculation of radian in Eq.(2) useful merely for the visualization in figures like Figure 1.?\n\nQ-(2): In section 3, the channel-wise activation gradient $g^{\\(l\\)}$ is first introduced in Eq.(1). However, the formulating w.r.t the index of the model layer is missing in the consequent methodology description. Can the authors elaborate on how the channel-wise gradients in each layer are merged into the final GCD of an input sample $x_i$?\n\nQ-(3): The basis pair is crucial to disperse samples; thus, a small clean set is necessary for APGD detection. As even a single clean sample per class has been proven effective, how does the selection of clean samples influence APGD's performance? Or is APGD resistant to any random sampling of clean samples?\n\nQ-(4): Different from the study on the threshold $\\tau_s$ in section 5.4, $\\tau_z$ remains equal $e^2$. What is the rationale of setting $\\tau_z = e^2$? \n\nQ-(5): In Figure 4, APGD detection on the target class works better against all-to-one attacks than all-to-all attacks. While detecting poisoned samples of all-to-all attacks, does APGD handle the separation of all-to-all attacks class by class via the implementation of Stage 3?\n\nQ-(6): In the default setting of Adaptive-Blend, the poisoning ratio is relatively low (poisoned/total = 150/50000 = 0.3% for CIFAR10), where the same amount of noisy samples as poisoned samples are added by setting the conservatism ratio = 1.0, which is unfortunately missing in Table 7. Moreover, considering the default poisoning ratio = 5%, the ASR of 66.17% for Apat-Blend is much lower than that of the original paper. Does this imply that the Adptive-Blend in this paper has some biases from the default attack configuration?\n\nQ-(7): Considering that both WaNet and Adaptive-Blend attacks involve noisy samples to improve the attack stealthiness, can the authors provide some visualization on the separation of APGD between the poisoned samples and noisy samples in both attacks?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "With the inspiration that a backdoored model is apt to map significantly different poisoned samples and clean samples of the backdoor target to similar activation areas, this paper introduces a novel measurement, i.e., the circular distribution of the gradients w.r.t sample activation, namely GCD, which works to identify the target class of the backdoor and consequently separate poisoned and clean samples within the target class. Accordingly, this paper proposes a sample detection approach called AGPD to achieve dataset purification. Extensive experiments show AGPD's advanced performance in detecting and isolating poisoned samples."
+    }
+  ]
+}

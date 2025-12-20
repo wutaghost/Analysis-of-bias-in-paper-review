@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "Za3M6OZuCU",
+    "forum": "Za3M6OZuCU",
+    "title": "Actions Speak Louder Than Words: Rate-Reward Trade-off in Markov Decision Processes",
+    "authors": "Haotian Wu, Gongpu Chen, Deniz Gunduz",
+    "keywords": "Markov Decision Process, Channel coding, Rate-Reward Trade-off, Finite state channel",
+    "abstract": "The impact of communication on decision-making systems has been extensively studied under the assumption of dedicated communication channels. We instead consider communicating through actions, where the message is embedded into the actions of an agent which interacts with the environment in a Markov decision process (MDP) framework. We conceptualize the MDP environment as a finite-state channel (FSC), where the actions of the agent serve as the channel input, while the states of the MDP observed by another agent (i.e., receiver) serve as the channel output. Here, we treat the environment as a communication channel over which the agent communicates through its actions, while at the same time, trying to maximize its reward. We first characterize the optimal information theoretic trade-off between the average reward and the rate of reliable communication in the infinite-horizon regime. Then, we propose a novel framework to design a joint control/coding policy, termed Act2Comm, which seamlessly embeds messages into actions. From a communication perspective, Act2Comm functions as a learning-based channel coding scheme for non-differentiable FSCs under input-output constraints. From a control standpoint, Act2Comm learns an MDP policy that incorporates communication capabilities, though at the cost of some control performance. Overall, Act2Comm effectively balances the dual objectives of control and communication in this environment. Experimental results validate Act2Comm's capability to enable reliable communication while maintaining a certain level of control performance.",
+    "pdf_link": "https://openreview.net/pdf/5e687a3e5348b6bc8afcefc437df93de011baf0e.pdf",
+    "submission_date": "2024-09-28 09:46:09.370000"
+  },
+  "reviews": [
+    {
+      "note_id": "uzWqeedPcj",
+      "replyto": "Za3M6OZuCU",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 08:25:41.994000",
+      "modified": "2024-11-25 14:56:09.152000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13994/Reviewer_dvdt",
+      "actor": "Reviewer dvdt",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 2,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "The main strengths of the paper are:\n- The problem and issues addressed are well stated and clear.\n- The theoretical results presented are interesting.\n- To the best of my knowledge, encoding messages in state-action sequences of RL agents is a novel idea.",
+      "weaknesses": "The main weaknesses are:\n- I am not convinced of the significance of the work. Although the problem is relatively interesting, the theoretical results seem to fall a bit short, and the experiments are not very illustrative either (see questions below).\n- The notation is a bit cluttered and makes some technical statements hard to follow. I understand that authors make use simultaneously of RL notation and FSC notation, but as is, it is confusing. Eg: $x$ is used for actions, but in line 170 there is $a_t$ which seems to be used for actions too. $\\Epsilon$ and $\\pi$ seem to be used for policies, sometimes in the same statement. In line 449 there is a $\\mathcal{L}_{cn}$ which is not defined. In Appendix 1, the proof for the main theorem in Section 4 is presented, but immediately after the authors state that this section makes use of results in section 5 for the proof. $s^+$, $s_{t+1}$ and $s^{t+1}$ seem to be used for the same variable.\n- It is not obvious to distinguish whether the experiment environments are a common benchmark in other information theoretic RL work, or they have been specifically selected for this particular application. I understand that the method is novel, and therefore there may not be other benchmarks to compare to, but some justification for the particular choice of the experimental tasks would be beneficial.",
+      "questions": "- What would be a general motivating example for wanting to trade off rewards for information rates in the state sequences?\n- The theoretical results in page 6 revolve around concavity with respect to the joint stationary distribution. However, we usually cannot directly solve this, since the only control variable is the policy. The stationary state distribution in an mdp is an infinite product of transition matrices, which depend linearly on the policy. How do these results translate to policies? If they don’t, are they really useful?\n- Section 5 needs some intuition. After the theoretical results, the particular model architecture choice is not obvious.\n- In line. 452, it is stated that at each step of the algorithm, a critic needs to be trained to estimate the gradient. How costly is this?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper presents an analysis and method to allow RL agents to transmit messages through control actions as sequences of visited states, trading off average reward for information rate of the transmitted message. They provide theoretical results on the maximum information theoretic capacity such transmissions have, and propose a model and algorithm to do this efficiently."
+    },
+    {
+      "note_id": "srRwun3Oyh",
+      "replyto": "Za3M6OZuCU",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 18:48:16.275000",
+      "modified": "2024-11-12 16:23:39.533000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13994/Reviewer_m4h4",
+      "actor": "Reviewer m4h4",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "1. This paper is well-written and well-organized.\n2. The proposed Act2Comm effectively balances the dual objectives of control for total return and communication cost.",
+      "weaknesses": "1. Act2Comm assumes a pre-determined control policy $\\pi$, which means it also needs to optimize the gap between this target policy and the Act2Comm learned policies. Could add a return gap part to further stabilize this procedure. Refer to this paper here 'Chen, J., Lan, T., & Joe-Wong, C. (2024). RGMComm: Return Gap Minimization via Discrete Communications in Multi-Agent Reinforcement Learning. Proceedings of the AAAI Conference on Artificial Intelligence, 38(16), 17327-17336. https://doi.org/10.1609/aaai.v38i16.29680'.\n2. I suggest the authors add a pseudo code in the appendix to further assist the readers to know the whole training process. Right now the order of training the control policies and the communication messages is unclear. \n3. The testing environments are too simple for testing MARL-Comm methods, which only consist of 3 states or 27 states, and 2 or 3 discrete actions. The methods should be tested in continuous control environments.\n4. There are no baselines for comparing the Act2Comm algorithms for the empirical evaluation. This may affect the theoretical results' soundness.\n5. I did not find the submitted codebase in this paper's submission files. The reproducibility might be a problem.",
+      "questions": "1. The whole process is very similar to some existing works for multi-agent communications, such as: \"Lowe, R., Wu, Y. I., Tamar, A., Harb, J., Pieter Abbeel, O., & Mordatch, I. (2017). Multi-agent actor-critic for mixed cooperative-competitive environments. Advances in neural information processing systems, 30\", these works are also training the messages along with actions as well. Could the author further discuss a bit more about how it differs from the existing implicit communication methods which are training the messages with actions?\n2. This paper models the MDP, if I understand it correctly, it should be a multi-agent MDP, then is this MDP fully observable or partially observable? Then this MDP should be modeled as the multi-agent version, and should define the number of agents and also the joint state, observation, and action space. Could the authors further clarify this part?\n3. How the communication messages like? Are these discrete or continuous?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper considers the problem of communication in decision-making problems, they consider communicating through actions, where the message is embedded into the actions of the agents for interacting with environments. The authors model the MDP environment as a finite-state channel (FSC), with actions as the input and the states of the receiver as the output. They propose a way to balance the long-term reward and the communication compacity and show that they could achieve both optimal policies for return and minimize the communication cost at the same time."
+    },
+    {
+      "note_id": "Xa1tAjwLlW",
+      "replyto": "Za3M6OZuCU",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-29 21:31:00.973000",
+      "modified": "2024-11-25 20:35:44.712000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13994/Reviewer_ej1T",
+      "actor": "Reviewer ej1T",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "S1: The idea appears to be novel and has not yet been addressed before.\n\nS2: The paper is mostly written well.",
+      "weaknesses": "W1: The paper requires further clarification and explanation of several critical aspects as lined out in the questions. \n\nW2: The setting relies on finite state and action spaces and does not yet address multi-agent scenarios. \n\nW3: No code base provided.\n\nW4: The structure is not ideal in that Theorem 1 is introduced in Section 4, but the proof of Theorem 1 requires results from Section 5.\n\nFurther (minor) weaknesses:\n* Figure 1 is pretty crowded and does not look nice\n* Typo l. 131 „Blackwell Blackwell“\n* Typo l. 229 „use“s",
+      "questions": "Q1: Why is C(\\tau) necessary in the Transceiver, given Theorem 1 states no historical data is required for the encoding?\n\nQ2: Theory (e.g. Theorem 2) is limited to the undiscounted case, which can cause issues in non terminating MDPs as the return values are likely to diverge to plus or minus infinity. At the same time, the communication does not account for terminal states in the MDP, thus I assume the work considers non terminating MDPs. This needs to be clarified or addressed.\n\nQ3: l348 what is L? Generally, I think the introduction of the decision rule U is relatively confusing. From what I understood, U is a rule that given the current channel state provides the corresponding action that results in the required next state the decoder needs to observe to transmit the message according to the code of the EAS channel. Is that correct? If so, I think an introductory sentence along these lines would benefit the paragraph.\n\nQ4: l382 Are the results limited to scalar states and actions? Otherwise I do not understand the dimensionality of c_t^{(\\tau)}.\n\nQ5: l398: I am not really sure how the quantization works. Shouldn't it be something like U = Q(Z) = |x| \\cdot Sigmoid(Z) for all x in X?\n\nQ6: L452 The paragraph is unclear. Is the estimated gradient the one of eq. 10? If so, why does the critic approximate precisely this gradient and not something else?\n\nQ7: How does your work differ from [1]? The paper should discuss this in my opinion.\n\n[1] Communicating via Markov Decision Processes, Sokota et al. ICML 2022",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The proposed Act2Comm algorithm presents a multi-objective optimization for communication via the MDP state. This can be beneficial e.g. for multi agent scenarios in hostile environments where no dedicated communication infrastructure is available. In this case, the policy acts both as a message encoder as well as a controller. This requires integrating communication (such that a certain code rate and error probability is achieved) and control (such that a minimum return is achieved). Act2Com presents a transformer-based approach to this challenge."
+    },
+    {
+      "note_id": "G4eDNcD9PN",
+      "replyto": "Za3M6OZuCU",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-18 20:39:56.151000",
+      "modified": "2024-11-25 14:28:34.672000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13994/Reviewer_kFNj",
+      "actor": "Reviewer kFNj",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "* The connection between information content and policy performance is of great theoretical and practical interest; this paper appears to provide a clean characterization of the tradeoff in finite state/action MDPs.\n* The paper also proposes a deep learning-based scheme for generating policies which balance transmission rate and policy performance that—due to its use of neural networks—could (optimistically?) scale to larger problems.",
+      "weaknesses": "* I was surprised not to see papers like “Least inferable policies for Markov decision processes” referenced in the related work discussion. There are other papers from some of these authors which, if memory serves, essentially try to find policies which balance entropy of the state distribution with expected future reward. I believe the main difference is that they were trying to maximize entropy of the state distribution, which amounts to making the capacity of your action-state channel very small. But I imagine it’s just a sign flip to get the other direction. I would appreciate some discussion here.\n* Nitpick: line 131 should use \\citep for the Blackwell reference. What does “indecomposable” mean?\n* In the MDP preliminaries, don’t we need r() to be bounded in order to ensure that (1) is well-posed?\n* nitpick: it would be helpful to define “unichain” for unfamiliar readers\n* From only reading the main text, I would assume that Theorem 1 is surely known in the literature, and is a direct corollary of Shannon’s classic 1948 result, but adapted to the EAS channel. However, appendix A.1 presents a fairly involved proof. Please adjust the main text to explain what is new about this result from existing literature.\n    * There should be some statement of proof for every theorem/lemma, or at least a clear statement that proofs can be found in a specific appendix. I did not see such a statement (apologies if I missed it).\n* nitpick: it should be “ascent” not “decent” in line 306. Also some mention should be made of the inequality constraint here.\n* I suggest that the authors have a bit more of a discussion around lemma 1 to explain how the concavity wrt V will be used later. Currently, lemma 1 interrupts the flow a little.\n* nitpick: is the * in (12) multiplication? If so, I suggest using \\cdot. Similar suggestion on line 418.\n* The authors should clarify the discussion of non-differentiability of f_U in line 414 and below. \n* “critic network with 3 linear layers” (line 431) -> does this imply that there are no nonlinearities? Perhaps: “fully-connected layers” is what is meant here?\n* I am having a lot of difficulty following the logic of section 5 and would appreciate it if the authors could revise the presentation to more clearly articulate the key ideas, how they relate to the problem in Theorem 2, why each idea is necessary, etc.\n    * For example, I do not understand what the role of the critic is, i.e. what its inputs and outputs are and how they relate to the problem at hand. \n    * To be blunt, the first part of this paper (through section 4) is lovely, but section 5 is so confusing that it makes me seriously question my understanding of the problem from section 4. If this can be adequately addressed, I am very happy to raise my score. Specifically, I suggest that the authors:\n       1. Provide a high-level overview of how the approach in Section 5 relates to and differs from the problem formulation in Theorem 2.\n       2. Clearly explain the role of each component (e.g., the critic network) in the proposed approach, including its inputs, outputs, and how it contributes to solving the problem.\n       3. Include a diagram or flowchart illustrating the relationships between different components of the proposed method.\n       4. Consider reorganizing the section to first present the overall approach, then dive into the details of each component.",
+      "questions": "* Reading the discussion around line 227, do we need for the code to be prefix-free for finite n?\n* Do we really need Lemma 2?\n* Why do the authors describe gradient descent for the problem in Theorem 2 when the proposed approach is actually solving a different problem? Theorem 2 is very nice to state, but I suggest the authors consider whether it is really necessary to discuss solving the problem in Thm. 2 in this level of detail if that is not what is actually done later in the paper.\n    * This does beg the question of why not just use some gradient method to solve the problem in Thm. 2 instead of the proposed workflow outlined in section 5? \n    * Put another way: why is the transformer-style approach in section 5 really necessary when the problem in Theorem 2 looks so elegant? \n* Why are the regions in Figure 3b/c shaded? And, how are the target BER and reward handled? I did not pick up on that in the preceding discussion. \n* The test environments are quite small. What is the main limitation in scaling the proposed approach? Specifically, please:\n   1. Discuss the computational complexity of the proposed approach as the state and action spaces grow.\n   2. Identify specific challenges you anticipate in applying the method to larger, more complex environments.\n   3. Suggest potential modifications or extensions to the proposed approach that might address these scalability challenges.\n   4. If possible, provide preliminary results or analysis on a slightly larger environment to demonstrate scalability potential.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper studies the fundamental tradeoff between the information content of an agent’s actions and the long-term performance of the agent in an MDP. This tradeoff is formalized as a convex optimization problem in the context of discrete state and action spaces. A transformer-based approach is then presented to approximate policies which solve a variant of the aforementioned problem, and results are presented in two small toy examples."
+    }
+  ]
+}

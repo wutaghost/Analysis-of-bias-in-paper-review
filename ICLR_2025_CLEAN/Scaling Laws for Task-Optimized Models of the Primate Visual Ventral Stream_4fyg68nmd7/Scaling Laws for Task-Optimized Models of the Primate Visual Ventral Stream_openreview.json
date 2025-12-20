@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "4fyg68nmd7",
+    "forum": "4fyg68nmd7",
+    "title": "Scaling Laws for Task-Optimized Models of the Primate Visual Ventral Stream",
+    "authors": "Abdulkadir Gokce, Martin Schrimpf",
+    "keywords": "scaling laws, neural alignment, behavioral alignment, computer vision, primate visual ventral stream",
+    "abstract": "When trained on large-scale object classification datasets, certain artificial neural network models begin to approximate core object recognition (COR) behaviors and neural response patterns in the primate visual ventral stream (VVS). While recent machine learning advances suggest that scaling model size, dataset size, and compute resources improve task performance, the impact of scaling on brain alignment remains unclear. In this study, we explore scaling laws for modeling the primate VVS by systematically evaluating over 600 models trained under controlled conditions on benchmarks spanning V1, V2, V4, IT and COR behaviors. \nWe observe that while behavioral alignment continues to scale with larger models, neural alignment saturates. \nThis observation remains true across model architectures and training datasets, even though models with stronger inductive bias and datasets with higher-quality images are more compute-efficient. \nIncreased scaling is especially beneficial for higher-level visual areas, where small models trained on few samples exhibit only poor alignment.\nFinally, we develop a scaling recipe, indicating that a greater proportion of compute should be allocated to data samples over model size. \nOur results suggest that while scaling alone might suffice for alignment with human core object recognition behavior, it will not yield improved models of the brain's visual ventral stream with current architectures and datasets, highlighting the need for novel strategies in building brain-like models.",
+    "pdf_link": "https://openreview.net/pdf/09f107accd405e5c03e2f5d76172b6b13b9d1cde.pdf",
+    "submission_date": "2024-09-28 09:21:45.651000"
+  },
+  "reviews": [
+    {
+      "note_id": "2hc94wNRmF",
+      "replyto": "4fyg68nmd7",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 14:52:26.951000",
+      "modified": "2024-12-03 16:22:44.823000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13938/Reviewer_Z99m",
+      "actor": "Reviewer Z99m",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 4,
+      "contribution": 2,
+      "strengths": "The authors completed an extensive sweep through model architectures, compute, and data budgets, in order to give a detailed view of how model scale relates to neural and behavioral brain scores. The key findings here are important (although with debatable novelty): (1) Neural fits asymptote or worsen with scale, (2) behavioral fits are linear with scale (although scale alone appears to be insufficient), (3) the ceiling and form of scaling laws is different for each visual area region that was investigated. Overall, this is a nice capstone on BrainScore, and perhaps is most notable for showing how methods from AI are not always applicable for explaining brain and behavior.",
+      "weaknesses": "1. The power of scaling laws in domains like language (IMO) is that they imply \"all you need is scale.\" That is, and in the spirit of the bitter lesson, there are no conceptual barriers to achieving a criterion level of performance, only engineering ones. If this were the case in brain science it would be a true world changer. But as this paper (and others which were cited) show, this is not the case. DNNs + scale are not the solution to explaining the variance in brainscore visual system recordings. In that sense I see a large overlap between the findings and result of [1] in which they found a trade-off between ImageNet performance and BrainScore fits. In both cases, these are null results. It is great to show this result, but the lack of a direction forward is concerning.\n\nTo drive the point home, in Fig 3, the authors show that training on ImageNet21k (but curiously not WebVision which has more images) leads to better fits. Indeed this would seem to be a scaling law... but the effect size makes it impractical at best: the model maxes out around 0.45 alignment even after all of that data.\n\nFor these reasons I struggle to see how this paper makes a strong contribution to the field. It feels better served as a memo or blog post than a conference or journal paper.\n\n2. I think some of the line fits are overly optimistic. For example, in Fig 1, the neuro line is monotonically increasing. But if I squint and just look at the dots, it looks more like a subtle decrease in fits, on average, as a function of compute. This issue is in many of the plots. This relates to my thoughts in (1) about what this all means and whether or not the findings are novel. See fig 2 ViT behavioral line fits for an example where it's not just for neural data. I am marking down the \"Soundness\" of the paper because of these line fits, but to be honest I don't have any great suggestions about how to improve the fits while maintaining interpretable \"laws\" when you have what look like non-monotic changes like with the Neural data in Fig 1c.\n\n3. The y limits of the plots should be fixed to one range. It looks like 0-0.7 captures everything. Theres too much bouncing around between different ranges in different subplots. Also could you label what dataset the validation accuracy is derived from on plots where you report it?\n\n[1] Linsley et al. Performance-optimized deep neural networks are evolving into worse models of inferotemporal visual cortex.",
+      "questions": "1. On Figure 6b, that's a beautiful correlation. How far can you take it out? Just eyeballing I'd guess it would get near 0.7. Perhaps a pivot for the paper, to get the positive result I think it needs, would be to focus on this scaled-up model of behavior? Just a thought.\n\n2. Why do you think neural scaling laws are different for different brain regions and also for behavior? This is a complex question of course, and I don't expect a definitive answer, but perhaps there's something interesting here.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors investigate so-called neural scaling laws for predicting visual behavior and neural activity. \"Scaling laws\" are empirical trends that show a relationship between model scale (e.g., compute used or amount of data used in training) and its loss on a pretraining task. Here, the authors show different functional forms of scaling laws for predicting neural activity vs. behavior, where the latter is far more promising than the former.\n\n**Update**\nI'm on the fence with this paper. I think there's tons of well-done experiments, and I think the message is important to the field of NeuroAI albeit not totally a novel one. I think the line fits are also still problematic and telling a story that's not totally backed up by the data, although I appreciate that the authors are trying to establish a parallel with work in AI on scaling laws. If there were a clear direction forward then this would be a no-brainer accept. As is, I believe it's borderline. I am increasing my score to reflect this.\n\nAlso on a separate note, my apologies to the authors for neglecting to respond to all of their points. I was confused by the threading of the responses and mistook the authors' responses to gmHr for responses to my own questions."
+    },
+    {
+      "note_id": "tb6lyHTNAd",
+      "replyto": "4fyg68nmd7",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 03:01:29.283000",
+      "modified": "2024-11-12 16:40:47.312000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13938/Reviewer_gmHr",
+      "actor": "Reviewer gmHr",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 4,
+      "contribution": 2,
+      "strengths": "The paper is well written. The introduction offers a good view of the literature and it is easy to follow the procedure they use to make the evaluation. The results are clearly presented and explained.  It provides a good overview of the current landscape of models in the context of neural and behavioral alignment.",
+      "weaknesses": "My main observation about this work is that, while it provides valuable insights and a well-illustrated overview of the current landscape of models and their alignment with  neural of behavioral benchmarks, it could benefit from more clarity on how these findings might guide future advancements. The paper mentions previous work with similar findings, as noted in the discussion; however, it would be helpful to understand more concretely how this work can serve as a foundation for the next steps in the field and how scaling laws can truly help scientists develop the next generation of more brain-like models. For instance what kind of hypothesis can be drawn from scaling laws that can be tested by adding or removing samples/compute of models being constructed to be more brain-like? \n\nAlthough the limitations section mentions that ‘these functions may not generalize beyond the scales tested,’ this suggests a natural boundary for the impact of these results. Could the authors estimate, based on their scaling laws, what order of magnitude increase in dataset or parameter size might be needed to significantly improve neural alignment beyond the observed plateau?\n\nWhile I understand that this point is mentioned in the limitations section, I feel it is a significant oversight not to include recurrent models. It is encouraging that the paper mentions that inductive bias in the form of convolution seems to yield faster returns, but this feels limited, given that most of the models tested in these benchmarks are much deeper than what might be expected for an architecture resembling the visual cortex. For instance, would be interesting to see how the scaling laws would apply to CorNet? Is it the case that the more brain like the easier it is to scape the scaling laws? that would be very impactful for the community. \n\n\nI may have missed it, but did not see mention on self supervised models or robust models and how the scaling laws operate on models trained on these type of frameworks?",
+      "questions": "* What are the implications of this work, given the limitations already presented in the paper? \n\n* What would be the predictions for a model that closely resembles the  visual cortex  such as  CorNET ? \n\n* Given that the paper focuses on scaling, Have the authors considered how their scaling laws might apply to or change for models pre-trained on much larger datasets like LAION before fine-tuning on ImageNet? This could provide insights into whether the observed plateaus persist across different pre-training regimes",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces  a way of calculating scaling laws for neural and behavioral alignment with respect of training data and parameter size of models. It offers an interesting overview of the current status  of models and its performance on these alignment challenges."
+    },
+    {
+      "note_id": "L4NcnuXHRg",
+      "replyto": "4fyg68nmd7",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 02:33:08.389000",
+      "modified": "2024-11-12 16:40:47.301000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13938/Reviewer_fpoP",
+      "actor": "Reviewer fpoP",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "* This paper sheds light on the similarity of neural network representations to biological visual representations as a function of model size, compute, and training dataset size. The authors have presented these results in a sound theoretical framework by drawing inspiration from analyses of neural scaling laws. \n* It is super interesting that different areas of the ventral visual stream have varied effects to scaling of neural architectures/datasets. I have not seen this in prior work to the best of my knowledge and this will raise interesting discussions at ICLR.\n* I appreciate that the paper is well-written, the figures are legible and accompanied with reasonably detailed captions.",
+      "weaknesses": "* **Lacking evaluation of what model behaviors give rise to alignment.** My main point of feedback to further improve this paper is to address what other factors of artificial neural networks contribute to enhancing similarity to biological vision. It is interesting that there exist scaling laws between model / dataset sizes and neural / behavioral alignment, but this has already been documented in prior studies. I urge the authors to further study the qualitative factors (for e.g. sensitivity to the same spatial frequencies that humans are sensitive to) that give rise to enhanced similarity between ANNs and human vision.\n* **Missing evaluation of more recent multimodal models.** There has been a surge in multimodal vision language models that, if evaluated in the same framework established by this paper, would produce really intriguing findings on model scaling and alignment. I encourage the authors to include publicly available large vision language models to increase the impact of their findings, as these VLMs are more widely in use now.",
+      "questions": "* Would the authors like to highlight how different training signals would influence alignment to brain / behavior? Humans have a rich multimodal perception of the world, they use depth perception, and predominantly learn without supervision. Are the authors able to tease apart the effects of any such factors in their analyses?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "In this paper, the authors study the relationship between the size / compute requirement of popular neural network architectures and their training dataset sizes vs alignment to the biological ventral visual stream. The authors analyze the alignment of various architectures to the primate VVS using the publicly available Brain-Score benchmark and claim that (1) scaling models by increasing parameter count produces diminishing neural alignment beyond a saturation point in model size, but behavioral alignment continues to increase with model size, (2) Alignment scales with training dataset size, (3) Higher visual areas in the cortical hierarchy show stronger gains in alignment with respect to scaling."
+    },
+    {
+      "note_id": "CwRt2fOYS3",
+      "replyto": "4fyg68nmd7",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-27 16:11:14.782000",
+      "modified": "2024-11-12 16:40:47.214000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13938/Reviewer_rNYX",
+      "actor": "Reviewer rNYX",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "The core claim—model size influencing alignment—is well supported by the results.\n\nInvestigating neural and behavioral alignment is a relevant area with potential applications for improving model interpretability and guiding architecture design.\n\nThe study contributes to understanding the role of model scale in alignment, a valuable area for both theoretical insights and practical applications in AI research.",
+      "weaknesses": "Inductive biases might need better control, either quantitatively or qualitatively, to improve result clarity.\n\nMinor issues: typo at l100 (“ecology”), unclear reference in l130 (“Utah”), and Fig 1 could specify the saturation value.\n\nBenchmark sample size for V1 and V2 is relatively small (315), which may impact result generalizability.\n\nEquation 7’s clarity is limited without referencing equations 8 and 9; introducing C(N, D) = 6ND earlier could help.",
+      "questions": "Could there be additional context on the novelty of this work relative to existing literature on model size effects?\n\nIs it possible to control inductive biases more rigorously, either quantitatively or qualitatively?\n\nIn Figure 1, what value does alignment saturation reach?\n\nIs “Utah” in l130 a reference or typo?\n\nWould increasing the benchmark sample size for V1, V2 make the results more robust?\n\nCould the paper benefit from additional discussion on neural versus behavioral alignment, and how better control of inductive biases might enhance interpretability?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper explores how varying model sizes impact neural and behavioral alignment, seeking insights into the relationship between model architecture and its ability to mimic human-like neural responses and behaviors."
+    }
+  ]
+}

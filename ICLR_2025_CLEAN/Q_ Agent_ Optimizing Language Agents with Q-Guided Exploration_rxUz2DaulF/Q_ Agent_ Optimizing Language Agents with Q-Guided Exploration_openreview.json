@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "rxUz2DaulF",
+    "forum": "rxUz2DaulF",
+    "title": "Q* Agent: Optimizing Language Agents with Q-Guided Exploration",
+    "authors": "Zongyu Lin, Yao Tang, Da Yin, Stuart X. Yao, Ziniu Hu, Yizhou Sun, Kai-Wei Chang",
+    "keywords": "agent, large language model, q-learning, self-training",
+    "abstract": "Language agents have become a promising solution to complex interactive tasks. One of the key ingredients to the success of language agents is the reward model on the trajectory of the agentic workflow, which provides valuable guidance during training or inference. However, due to the lack of annotations of intermediate interactions, most existing works use an outcome reward model to optimize policies across entire trajectories. This may lead to sub-optimal policies and hinder the overall performance. To address this, we propose Q\\*Agent, leveraging an estimated Q value to generate intermediate annotations for open language agents. \nBy introducing a reasoning tree and performing process reward modeling, Q\\*Agent provides effective intermediate guidance for each step. This guidance aims to automatically annotate data in a step-wise manner.\nBesides, we propose a Q-guided generation strategy that can significantly boost model performance by providing process guidance during inference.\nNotably, even with almost half the annotated data, Q\\*Agent retains strong performance, demonstrating its efficiency in handling limited supervision. We also empirically demonstrate that Q\\*Agent can lead to more accurate decision making through qualitative analysis.",
+    "pdf_link": "https://openreview.net/pdf/5434a7b772b44b3855e6a21b3e2399f481183afb.pdf",
+    "submission_date": "2024-09-28 09:59:04.601000"
+  },
+  "reviews": [
+    {
+      "note_id": "G6LQAsc3cu",
+      "replyto": "rxUz2DaulF",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-07 10:29:28.560000",
+      "modified": "2024-11-12 16:12:37.979000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14016/Reviewer_kPgp",
+      "actor": "Reviewer kPgp",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 2,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "The authors propose a method to train a language agent that achieves state-of-the-art performance.",
+      "weaknesses": "I have some questions about this work, which are mentioned in the Questions section below.",
+      "questions": "I am unsure whether I have fully understood this paper, so please let me know if I have any misunderstandings. I would be very happy to gain a complete understanding of your work.\n1. As mentioned in Section 2.2, Q\\*Agent appears to be closely related to Q\\*(Wang et al., 2024a) and the Q-value model enhanced (Zhai et al., 2024). In my understanding, based on your summary, I am uncertain whether adding a behavioral cloning stage is an important contribution. Could you provide a more detailed explanation of your contributions compared to these previous works?\n2. During the step 2 in Figure 1, Q\\*Agent stops exploring a branch’s nodes if the branch yields a zero reward. However, with this strategy, I wonder if Q\\*Agent disregards partially correct trajectories where only the final parts are incorrect.\n3. In Q-guided self-training, why does the Q\\*Agent algorithm not use the dataset collected during step 2 in Figure 1?\n4. In my understanding, the “exploration” steps, steps 2 and 4 in Figure 1, seem to be closer to exploitation rather than exploration. In RL literature, exploration typically aims to gather information about unknown parts of the environment. However, in this paper, both of these “exploration” steps use the best action based on current knowledge (reward of 1 or action with max Q), which generally aligns more closely with exploitation in RL. This terminology may be confusing for researchers who familiar with RL concepts.\n5. In the experimental section, there are no results for Q\\*(Wang et al., 2024a) or the Q-value model enhanced (Zhai et al., 2024). Is there any reason these algorithms were omitted?\n6. In the experimental section, performing SFT appears sufficient to achieve satisfactory results. Therefore, I am curious about the performance of Q\\*Agent when the SFT dataset shows poor performance, in order to observe the impact of RL.\n7. I am confused by the definitions of Q\\*Agent-ST and Q\\*Agnet-I. As I understand it, during step 4 in Figure 1, Q\\*Agent-ST involves using QNet to compute Q-values for m actions and selecting the best action, while Q\\*Agent-I refers to using action sampled from the agent without using QNet. If this is correct, then what is the purpose of QNet?\n\nMinor comment:\nThe notations in Appendix A.3 are somewhat confusing. The notations $\\mathcal{A}$, $\\mathcal{Q}$, and $q_m$ should be defined formally. Additionally, in line 7, $\\arg\\max$ is not used properly according to its definition.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a method to train a language agent, enabling it to handle complex tasks. To this end, the authors initialize the language agent via performing behavioral cloning on the collection of expert trajectories. Then, the authors utilize the supervised fine-tuned agent to explore the environment and collect trajectories. Using the collected trajectories, QNet is trained via Q-learning. Finally, Q-guided exploration is used to inference, and the Q\\*Agent is trained using SFT dataset and Q-guided trajectories. Based on this training steps, Q\\*Agent achieves state-of-the-art performance."
+    },
+    {
+      "note_id": "Jw0yFtqYgr",
+      "replyto": "rxUz2DaulF",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-06 02:21:50.434000",
+      "modified": "2024-11-12 16:12:37.966000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14016/Reviewer_7xr3",
+      "actor": "Reviewer 7xr3",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 1,
+      "strengths": "1. This paper introduced learning a Q function, which provides step-wise feedback instead of outcome-based rewards for the language agents. \n2. It proposed two ways of leveraging Q functions, one for selecting actions in inference and one for filtering data in training/finetuning.",
+      "weaknesses": "1. The experimental study is limited on one domain. It is unclear how effective the proposed method on other types of agent task, or even on other types of websites. \n\n2. The experimental study lacks discussion about related work. For inference-time self-improvement, the experiment only compared the proposed method with best-of-N and ignores a large body of related work on language agent. I think the following work need to be discussed and compared with the proposed method.\n - Some fundamental work on self-improvement on language agent, for example the Reflexion and LATS methods.\n - Some work use a trained model (not per-step) to provide feedback for self-improvement at the inference time. E.g. \"Autonomous Evaluation and Refinement of Digital Agents Jiayi Pan, Yichi Zhang, Nicholas Tomlin, Yifei Zhou, Sergey Levine, Alane Suhr\"\n - Some work use per-step feedback in self-improvement, without finetuning a separate Q functions, in language agent tasks. E.g. \"Tree Search for Language Model Agents Jing Yu Koh, Stephen McAleer, Daniel Fried, Ruslan Salakhutdinov\"\n\nWhen compare with methods without finetuning a new model, the paper also needs to justify the cost of finetuning additional model.\n\n3. It seems the base approach in the experimental study include common prompting methods such as CoT, few-shot, ReAct etc. It is unclear if the benefit of the proposed method is orthogonal, or covered by these basic prompting approaches for language agent.",
+      "questions": "1. Can you replace the illustrative example in Figure 2 with an example from (or more close to) the experimental study in this paper. This prevent it from over-claiming or misleading the applicability of the proposed method.\n2. Please use $Q^\\star$ instead of $Q^*$ to denote the optimal state-action value function.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces Q*Agent, a novel approach of building language agents through learning a Q function and use it to select action. Experimental results on the WebShop benchmark show that QAgent achieves strong performance and efficiency gains compared to baseline methods."
+    },
+    {
+      "note_id": "m0raPNTzwy",
+      "replyto": "rxUz2DaulF",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 23:37:04.598000",
+      "modified": "2024-11-12 16:12:37.949000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14016/Reviewer_eNPo",
+      "actor": "Reviewer eNPo",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 5,
+      "soundness": 2,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "This paper is well-motivated. The lack of process rewards is a significant challenge in agent tasks. The proposed method reduces the costs associated with obtaining high-quality data annotations.\n\nConsidering training step-level verifiers is demonstrated to be effective in LLM reasoning tasks, applying the approach to agent tasks is of great significance.",
+      "weaknesses": "The paper is poorly written, lacking many essential explanations and details. For example, in Section 4.4, the authors state, \"we also introduce augmenting action diversity with perturbation during this stage, which is realized by prompting LLM to paraphrase the task description,\" yet they do not provide any discussion on prompt implementation or examples of action diversity. The termination condition for the tree construction process is not clarified, and several definitions, such as $C_t$ in Equation (4), are missing.\nThe experimental setup also deeds further clarification. Some critical hyper-parameters, such as the discount factor $\\gamma$ for extracting Q-values is not listed. The metrics for performance in Table 1 are not explained. The sampling number per step of Q* Agent-I is not provided. \nFor visualization, the horizontal axis in Fig. 3(a) should indicate the number of sampled actions. Additionally, Fig. 3(b) lacks a label for the ordinate. \nOverall, there are too many issues with the paper to list them all here.\n\nThe versatility of the method needs to be verified in more agent tasks.\n\nEquation (3) is not the cross-entropy loss.\n\nLine 415: Table 2 is not organized into three sections.",
+      "questions": "In Section 5.5, how were the \"Averaged reward\" and \"Reward\" obtained during inference? I believe the average step-level reward is unavailable during inference.\n\nWhat the advantage of utilizing bellman equation to estimate Q-values compared to widely-used MCTS.\n\nThe authors state that the average depths of tree searching for agent tasks are large. Any specific statistics? The authors in [1] state that the average number of steps for Webshop is 6.8.\n\nReference:\n[1] Putta P, Mills E, Garg N, et al. Agent q: Advanced reasoning and learning for autonomous ai agents[J]. arXiv preprint arXiv:2408.07199, 2024.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper study a critical problem in agent scenarios: the absence of process rewards for each intermediate step. The authors propose an approach that involves three main steps: 1. collecting a large number of interaction trajectories by constructing a reasoning tree; 2. using Bellman's equation to estimate the expected Q of each step; and 3. training a QNet to estimate the process reward Q values for states and actions. The experiments validate the effectiveness of QNet in providing intermediate step rewards during both training and reasoning, demonstrating its ability to offer process-based guidance and improve agent performance compared to trajectory-based rewards."
+    },
+    {
+      "note_id": "z4Jix2W0SO",
+      "replyto": "rxUz2DaulF",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-26 12:47:16.688000",
+      "modified": "2024-11-25 09:30:37.027000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14016/Reviewer_gDbK",
+      "actor": "Reviewer gDbK",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "The main contribution of this paper lies in its ability to construct step-wise rewards for each step using an MCTS-like approach, based solely on the final reward. These rewards are then used to train a Q-value network to support decision-making at inference time.\nIn the overall algorithm design, after conducting SFT, the authors make a few adjustments to the MCTS. They utilize a “tree pruning” approach to reduce the search space and train a Q-value network based on calculated Q-values. This allows the Q-value network to guide the agent's decision-making at inference time by selecting actions that maximize the Q-value.",
+      "weaknesses": "+ **Algorithm Framework**: The core framework of this paper is derived from the MCTS, yet the authors did not evaluate or compare its relationship to MCTS.\n  + **Known Environment Assumption**: Unlike tasks such as mathematical reasoning, the interactive tasks in this paper require constructing a reasoning tree using the environment to achieve state transitions (i.e., generating the next state based on the current state and action). However, the authors did not discuss this assumption.\n  + **Tree Pruning**: The main improvement of this work over MCTS lies in tree pruning, considering the vast action space for LLM as a generative model. If a simulation fails to get a positive reward, Q* Agent discards the node that attempted to expand. This approach essentially explores a few trajectories that can reach the final goal within an enormous decision space and then performs Q-value extraction. However, for complex tasks that may require dozens of steps to reach the final goal (getting a positive final reward), the probability of finding a successful trajectory is exceedingly low, severely limiting the algorithm's applicability. The authors even restrict expansion to only the first three to five steps, making the algorithm suitable only for tasks requiring exploration at the very beginning of each episode.\n  + **Task-specific Q-value Network**: This method requires training a task-specific Q-value network for each task and using the corresponding network during decision-making, limiting the algorithm's generalization capability, which is a core advantage of LLMs (otherwise, a task-specific agent could be directly trained with RL). Using RL to train the LLM with this Q-function could mitigate this issue.\n  + **MDP Design**: The state definition includes the entire interaction history. When the interaction sequence becomes lengthy, this introduces a large number of tokens, further constraining the algorithm's performance on complex tasks.\n+ **Experimental Results**: Experimentally, the authors only compares the proposed method with some simple baselines on the WebShop benchmark. While it achieves some performance improvement, the improvement is relatively small. Other experimental results do support the effectiveness of the proposed Q-guided decision-making. However, no ablation studies were conducted on techniques like tree pruning, making the experiments insufficiently comprehensive.\n  + **Experimental Setup**: Only WebShop is selected as the experimental platform, limiting the results' credibility. The authors also do not show variance or the number of test episodes, making it difficult to assess the impact of randomness on the results, especially given the small performance improvement.\n  + **Limited Experimental Content**: It is recommended that the authors conduct ablation studies on techniques in the tree construction phase, particularly on stop expansion and the \"early stage\" length in tree pruning.",
+      "questions": "Please refer to the weaknesses.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors propose an LLM agent algorithm based on Q-value-guided training and inference-time decision-making to tackle complex interactive (decision-making) tasks. The primary motivation is to provide more efficient feedback to the agent through step-wise rewards. By integrating the LLM agent within an MCTS-like framework, the approach optimizes the LLM agent, addressing the issue of sparse rewards that arise from solely using trajectory rewards in existing algorithms."
+    }
+  ]
+}

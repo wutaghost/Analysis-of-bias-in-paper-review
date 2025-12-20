@@ -1,0 +1,92 @@
+{
+  "paper": {
+    "id": "mMXCMoU95Y",
+    "forum": "mMXCMoU95Y",
+    "title": "CAuSE: Post-hoc Natural Language Explanation of Multimodal Classifiers through Causal Abstraction",
+    "authors": "Dibyanayan Bandyopadhyay, Soham Bhattacharjee, Asif Ekbal",
+    "keywords": "Interpretability, Causal Abstraction, Multimodality, Classification",
+    "abstract": "The increasing integration of AI models in critical areas, such as healthcare, finance, and security has raised concerns about their black-box nature, limiting trust and accountability. To ensure robust and trustworthy AI, interpretability is essential. In this paper, we propose CAuSE (Causal Abstraction under Simulated Explanation), a novel framework for post-hoc explanation of multimodal classifiers. Unlike existing interpretability methods, such as Amnesic Probing and Integrated Gradients, CAuSE generates causally faithful natural language explanations of fine-tuned multimodal classifiers' decisions. CAuSE integrates Interchange Intervention Training (IIT) within a Language Model (LM) based module to simulate the causal reasoning behind a classifier's outputs. We introduce a novel metric Counterfactual F1 score to measure causal faithfulness and demonstrate that CAuSE achieves state-of-the-art performance on this metric. We also provide a rigorous theoretical underpinning for causal abstraction between two neural networks and implement this within our CAuSE framework. This ensures that CAuSE’s natural language explanations are not only simulations of the classifier’s behavior but also reflect its underlying causal processes. Our method is task-agnostic and achieves state-of-the-art results on benchmark multimodal classification datasets, such as e-SNLI-VE and Facebook Hateful Memes, offering a scalable, faithful solution for interpretability in multimodal classifiers.",
+    "pdf_link": "https://openreview.net/pdf/91e326ff4a75b92525c1fbcd1aee530442d10797.pdf",
+    "submission_date": "2024-09-28 09:50:56.849000"
+  },
+  "reviews": [
+    {
+      "note_id": "2SHgzL8Lsn",
+      "replyto": "mMXCMoU95Y",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-09 04:26:24.149000",
+      "modified": "2024-11-12 16:15:57.796000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14003/Reviewer_4JtQ",
+      "actor": "Reviewer 4JtQ",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "+ The paper introduces a novel loss function to jointly train for generating natural language explanations and classifying with causal guarantees.\n+ The authors provide theoretical results under specific assumptions that guarantee causal abstraction between the classifier we want to explain and the machinery used to generate faithful natural language explanation.\n+ The authors provide reasonable baseline comparisons to VLM-based methods.\n+ The paper includes empirical validation for the need for multiple components in the loss function to generate coherent and faithful natural language explanations.\n+ The authors include case studies for both when the framework succeeds and fails to provide coherent and faithful explanations, giving some insights into the capabilities and drawbacks of the CAuSE framework.\n+ The architecture diagrams provide helpful intuition on how the CAuSE framework works.",
+      "weaknesses": "+ The assumptions for Theorem 1 and 2 are restrictive and specifically require that the classifiers $\\mathcal{C}_1$ and $\\mathcal{C}_2$ share identical weights.\n+ The Counterfactual F1 score only accounts for the classifier $\\mathcal{C}_2$, without assessing the causal faithfulness of the LLM machinery $\\phi_2$ used to generate explanations. As a result, the conclusion drawn from the Counterfactual F1 score between the CAuSE framework and VLM-based baselines is unclear, making it difficult to determine if CAuSE achieves state-of-the-art results in causal faithfulness.\n+ Some architecture designs and choices for loss function components are insufficiently justified. (See Questions for questions about the motivation of specific choices)\n+ The authors identify scaleability as a challenge in prior methods (e.g., Amnesic Probing), but do not discuss scalability for the CAuSE framework.\n+ The paper’s structure hinders linear reading, with multiple references to sections and tables that appear much later. Additionally, the distance between when a choice is introduced and when it is justified makes it challenging to follow.\n+ Figures 1 and 2 would benefit from larger font sizes and detailed captions to enhance readability and comprehension of the CAuSE framework.",
+      "questions": "+ Line 103: Other than for practical reasons, what is the theoretical motivation for $\\phi_1$ and $\\phi_2$ to share the same weights?\n+ Line 106: How exactly is representation $c$ broken into two components $c_0$ and $c_1$?\n+ Line 152, 255, and 272: What motivates the need for both the cross entropy loss $L_C$ and the teacher-student loss $L_{TS}$ in the loss function\n+ Line 182: Where does the linguistically infused representation $\\hat{c}$ is used in the CAuSE framework?\n+ Line 305: Given that Theorem 2 includes the LLM machinery, does the Counterfactual F1 score include the LLM machinery $\\phi_2$? If not, how may one include $\\phi_2$ in the Counterfactual F1 score, and how may it impact the causal faithfulness measure of the CAuSE framework?\n+ Table 2: Why does CAuSE framework often produce gibberish text when provided with counterfactual inputs and some components of the loss function are removed? Is this problem present in the VLM-based baselines?\n+ Section 4.2.2: Are there some statistics on how common these errors tend to occur in CAuSE?\n+ Appendix C: What is the motivation for restricting the VLM explanation to one sentence?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper presents a novel framework to produce explanations for multimodal classifiers. The framework addresses several shortcomings of existing methods, aiming to produce natural language, causally faithful, and task-agnostic explanations. The authors provide theoretical guarantees on causal abstraction of their framework under specific assumptions. The authors introduce the Counterfactual F1 score as a proxy for causal faithfulness in multimodal classifier's explanations. The paper includes empirical comparisons to VLM-based baseline methods and justification for different components in their novel loss function, using well-established datasets e-SNLI and Facebook Hateful Memes."
+    },
+    {
+      "note_id": "pyGyWjSwpU",
+      "replyto": "mMXCMoU95Y",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 11:22:20.265000",
+      "modified": "2024-11-12 16:15:57.278000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14003/Reviewer_cVSQ",
+      "actor": "Reviewer cVSQ",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "- The paper investigates an important area of generating faithful natural language explanations for visual language models.\n- The paper proposes a causality-based approach for improving the faithfulness of explanations.",
+      "weaknesses": "- The paper does not adequately validate the faithfulness of the generated explanations. More thorough investigation is needed to support the claims.\n- The evaluation metric is not sufficient to validate the faithfulness of explanations.\n- The paper lacks motivation for design choices in several components of the proposed method.\n- The paper suffers from unclear explanations of key components, making it difficult to follow some methodological details.",
+      "questions": "- Does the post-hoc classifier need to be trained from scratch with the language models, or can this method be used to interpret pre-trained models?\n- In Figure 1, the multimodal encoder appears not to take any text input, which contradicts the description in Section 2.1.\n- Why are two language models needed? What is the purpose behind training an LM to reconstruct the input text? Although discussed in ablation studies, the explanation feels rather post-hoc.\n- In Equations (2) and (3), is using only the previous token sufficient for next token prediction?\n- According to the definition, x_{i-1} should be the ground-truth token, which does not match the autoregressive generation scheme depicted in Figure 1.\n- Does sum pooling offer advantages over average pooling, particularly when text lengths vary significantly between samples?\n- Is the training conducted end-to-end in a single phase? The training process should be described more clearly.\n- How is c_hat from Section 3.1 utilized in this work?\n- Counterfactual F1 is not explicitly referenced in any table.\n- In Algorithm 1, how is the return value for \"Calculate Counterfactual F1 score\" determined? The origin of F1 and the definition of the score function are unclear.\n- How does the causal abstraction in this method address the limitations mentioned in the Introduction, such as \"models injecting their own biases and opinions\"? Are there any experimental results supporting the faithfulness of the generated explanations, especially\nwhen the model makes incorrect decisions?\n- How are baseline methods generating natural language explanations? Did you include groundtruth explanations in the few-shot prompts? Additionally, the paper would benefit from comparing to more sophisticated baselines, such as Chain-of-Thought (CoT) prompting, to better elicit the decision-making process.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces the CAuSE framework for generating post-hoc natural language explanations for multimodal classifiers by leveraging causal abstraction. The proposed method aims to provide causally faithful explanations, evaluated using the proposed Counterfactual F1 score. Experiments are conducted on two visual-textual classification tasks:e-SNLI-VE and Facebook Hateful Memes."
+    },
+    {
+      "note_id": "3csHFEDoHL",
+      "replyto": "mMXCMoU95Y",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 15:51:37.084000",
+      "modified": "2024-11-12 16:15:57.250000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14003/Reviewer_s4tx",
+      "actor": "Reviewer s4tx",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 1,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "- The paper makes strides on a relevant topic (NLEs for VLMs). Much work appears to have gone into architectural/training design.\n- The subject area is one of importance. Many results are amassed.",
+      "weaknesses": "- While the paper seems to make good theoretical strides, it is nearly impossible to evaluate the given method against relevant baselines. The paper does verify that this is the first method of its type to compute NLEs directly from a classifier's hidden state. However, it does lack comparison against any other methods (black box or not) that would help significantly.\n- Readability is a major problem in the paper. Definitions and diagrams are piled somewhat haphazardly atop one another. Occasionally, vague justifications are used i.e. *Recent studies (Madsen et al., 2024) have highlighted these faithfulness issues, revealing inconsistencies when models are further probed* (not enough room is given for exposition).\n- The claims are elaborate in the paper (such as state-of-the-art performance on the justification that no other methods exist, as above), but the experimental evaluation is too small to justify such claims. I would recommend toning these down to some degree: *this ensures that CAuSE’s natural language explanations are not only simulations of the classifier’s behavior but also reflect its underlying causal processes*- How is it ensured? The paper later shows failure cases, which makes this statement confusing and the claim to be slightly too strong.\n- Typo: L49 *Visual Language Models*",
+      "questions": "- Why exactly are we unable to compare the method against other baselines? Please elaborate.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a new framework for natural language explanations (NLEs) of Vision Language Models (VLMs). It introduces a new metric, counterfactual F1 score with which to self-assess its method."
+    }
+  ]
+}

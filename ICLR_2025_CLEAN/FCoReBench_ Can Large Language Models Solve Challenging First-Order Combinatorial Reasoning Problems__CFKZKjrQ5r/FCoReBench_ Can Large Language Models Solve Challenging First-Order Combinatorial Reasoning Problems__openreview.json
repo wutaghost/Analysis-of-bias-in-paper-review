@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "CFKZKjrQ5r",
+    "forum": "CFKZKjrQ5r",
+    "title": "FCoReBench: Can Large Language Models Solve Challenging First-Order Combinatorial Reasoning Problems?",
+    "authors": "Chinmay Mittal, Krishna Kartik, Parag Singla, Mausam .",
+    "keywords": "llms, logical-reasoning, first-order-reasoning, neuro-symbolic",
+    "abstract": "Can the large language models (LLMs) solve challenging first-order combinatorial\nreasoning problems such as graph coloring, knapsack, and cryptarithmetic? By\nfirst-order, we mean these problems can be instantiated with potentially an infinite\nnumber of problem instances of varying sizes. They are also challenging being\nNP-hard and requiring several reasoning steps to reach a solution. While existing\nwork has focused on coming up with datasets with hard benchmarks, there is\nlimited work which exploits the first-order nature of the problem structure. To\naddress this challenge, we present FCoReBench, a dataset of 40 such challenging\nproblems, along with scripts to generate problem instances of varying sizes and\nautomatically verify and generate their solutions. We first observe that LLMs, even\nwhen aided by symbolic solvers, perform rather poorly on our dataset, being unable\nto leverage the underlying structure of these problems. We specifically observe\na drop in performance with increasing problem size. In response, we propose a\nnew approach, SymPro-LM, which combines LLMs with both symbolic solvers\nand program interpreters, along with feedback from a few solved examples, to\nachieve huge performance gains. Our proposed approach is robust to changes in the\nproblem size, and has the unique characteristic of not requiring any LLM call during\ninference time, unlike earlier approaches. As an additional experiment, we also\ndemonstrate SymPro-LM’s effectiveness on other logical reasoning benchmarks.",
+    "pdf_link": "https://openreview.net/pdf/172050f37f36995a59fbe04e04313cf5e4285f5e.pdf",
+    "submission_date": "2024-09-28 10:45:04.249000"
+  },
+  "reviews": [
+    {
+      "note_id": "qYupyjHyg2",
+      "replyto": "CFKZKjrQ5r",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 05:35:09.170000",
+      "modified": "2024-11-12 16:37:04.872000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14114/Reviewer_yJYh",
+      "actor": "Reviewer yJYh",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 2,
+      "soundness": 2,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "- The problems covered in FCoReBench are relatively comprehensive, highlighting a valuable research direction. It would be interesting to see more generalized problems to be addressed once VLM are taken into consideration.\n- A corresponding responce framework has been developed for the issue proposed, and the experimental results are promising.\n- The experimental section in section 7 features thorough verification and comprehensive chart presentations.\n- The discussion in section 8 is insightful. It would be benificial to list the problems in each situation in the appendix, and even better, to illustrated them with diagrams in the main text. This would help to elucidate the dataset's relevance to the central issue.",
+      "weaknesses": "- The construction part of the dataset issue in Section 4 requires manual labor, which is quite labor-intensive. Could it be automated using LLM?\n- The current agent can only solve first-order logic. Higher-order logic requires individual generation, which is resource-intensive and difficult to scale.\n- There is a lack of innovation in the proposed framework SymPro-LM, which merely combines existing symbolic solvers and program generation. It would be better to consider a more specific design.\n\nWriting aspects:\n- There are issues with the section layout and organization; the section titles are inconsistent and not uniformly formatted (e.g. section 5 and 5.1, section 7 and 7.1). The table layout on page 7 is also peculiar.\n- The overall language used in writing is subpar, being rather colloquial and informal. E.g.:\n  - In Section 3, as a problem definition, there should not be such an emphasis on the subject \"We.\" The problem should be described objectively and rigorously from a third-party perspective.\n  - In Section 4, the term \"the author\" should be used less frequently to avoid potential privacy issues. Instead, use \"agent\" or \"process\" to emphasize actions rather than the actors, which would be more formal. If necessary, flowcharts can also be used to represent the selection, polishing, and construction processes, which would greatly assist readers in understanding the overall procedures.\n- This paper primarily focuses on the benchmark, as emphasized in the title; thus, the experimental section should mainly focus on verifying the performance of the benchmark in various aspects. The current writing approach is centered around SymPro-LM. If this focus is to be maintained, the emphasis of the entire article should be placed on SymPro-LM.",
+      "questions": "- I do not understand the sentence in page 3, line 122: \"These dataset are not first-order i.e. each problem is accompanied with a single instance (despite the rules potentially being described in first-order logic).\"\n- In page 3 line 151, does the training data $\\mathcal{D}_\\mathcal{P}$ condition on the previous $\\mathcal{C}$ given by different problems? In my understanding, different $(x, y)$ pair may have different $\\mathcal{C}$.\n- In page 4 line 179-181: \"The rules were re-written to ensure that an LLM cannot easily invoke its prior knowledge about the same problem. For the same reason, the name of the problem was hidden.\" Why can't let LLM be aware of the given problem catagory?\n- In page 4 line 191: \"did not contain any formal specifications or mathematical formulas\" I don't know why this rule is set.\n- In the last paragraph of section 4, why does the instances in the test set are typically larger in size than those in training? Also, why does the number of instances in test dataset smaller than those in the train dataset?\n- In section 5.1, what is the \"training\" object of SymPro-LM? More specifically, this framework does not need any nn training. What does it optimize during iterations?\n- In page 6 line 318, why do you use different temperature on different solvers? Could you explain the detailed reason?\n- In page 7 line 349, what is the \"random\" approach here?\n- Some typos:\n  - In page 3 line 149: \"We are also provided\" -> \"We also provides\"\n  - In page 4 line 213: \"which takes as input\" -> \"which takes input as\"\n  - In page 5 line 266: \"This step is need\" -> \"This step is needed\"\n  - In page 10 line 504: \"but after\" -> \"only after\"",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper focuses on the problem-solving ability of LLM on first-order combinatorial problems in natural language form, arguing that no existing benchmark could reveal this challange properly. To stress the significance of this issue, this paper proposes a new benchmark, FCoReBench, which covers 40 challanging problems in varying sizes and correspounding solutions. In responding to the poor performance of current LLMs on FCoReBench, this paper further proposes a new framework, SymPro-LM, to push forward the potential capacity of language models by combining symbolic solvers, program interpreters and the LM backbone. The experimental results show a significant improvement in various aspects, indicating the valuable attempt of assembling different augmented modules."
+    },
+    {
+      "note_id": "Lv0QQEQxcr",
+      "replyto": "CFKZKjrQ5r",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 20:50:46.533000",
+      "modified": "2024-11-12 16:37:04.847000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14114/Reviewer_fByT",
+      "actor": "Reviewer fByT",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "The proposed SymPro-LLM can work with different instances from the same first order combinatorial optimization problem without the need to re-evaluate using LLMs.\n\nThe proposed dataset is difficult for existing LLMs. The instances are based on combinatorial reasoning problems, which are mostly NP-Hard problems.\n\nThe proposed dataset is lifted such that unlimited new instances can be generated.",
+      "weaknesses": "While I find the proposed approach of using LLM to output program to formulate models interesting, I am not convinced the experimentations conducted provide enough insight to LLM reasoning abilities. From the examples shown in figure 2, NL(C), NL(X), NL(Y) seems to be pseudo code for formulating the problem. The task of the LLM therefore becomes translating the pseudo code to python, which does not require the same level of reasoning as solving the problems.\n\nThe paper does not evaluate enough existing models for the new proposed benchmark dataset. For example, the state-of-the-art GPT-4o and GPT-o1 are not evaluated. The paper also include limited analysis of why the existing approaches fail on the proposed dataset. \n\nThe writing and presentation require more clarity and focus. For example, section 7 presents results across different LLM models, different frameworks/styles of prompting, different datasets/problem classes, and different experimental setups. It is unclear to me what the key takeaways from these results are.",
+      "questions": "Is there a possibility of data contamination, where the LLMs have seen these combinatorial optimization problems in their training data, and therefore know how to formulate them easily? \n\nDo you have further insights on why Logic-LM performance is so much worse in Table 1? It is also formulating the model and offloading the reasoning to a solver similar to the proposed framework.\n\nTable 1: Considering the NP-Hard nature of the problems, how come random guess achieves over 20% accuracy? What are your expectations for the eventual performance of LLMs on this dataset?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "Introduces FCoReBench which consists of generators and evaluators for 40 combinatorial optimization problems such as sudoku, graph coloring etc. Evaluates existing prompting approaches and LLM augmentation approaches on the dataset. Proposes a new framework SymPro-LLM which when given a problem, output a program that converts the problem to symbolic representation, which is then passed to a symbolic solver to get the solution."
+    },
+    {
+      "note_id": "NuEKmUJR8i",
+      "replyto": "CFKZKjrQ5r",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-29 01:10:52.919000",
+      "modified": "2024-11-12 16:37:04.835000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14114/Reviewer_8qGB",
+      "actor": "Reviewer 8qGB",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "Using LLM to solve logic puzzles and combinatorial problems is a very important and interesting direction. This paper contributes a well-established dataset for this field which can be valuable to the research community. The paper also proposes a framework that combines extant solvers such as Z3 with LLMs. The experiment results seem convincing and promising.",
+      "weaknesses": "1. The name \"first order\" is a bit confusing. Does it mean it is related to first-order logic? If so, it would be great to elaborate on this connection. Otherwise, a more detailed definition should be provided. It is not clear from the paper what the difference is between first-order problems and second-order ones.\n\n2. Whether the level of contribution of this paper meets the standard of ICLR is questionable. It is not clear whether this paper proposed novel methodologies. The main contribution according to the paper seems to be the establishment of a dataset.\n\nMinor: The fonts in Figure 4 should be larger.",
+      "questions": "What is the difference between first-order and non-first-order problems?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces FCoReBench, a benchmark designed to evaluate the capabilities of LLMs in solving first-order combinatorial reasoning problems. The benchmarks include NP-hard problem instances like graph coloring and knapsack, with varying instance sizes. Current LLMs struggle with these tasks, particularly as the problem size increases. To address this limitation, this paper proposes SymPro-LM, a hybrid approach that combines LLMs with symbolic solvers, enhancing performance by leveraging the strengths of both methods. \n\nThe proposed approach achieved a 21.61% improvement over few-shot prompting, a 3.52% improvement over Program-aided Language models (PAL), and a 16.83% enhancement over Logic-LM. Additionally, incorporating feedback from solved examples boosts SymPro-LM's performance by 21.02% after four rounds, compared to 12.5% for PAL. SymPro-LM also excels on three non-first-order logical reasoning benchmarks, outperforming existing baselines on two datasets and remaining competitive on the third, highlighting the effectiveness of integrating LLMs with symbolic solvers."
+    },
+    {
+      "note_id": "T9sKJ71W2M",
+      "replyto": "CFKZKjrQ5r",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-27 18:20:14.020000",
+      "modified": "2024-11-12 16:37:04.711000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14114/Reviewer_3HGQ",
+      "actor": "Reviewer 3HGQ",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "The paper aims to address an important problem. The proposed approach is conceptually sound, and the experimental results indicate promising improvements in the reasoning capabilities of LLMs when using the technique.",
+      "weaknesses": "This paper has several critical issues that require the authors' attention:\n\n1. Misalignment Between Title and Content: While the title suggests a focus on the proposed problem set, the main body primarily discusses the technique, SymPro-LM. After reviewing the entire paper, it appears more as a technique paper rather than a benchmark paper. I suggest revising the title and reorganizing the structure to more accurately reflect its focus on methodology.\n\n2. Lack of Clarity on Incremental Contributions of the Problem Set: Although the problem set seems useful, the paper does not clearly articulate its unique contribution. Existing symbolic-solver-aided LLM approaches have already addressed similar reasoning problems, and some may have been tested on benchmarks containing first-order combinatorial reasoning problems. It is essential to compare the proposed problem set with these existing benchmarks, highlighting overlaps and differences. However, this paper provides limited detail on this aspect.\n\n3. Scope Restriction and Generalizability of the Technique: While the paper narrows its focus to first-order combinatorial reasoning problems, conceptually, the proposed technique has broader applicability across various reasoning tasks. Given the absence of any domain-specific adaptations, I recommend either expanding the paper’s scope and conducting a more comprehensive evaluation across diverse reasoning problems, or explaining the reason of the scope restriction.\n\n4. Use of an Outdated LLM in Evaluation: The LLM used in the evaluations appears a bit outdated. I suggest incorporating recent models, such as GPT-4o and o1, to provide a more relevant assessment.\n\n5. Unclear Criteria for Problem Selection in the Problem Set: The criteria for including specific problems in the problem set are not well-defined. For example, while the paper includes problems from the industry track of SAT competitions, it does not explain the exclusion of others (e.g., the main track). Furthermore, recent SAT competitions no longer feature an industry track, making the rationale for this selection unclear.",
+      "questions": "What is the criteria of problem selection?\nWhat is the overlap and difference between your problem set and existing problem set?\nWhy does the paper restrict its scope within first-order combinatorial reasoning problems?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces a problem set designed to assess LLMs' ability to solve first-order combinatorial reasoning problems. It argues that current symbolic-solver-aided LLMs perform poorly on this problem set and proposes a novel approach that combines a symbolic solver with a program interpreter to improve reasoning capabilities, demonstrating superior performance on the problems."
+    }
+  ]
+}

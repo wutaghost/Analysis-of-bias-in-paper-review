@@ -1,0 +1,13 @@
+{
+  "paper": {
+    "id": "gTwD366p5I",
+    "forum": "gTwD366p5I",
+    "title": "VisualCoder: Guiding Vision Language Models in Code Execution with Fine-grained Chain-of-Thought Reasoning",
+    "authors": "Cuong Le Chi, Chau Truong Vinh Hoang, Phan Nhật Huy, Dung D. Le, Tien N Nguyen, Nghi D. Q. Bui",
+    "keywords": "Multimodal Large Language Models, Control Flow Graphs, Visualized Code Representation, Code Execution Reasoning, Fault Localization, Program Repair",
+    "abstract": "Predicting program behavior and reasoning about code execution remain significant challenges in software engineering, particularly for large language models (LLMs) designed for code analysis. While these models excel at understanding static syntax, they often struggle with dynamic reasoning tasks. We introduce VisualCoder, a novel approach that enhances code reasoning by integrating multimodal Chain-of-Thought (CoT) reasoning with visual Control Flow Graphs (CFGs). By aligning code snippets with their corresponding CFGs, VisualCoder provides deeper insights into execution flow, enabling more accurate predictions of code behavior. Our experiments demonstrate that augmenting LLMs with visual CFGs significantly outperforms text-based CFG descriptions in code reasoning tasks. We address challenges in multimodal CoT integration through a reference mechanism, ensuring consistency between code and its execution path, thereby improving performance in program behavior prediction, error detection, and output generation.",
+    "pdf_link": "https://openreview.net/pdf/547e28f32d321e07f2bac6032b07efc2e05e7cd1.pdf",
+    "submission_date": "2024-09-28 09:47:05.945000"
+  },
+  "reviews": []
+}

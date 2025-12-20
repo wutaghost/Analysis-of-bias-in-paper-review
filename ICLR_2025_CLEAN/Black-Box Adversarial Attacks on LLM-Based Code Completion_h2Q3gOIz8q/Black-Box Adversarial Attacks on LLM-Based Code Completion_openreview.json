@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "h2Q3gOIz8q",
+    "forum": "h2Q3gOIz8q",
+    "title": "Black-Box Adversarial Attacks on LLM-Based Code Completion",
+    "authors": "Slobodan Jenko, Jingxuan He, Niels Mündler, Mark Vero, Martin Vechev",
+    "keywords": "code completion, security, code security, adversarial attacks, black-box, large language models",
+    "abstract": "Modern code completion engines, powered by large language models (LLMs), assist millions of developers with their impressive capabilities to generate functionally correct code. As such it is crucial to investigate their security implications. In this work, we present INSEC, the first black-box adversarial attack designed to manipulate modern LLM-based code completion engines into generating vulnerable code. INSEC works by injecting an attack string as a short comment in the completion input. The attack string is crafted through a query-based optimization procedure starting from a set of initialization schemes. We demonstrate INSEC's broad applicability and effectiveness by evaluating it on various state-of-the-art open-source models and black-box commercial services (e.g., OpenAI API and GitHub Copilot). We show that on a diverse set of security-critical test cases covering 16 CWEs across 5 programming languages, INSEC significantly increases the rate of generated insecure code by ~50%, while upholding the engines' capabilities of producing functionally correct code. Moreover, due to its black-box nature, developing INSEC does not require expensive local compute and costs less than 10 USD by querying remote APIs, thereby enabling the threat of widespread attacks.",
+    "pdf_link": "https://openreview.net/pdf/9bea65882121df8a5032321238c56dd92b4901a8.pdf",
+    "submission_date": "2024-09-28 09:22:44.638000"
+  },
+  "reviews": [
+    {
+      "note_id": "RuOpTcY2SV",
+      "replyto": "h2Q3gOIz8q",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 09:25:22.489000",
+      "modified": "2024-11-12 16:19:11.184000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13941/Reviewer_Xra8",
+      "actor": "Reviewer Xra8",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "1. The paper proposes a practically realizable attack scenario on code completion engines.\n2. The proposed method for generating attacks is very cheap and simple to replicate.\n3. Authors evaluate their proposal fairly well by performing several ablations.\n4. Authors come up with a new dataset, which will be useful for the research community (when open sourced)",
+      "weaknesses": "1. The authors only evaluate on their own dataset. Since the problem of getting code LMs to output vulnerable code is a well studied problem, surely there are existing datasets that can complement this evaluation. The dataset prepared here is based on HumanEval and therefore is not necessarily aligned with real coding scenarios (e.g., HumanEval problems are short). Whereas in reality, users work with one or more files and the extension uses RAG to stuff context from multiple places into the prompt. The authors can consider basing their evaluations based on other benchmarks that are closer to the real-world setting of code completion, such as repocoder (https://arxiv.org/abs/2303.12570) and repobench (https://arxiv.org/abs/2306.03091). While that would definitely make functional-correctness evaluation challenging, it would significantly strengthen the paper.",
+      "questions": "N/A",
+      "ethics_flag": [
+        "Yes, Privacy, security and safety"
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper proposes a practical attack on code completion tools like Github Copilot. The authors insist (rightly so) that other attacks on code completion tools assume access to the training dataset, which is rather complicated to get, instead the paper treats these models as black boxes, and assumes access to the API (e.g., via malicious IDE extensions). The key idea is to simply insert a comment in the prompt, throwing the model off and getting it to generate vulnerable code. The paper describes a method to come up with such comments and extensively evaluates their method on different code completion tools/models. For evaluation, the authors come up with their own datasets inspired by HumanEval in order to measure both correctness and vulnerability (detected using CodeQL). Furthermore, authors perform a good number of ablations to evaluate the effectiveness of their design/heuristic choices."
+    },
+    {
+      "note_id": "2GweMexuYC",
+      "replyto": "h2Q3gOIz8q",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 06:55:29.641000",
+      "modified": "2024-11-30 03:45:39.165000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13941/Reviewer_384H",
+      "actor": "Reviewer 384H",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "- INSEC is evaluated on a range of programming languages and CWEs, showing a high rate of vulnerability generation and maintaining close-to-original functional correctness.\n- The paper presents some interesting findings. For example, better completion engines (bigger LLMs) retain more functional correctness under the attack.\n- Detailed ablation study on each component of INSEC.",
+      "weaknesses": "- **Dataset**: the reference solutions are generated by GPT-4 for languages other than Python.\n  - There are existing extension to HumanEval, such as HumanEval-X [1] that includes human-crafted data samples and solutions in Python, C++, Java, JavaScript, and Go.\n- The vulnerability metric is not rigorous enough, and thus may not truly reflect the attack success rate. CodeQL could make mistakes in vulnerability judgment (line 318-319) as prior work highlights the low precision and high false alarm rates common in static analysis tools [2].\n  - Some verification is needed to confirm the vulnerability. For example, combine static analysis with dynamic testing or manual code review for a subset of samples. Alternatively, a combination of several vulnerability detection methods can be applied to lower false positives. Discuss the potential impact of false positives on the results.\n- Additional evaluation could enhance the analysis, including testing out-of-distribution code samples (see Questions) and assessing robustness across various prompts.\n  - For example, if the user specify \"generating secure code\" in the prompt, would the vulnerability ratio decrease?\n- Presentation and readability could be improved\n  - Define CWE upon its first use (Line 89).\n  - The problem set-up paragraphs (Section 1 - 3) are lengthy and contain some redundant information (e.g., lines 68-70 and 167-169).\n  - As INSEC only modifies the prefix for best performance, it should be made clear in the threat model description (line 159-160): 'INSEC modifies only the prefix p, leaving the suffix s unchanged.'\n  - Consider incorporating the details and breakdown of the five programming languages and 16 CWEs into the main text for clarity.\n\n[1] Qinkai Zheng et al. Codegeex: A pre-trained model for code generation with multilingual benchmarking on humaneval-x. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining, KDD ’23, pp. 5673–5684, New York, NY, USA, 2023. \n\n[2] Hong Jin Kang, Khai Loong Aw, and David Lo. Detecting false alarms from automatic static analysis tools: How far are we? In Proceedings of the 44th International Conference on Software Engineering, pp. 698–709, 2022.",
+      "questions": "1. The attack strings pool and the exact attack string to inject are highly dependent on the training and validation sets (historical data). Would the attack success rate drop significantly if the test code were out-of-distribution, such as when using new API calls? Could randomization, rather than selecting the top string from the validation set, improve generalizability?\n2. **Design Choices:** How were the following values chosen, and could different values impact the attack success rate?\n   - \"During evaluation, we generate 40 completions for each task and compute func rate@1 and func rate@10\" (Line 302)\n   - \"generate 100 completion samples for each task\" (Line 316)\n3. Does the performance on vulnerability generation and functional correctness vary across different programming languages and CWEs?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes INSEC, a black-box adversarial attack designed to trick LLMs to generate vulnerable code. Evaluation on 5 programming languages and 16 CWEs show that INSEC can increase the rate of generating insecure code by ~50% while maintaining high functional correctness."
+    },
+    {
+      "note_id": "bEUBboy7qs",
+      "replyto": "h2Q3gOIz8q",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 19:46:35.229000",
+      "modified": "2024-11-26 22:50:05.440000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13941/Reviewer_Jqc8",
+      "actor": "Reviewer Jqc8",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "- This paper proposes INSEC, a new black-box adversarial attack to real-world code completion systems.\n- Extensive experiments include vulnerability and functional correctness metrics, demonstrating INSEC's efficacy across seceral LLM-based engines.",
+      "weaknesses": "- The practicality of the proposed threat model for code LLMs could be further clarified.\n\nFirst, while the adversarial attack demonstrates a creative approach, its real-world applicability may be limited. This is because the attack relies on embedding a specifically crafted comment adjacent to the exact code snippet that the user wants completed. In real scenarios, users will not attack the code LLM to generate vulnerable code for themselves. Even if an attacker were to attempt this, the suggested deployment methods in the paper, such as malicious IDE plug-ins or other input control techniques, may face practical challenges. In dynamic or interactive environments, where code is generated line by line, integrating a crafted comment seamlessly within existing code snippets might be difficult. This differs from prompt-response interactions typical of natural language LLMs, where such manipulations might be simpler to execute covertly.\n\nAdditionally, even if the attack succeeds in generating vulnerable code, static analysis tools commonly used before code deployment may readily detect these vulnerabilities. Given that code undergoes security scanning, this could limit the attack's effectiveness. \n\n- Selection and Mutation Strategy.\n\nThe approach of using selection and mutation strategies, while effective, is not entirely novel for adversarial attacks on code LLMs. Similar techniques have been applied in other adversarial attack settings, such as [1]. Additionally, while CodeQL was selected as the primary vulnerability detection tool, not all static analysis tools cover the full spectrum of CWEs. It may be worth considering alternative or additional tools to provide a broader assessment of the attack's impact.\n\n- It appears that no defense strategies are discussed in the paper. \n\n[1] Yang, Z., Shi, J., He, J. and Lo, D., 2022, May. Natural attack for pre-trained models of code. In Proceedings of the 44th International Conference on Software Engineering (pp. 1482-1493).",
+      "questions": "- In Figure 2 and Figure 3(a), the first part of each figure appears to be under the same settings, yet the results show slight differences (74 vs. 73, and 78 vs. 77). Could it be clarified if there are any specific reasons behind these discrepancies?\n- In the “without comment” setting, it appears that the crafted comment is inserted without the comment symbol. My concern is that without this symbol, the inserted string could interfere with the generated code's functionality by introducing compilation errors. This might make the setting less realistic or impactful, and I would appreciate any clarification on how this potential issue is addressed.\n- Have the paper investigated whether the crafted comment has transferability? Specifically, could a comment crafted for one model effectively trigger vulnerabilities in other models?\n- Are there any discussions on defense mechanisms against this attack? I imagine that standard static analysis tools or even simpler measures, like filtering out all comments, could mitigate this attack effectively. Additionally, have the paper considered adaptive attacks that might bypass straightforward defenses?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces INSEC, a black-box adversarial attack targeting large language models (LLMs) for code completion, specifically aiming to manipulate these models into generating vulnerable code. The attack operates by injecting a crafted comment as a prompt, subtly influencing the model's output toward insecure code. Evaluations across multiple state-of-the-art models, including open-source engines and black-box commercial APIs like GitHub Copilot and GPT-3.5-Turbo-Instruct show that INSEC can increase the vulnerability rate of code generated while maintaining functional correctness, posing security risks for deployed LLM-based code assistants."
+    },
+    {
+      "note_id": "I3Ai0txIu8",
+      "replyto": "h2Q3gOIz8q",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-28 23:45:24.976000",
+      "modified": "2024-11-12 16:19:10.996000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13941/Reviewer_Ue9Z",
+      "actor": "Reviewer Ue9Z",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "1. The paper presentation is quite good, easy to follow. The authors first introduce the background information of code completion and threat model, then detailed explain the implementation of INSEC step by step, and finally present an extensive evaluation.\n\n3. The experiments are rich and involve a large workload. The authors analyze many hyperparameters, including the insertion position of attack strings and the impact of different tokenizers on effectiveness of attack, making the result solid.\n\n4. The paper propose the first black-box adversarial attack on LLM-based code completion system, and introduce a novel method for initializing attack strings, with five well- designed methods and analysis.",
+      "weaknesses": "1. Technical wise, the paper appears rather shallow. This is my main concern. The mutate method seems simple, with only random functions to decide mutation position and replacement. Despite that applying random mutate to optimize the initial attack string could construct effective attack strings, it may not be efficient and could lead to local optima. \n\n2. Evaluation can be enhanced. There is no comparative analysis of different mutate methods and experimental analysis of the mutation process. I notice that you implemented many optimization methods in the submitted code, but there is no experiment results comparing them, Why?\n\n3. Models. The experiments didn't include some SOTA models like GPT-4. More SOTA models should be included for persuasiveness.\n\n4. (stealthiness) No discussion/evaluations on defense methods. For instance, would the mutated inputs (e.g., those \"dalЖ +k重d5\" in Figure 1) be easily detected by some anomaly detection tools?  Discussions on stealthiness mostly on the \"output functionality\"; this appears rather thin.",
+      "questions": "1. In page 8, Figure 5, there are a column of Opt only, I am wondering how do you form a set of attack strings with only optimization method? There should be initial string for optimization.\n\n2. I notice that you implemented many optimization methods in the submitted code, but there is no experiment results comparing them, Why?\n\n3. What is the result of INSEC on GPT 4?\n\n4. Can some anomaly detection tools easily detect the attack? In other words, how to understand the stealthiness of the attack, from the input perspective?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduce INSEC, a novel black-box adversarial attack designed to manipulate LLM- based code completion engines into generating insecure code by inserting attack strings as comments in code completion input. INSEC first applies five different approaches to generate initial attack strings, then optimizes them through random mutations. Through iterations of mutation and selection, INSEC maintains a pool of most effective attack strings, and tests their effectiveness on different large language models. The authors propose a dataset containing 16 CWE and 5 programming languages, and evaluate INSEC on open-source models and commercial services. Results show a 50% rise in insecure code generation without majorly affecting functional correctness. The method is also cost-efficient, requiring less than $10 for querying APIs, and doesn’t need access to model internals."
+    }
+  ]
+}

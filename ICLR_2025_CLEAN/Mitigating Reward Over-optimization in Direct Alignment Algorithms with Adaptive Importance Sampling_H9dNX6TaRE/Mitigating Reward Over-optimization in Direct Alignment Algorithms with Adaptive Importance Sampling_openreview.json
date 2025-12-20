@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "H9dNX6TaRE",
+    "forum": "H9dNX6TaRE",
+    "title": "Mitigating Reward Over-optimization in Direct Alignment Algorithms with Adaptive Importance Sampling",
+    "authors": "Nguyen Minh Phuc, Ngoc-Hieu Nguyen, Binh T. Nguyen, Khoa D Doan",
+    "keywords": "Reinforcement Learning From Human Feedback, Direct Preference Optimization, Reward Hacking",
+    "abstract": "Recently, Direct Alignment Algorithms (DAAs) such as Direct Preference Optimization (DPO) have emerged as alternatives to the standard Reinforcement learning from human feedback (RLHF) for aligning large language models (LLMs) with human values. Surprisingly, while DAAs do not use a separate proxy reward model as in RLHF, their performance can still deteriorate due to over-optimization – a phenomenon found in RLHF where the policy can exploit failures of the reward model to achieve high rewards but the actual quality of the model begins to degrade. Recent studies find that DAAs tend to increase probability mass on out-of-distribution responses and the training objective in DAAs is heavily under-constrained on these out-of-distribution (OOD) responses due to a mismatch between offline distribution and the LM policy. In this paper, we propose a method to mitigate the distribution shift between the offline distribution and the LM policy by multiplying with an importance weight to reflect the policy distribution. The resulting method, called Adaptive Importance Sampling (AIS), relies on importance sampling techniques and resolves the high variance issue in importance sampling without extra hyper-parameters. Our experiment results showed Adaptive IS can improve win rates by 15% while maintaining a lower KL budget compared to DAAs.",
+    "pdf_link": "https://openreview.net/pdf/cfd34545044fa34ebe2e37d6b55fb9a0628d8320.pdf",
+    "submission_date": "2024-09-28 11:05:23.276000"
+  },
+  "reviews": [
+    {
+      "note_id": "peDENSaoYU",
+      "replyto": "H9dNX6TaRE",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 05:14:37.967000",
+      "modified": "2024-11-12 16:34:28.393000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14149/Reviewer_u6Dx",
+      "actor": "Reviewer u6Dx",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "This work addresses a widely observed phenomenon where DAAs like DPO suffers from reward overoptimization even before completing the first epoch of the dataset. Insights into this phenomenon can help us understand the underlying mechanism of DAAs  and resolving this issue can mitigate the gap between online and offline algorithms and can provide us with computationally cheap yet performant alignment algorithms.\n\nThe proposed solution, AIS, is a principled algorithm with well-understood theoretical grounding. Empirically, AIS demonstrates more effective KL regularization and strong performance over the baseline. AIS is simple, easy to implement, and preserves the low computational cost of offline DAAs.\n\nIn terms of presentation, overall the paper is easy to follow. The work is well motivated and the method is clearly explained. The authors did a good job connecting to existing works in the literature.",
+      "weaknesses": "Important analysis on the proposed AIS method is missing. Importance sampling is one of the simplest techniques to address off-policy learning. The authors claim that vanilla IS suffer from high variance and thus an adaptive heuristic is applied to make a tradeoff between the bias and the variance. However, there is no analysis into this adaptive heuristic to justify its necessity and to provide insights into how this tradeoff impacts the overall performance.\n\nSimilarly, the empirical analysis in Section 4.3 demonstrates the detriment of distribution shift to DAAs. One natural question to ask is, as a method proposed for addressing distribution shift, how does AIS perform in these experiments? The current study does not provide any results to answer this question.\n\nOne limitation the authors did not call out in the limitation section is that AIS assumes that the preference dataset is generated from the SFT policy. However, this is not always the case in practice. Usually the responses in the preference dataset are sampled from different generations of the same data class, or even from different model classes. Thus this assumption is often violated and it hinders the effectiveness of AIS.\n\nPresentation-wise, the authors use inconsistent / incorrect citation formats through the paper. Calandriello _et al_ '24 should be cited in Section 3.1 for online DDAs. There are a few typos in writing. I think it should be \"budget\" in the last sentence of the abstraction. The Azar '23 and Gheshlaghi Azar '24 citations are citing the same paper. \n\n## References\nCalandriello _et al_ '24, Human Alignment of Large Language Models through Online Preference Optimisation, ICML 2024.",
+      "questions": "1. In Figure 2, Figure 4, and Figure 5, how was the KL computed? Was it estimated by taking on-policy samples from the current LM?\n\n2. Could the authors provide online alignment algorithm results such as PPO in the main evaluation in Section 4.2? In my opinion, AIS does not need to outperform PPO. The main purpose is to provide better context to the readers. These results can help the readers understand how much of the online-offline gap can be explained by distribution shift and can be addressed by AIS. These results can also provide guidance for follow-up work and future research.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This work addresses the reward optimization problem in direct alignment algorithms (DAAs) from the angle of distribution shift. In existing DAAs, the KL estimation is only unbiased when the samples are on-policy. However, as the policy being updated during learning, the responses from the offline dataset become off-policy, and thus distribution shift happens.\n\nTo address this issue, the authors propose adaptive importance sampling (AIS) as a solution. Assuming the preference data are generated from the SFT policy, AIS applies an importance sampling weight on each data point to correct the off-policyness. This weight term is further adapted by an exponential coefficient which is the inverse of the response length to tradeoff the bias and the variance. AIS is first evaluated in a toy example and demonstrates better estimation of the KL divergence than its unweighted counterpart. When combined with DPO, AIS demonstrates better KL-win rate tradeoff and higher peak performance than the baseline in a simulated setup, following Gao _et al_, 2022. The authors also conducted some empirical analysis in the simulation setup to understand the detriment of distribution shift."
+    },
+    {
+      "note_id": "lsVJszkpWa",
+      "replyto": "H9dNX6TaRE",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 01:49:34.309000",
+      "modified": "2024-11-12 16:34:28.427000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14149/Reviewer_AdMV",
+      "actor": "Reviewer AdMV",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "The paper primarily deals with the issue of reward over-optimization in specifically Direct alignment algorithms. The over-optimization issue is an extremely critical concern in the current alignment paradigms, and arises due to a distributional shift between offline training data and the LM's current policy, leading to increased probability on out-of-distribution (OOD) responses. The paper introduces an adaptive importance sampling strategy to mitigate the distributional shift issue using an exponential smoothing technique that balances bias and variance in IS estimates.",
+      "weaknesses": "1. The importance sampling term defined in the equation in line 212, suggest that the original equation is E_{\\pi_{\\theta}}[\\rho_theta]? Can you mathematically show why thats the case? In the context of online RLHF, it makes sense as shown in [1], but in offline whats the exact ideal optimization objective, leading to this importance weight? Can you specify, will be helpful. Also, highlight the difference from [1].\n2. Whats the mathematical motivation behind choosing the value of the alpha? How does it affect the convergence?\n3. There are several works on pessimism based methods to achieve reward over-optimization which are similar in principles, hence its not clear the novelty of the proposed work. A detailed comparison and contrast is critical to understand the novelty of the proposed approach.\n\nReferences:\n\n[1]. Sail: Self-improving efficient online alignment of large language models\n\n[2]. Iterative data smoothing: Mitigating reward overfitting and overoptimization in rlhf\n\n[3]. Provably Mitigating Overoptimization in RLHF: Your SFT Loss is Implicitly an Adversarial Regularizer\n\n[4]. Provably Mitigating Overoptimization in RLHF: Your SFT Loss is Implicitly an Adversarial Regularizer",
+      "questions": "The Taylor expansion is shown around rho_theta = 0, whats the point of expanding around  rho_theta = 0? It occurs when y_w = y_l or the preferred and chosen responses are very similar? Whats the intution behind expanding at that point is not clear.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper primarily deals with the issue of reward over-optimization in specifically Direct alignment algorithms and proposes an adaptive low variance importance sampling strategy to mitigate the issue, with an exponential smoothing technique that balances bias and variance in IS estimates. The proposed method effectively reduces over-optimization by achieving higher model win rates and maintaining a lower KL divergence budget than baselines."
+    },
+    {
+      "note_id": "K8QlJLJEcY",
+      "replyto": "H9dNX6TaRE",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 15:01:48.752000",
+      "modified": "2024-11-22 15:33:35.296000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14149/Reviewer_zEKh",
+      "actor": "Reviewer zEKh",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "-  The idea is simple and easy to integrate into existing algorithms like DPO and IPO as done in the paper.\n-  The paper shows clear gains in terms of less overfitting and better performance per KL budget.",
+      "weaknesses": "Overall, some more ablations or more in-depth investigation is lacking. There isn’t a good understanding of how important picking alpha is for the experiments. There is also not an investigation into how distribution shift (section 4.3) interacts with IS. See questions for more details.",
+      "questions": "- Figure 1 and section 3.2 could be improved a lot by using the smoothed IS estimate and ablating over alpha, showing how the tradeoff between bias and variance works in such a toy domain as well.\n- Some ablation over alpha in TL;DR would also be very insightful. Right now it seems that alpha is set arbitrarily to 1/|y|, when other values like 1/sqrt(|y|) might also be under consideration. Even if they perform worse, it is valuable insight into how alpha affects the performance or over-optimization.\n- The distribution shift experiments in section 4.3, while does show that distribution shift is directly harmful, seems to be missing the natural followup of applying IS or smoothed IS in order to improve. How much does adding IS help? Or would it actually hurt performance because the data is no longer form pi_ref, so importance sampling towards pi_ref is actually increasing the distribution shift? Knowing something about how IS interacts with distribution shift would be a very good contribution to the paper.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposed to use adaptive importance sampling during offline post-training alignment of LLMs as a way to reduce over-optimization. They use a smoothed exponential IS estimator (where the exponent is the reciprocal of the length of the generation) in order to reduce the variance of the IS in exchange for some bias. Their experiments show that with this smoothed IS correction, they are able to reduce over-optimization in DPO and IPO and reach better performance in a lower KL budget in the TL;DR summarization task. They also show that distribution shift is indeed problematic and makes over-optimization worse."
+    },
+    {
+      "note_id": "3KZcbvUWp3",
+      "replyto": "H9dNX6TaRE",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-27 09:45:11.388000",
+      "modified": "2024-11-12 16:34:28.365000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14149/Reviewer_WtSX",
+      "actor": "Reviewer WtSX",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 1,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "- The idea of using importance sampling to address distribution shift is not new, but it sounds interesting in the context of direct alignment methods.\n- This paper is well-written and easy to follow.\n- Numerous empirical results are presented, along with their limitations (see below).",
+      "weaknesses": "- This paper lacks technical depth. It studies the distribution shift issue in DPO, which is a valuable perspective. Unfortunately, it fails to explicitly point out or mention that DPO's gradient estimator is not unbiased because the data distribution is defined by the data-collection distribution policy $\\pi$ (see previous works [1, 2]). Furthermore, it fails to justify that the proposed gradient estimator is unbiased. The reviewer believes that it is not theoretically unbiased. In fact, the importance sampling weight requires the optimal policy $\\pi^*$, which is not available a priori.\n\n[1] Liu, Tianqi, et al. \"Statistical rejection sampling improves preference optimization.\" *arXiv preprint arXiv:2309.06657* (2023).\n\n[2] Xiong, Wei, et al. \"Iterative preference learning from human feedback: Bridging theory and practice for RLHF under KL-constraint.\" *Forty-first International Conference on Machine Learning*. 2024.\n\nFrom the reviewer's perspective, there are two factors in DPO's formulation that prevent it from finding the true optimal policy:\n\nFirst, DPO uses a fixed and offline dataset, where the data distribution does not originate from the optimal policy. \n\nSecond, DPO employs KL regularization with a fixed policy. To address these issues, two simple strategies can be applied: periodically updating the reference policy [3] or using entropy regularization [4].\n\n[3] Guo, Shangmin, et al. \"Direct language model alignment from online AI feedback.\" *arXiv preprint arXiv:2402.04792* (2024).\n\n[4] Xiao, Jiancong, et al. \"On the Algorithmic Bias of Aligning Large Language Models with RLHF: Preference Collapse and Matching Regularization.\" *arXiv preprint arXiv:2405.16455* (2024).\n\n- The superiority over other simple baselines is unclear. A straightforward way to address the distribution shift issue is to use a moving average of the reference policy that can ensure the policy moving beyond the KL contraint. \n\n- Experimental results are weak. The experiments are conducted on the TL;DR dataset, which unfortunately has very short response lengths, and the Pythia model used as a base is quite weak. Consequently, empirical conclusions and insights may have limited value for modern language models. Moreover, some experiment details are missing, which hinders reproducibility and understanding of key results.",
+      "questions": "1. Can the authors theoretically justify that the estimator is unbiased?\n\n2. Can the authors discuss the issue of length bias in the importance sampling weight? The length bias affects reward estimation [5], so the reviewer wonders about its effect on the importance sampling estimator used in this paper.\n\n[5] Park, Ryan, et al. \"Disentangling length from quality in direct preference optimization.\" arXiv preprint arXiv:2403.19159 (2024).\n\n3. Can this paper provide comparisons with online algorithms such as PPO, REINFORCE, and online DPO? Except for PPO, which requires extensive computational resources, other methods require nearly the same resources as DPO.\n\n4. Can the authors clarify the methods used for KL calculation and \"gold win-rate\" calculation in the experiments?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper studies the reward-optimization issue in aligning large language models. It focuses on direct alignment methods, such as Direct Preference Optimization (DPO) and Identity Preference Optimization (IPO). The paper argues that these issues arise from off-policy distribution shifts between the learning policy and the reference policy. Accordingly, an importance-sampling weighting term with adaptive schemes is proposed. Experiments with Pythia models on the TL;DR dataset are conducted."
+    }
+  ]
+}

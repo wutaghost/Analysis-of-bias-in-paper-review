@@ -1,0 +1,13 @@
+{
+  "paper": {
+    "id": "ia7XI8qvBv",
+    "forum": "ia7XI8qvBv",
+    "title": "CELI: CONTROLLER-EMBEDDED LANGUAGE MODEL INTERACTIONS",
+    "authors": "Jan-Samuel Wagner, Dave DeCaprio, Hosein Barzekar, Mark Anthony Martinez II, Hisham Hamadeh, Scott Ogden",
+    "keywords": "AI agents, artificial intelligence, machine learning, natural language processing, autonomous systems, intelligent automation, large language models, AI problem-solving, adaptive AI, multi-task AI, AI workflow optimization",
+    "abstract": "We introduce Controller-Embedded Language Model Interactions (CELI), a framework that integrates control logic directly within Language Model (LM) prompts, facilitating complex, multi-stage task execution. CELI addresses limitations in existing prompt engineering and workflow optimization techniques by embedding control flow into the LM's operational context, enabling dynamic adaptation to evolving task requirements. Our framework transfers control from the traditional programming execution environment to the LMs, allowing them to autonomously manage computational workflows while maintaining seamless interaction with external systems and functions. CELI supports arbitrary function calls with variable arguments, bridging the gap between LMs' adaptive reasoning capabilities and conventional software paradigms' structured control mechanisms. To evaluate CELI's versatility and effectiveness across diverse problem domains, we conducted three case studies: code generation (HumanEval benchmark), hierarchical content generation (Wikipedia-style articles), and multi-table data harmonization and reconciliation (supply chain auditing with inconsistent datasets). Results demonstrate significant performance enhancements across diverse domains. CELI achieved a 4.9 percentage point improvement over the best reported score of the baseline GPT-4 model on the HumanEval code generation benchmark. In hierarchical content generation, 78% of CELI-produced Wikipedia-style articles reached first draft quality when optimally configured. For multi-table data harmonization, CELI achieved perfect data cleaning and harmonization in a supply chain audit task, while detecting 64% of customer-manufacturer dispute discrepancies, similar to two human reviewers. These outcomes underscore CELI's potential for optimizing AI-driven workflows across diverse computational domains. CELI represents a paradigm shift in LM utilization, offering a flexible yet robust solution for managing intricate tasks that require both nuanced natural language processing and precise programmatic execution.",
+    "pdf_link": null,
+    "submission_date": "2024-09-28 10:55:31.183000"
+  },
+  "reviews": []
+}

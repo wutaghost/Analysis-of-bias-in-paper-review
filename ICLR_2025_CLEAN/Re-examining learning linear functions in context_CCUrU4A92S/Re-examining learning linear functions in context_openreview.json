@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "CCUrU4A92S",
+    "forum": "CCUrU4A92S",
+    "title": "Re-examining learning linear functions in context",
+    "authors": "Omar NAIM, Guilhem Fouilhé, Nicholas Asher",
+    "keywords": "In context learning, GPT, limitations",
+    "abstract": "In context learning (ICL) is an attractive method of solving a wide range of problems.  Inspired by Garg et al., we look closely at ICL in a variety of train and test settings for several transformer models of different sizes trained from scratch.  Our study complements prior work by pointing out several systematic failures of these  models to generalize to data not in the training distribution, thereby showing some limitations of ICL. We find that models adopt a strategy for this task that is very different from standard solutions.",
+    "pdf_link": "https://openreview.net/pdf/b1dbe1c856247923bb0ff7f626187787300df57d.pdf",
+    "submission_date": "2024-09-28 11:15:23.256000"
+  },
+  "reviews": [
+    {
+      "note_id": "KLvh3kCWq3",
+      "replyto": "CCUrU4A92S",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-06 22:53:17.655000",
+      "modified": "2024-11-12 16:37:05.754000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14174/Reviewer_JBsD",
+      "actor": "Reviewer JBsD",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "Understanding what these models learn even in the setting of linear regression can significantly enhance our understanding of their capabilities limitations. Indeed it has been observed that the models do not generalize in out-of-distribution samples and thus it is unclear whether these models learn some type of algorithm.",
+      "weaknesses": "1. The provided experimental study does not explain what these models are actually learning. For example it can be the case that the model are learning a tailor-made preconditioned gradient descent type of algorithm, with the preconditioned matrix being optimal for the in-distribution values and sub-optimal for out-of-distribution values.\n2. It cannot be excluded that the current training methods are not optimal, since we know that these models do have the capability of representing these algorithms. \n3. Some of these results have already been observed experimentally for example see [1] (Figures 5,6).  In these experiments consider multi-dimensional linear regression, they keep all expect for one dimension fixed and plot how the function changes when varying one dimension from [-B,B] similar to the authors' experiments for one dimensional linear regression.\n\nIn general the main weakness of this paper is that it does not make a convincing argument towards what these models are actually learning. \n[1]: Giannou, Angeliki, et al. \"How Well Can Transformers Emulate In-context Newton's Method?.\" arXiv preprint arXiv:2403.03183 (2024).",
+      "questions": "I agree with the authors that these models do not exactly learn some type of algorithm but I think that the main question is why these models do not do so while they have the expressivity ? One possible explanation is that there exist  parameters that better interpolate the specific distributions, while existing algorithms work for any type of distribution. \n\nDid the authors try to train the models with multiple distributions? It could be the case that then the models are able to perform some type of algorithm by not fine-tuning their weights to fit a specific distribution. Furthermore, considering the second point above, did the authors perform a search over the hyperparameters for training?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper studies experimentally the setting of in-context learning linear regression . The authors reproduce the experiments of Garg et al and at inference time test the models with 1) different distributions for the input/weight vectors 2) larger values for the input/weight vectors.\nBased on the observations of these results the authors argue that these models do not learn some type of algorithm."
+    },
+    {
+      "note_id": "B0ue9jWN0j",
+      "replyto": "CCUrU4A92S",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 00:05:27.833000",
+      "modified": "2024-11-12 16:37:06.028000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14174/Reviewer_zJMu",
+      "actor": "Reviewer zJMu",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 1,
+      "confidence": 4,
+      "soundness": 1,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "The paper conducts thorough experiments across various scales and settings, providing a comprehensive analysis of Transformer behavior.",
+      "weaknesses": "1. The related work could benefit from a more comprehensive review. The paper primarily discusses the works of Garg et al., Akyürek et al., and Von Oswald et al. on regression for in-context learning (ICL), but there are additional relevant studies in this area that are not cited. A more thorough literature review, covering empirical and theoretical works on regression in ICL, would enhance the paper’s context. Checking recent citations in this line of research may help identify key studies to include.\n\n2. The notation in Section 4 could be clarified, as some symbols are difficult to interpret. For example, it’s not immediately clear what $\\sigma$ represents in the context of $f_{i, \\sigma}$. Additional explanations could help improve readability.\n\n3. The organization of the paper could be refined to improve the overall flow. At times, the presentation feels somewhat informal, with experiments presented in sequence without clear connections, motivations, or in-depth analyses. For instance, it would be helpful if the authors could clarify the rationale for studying models of different scales and discuss what insights are gained from these comparisons. Additionally, mixing experiments on different scales and distributions makes it challenging to understand the primary conclusions. This structure could make it clearer to the reader what the authors aim to convey.\n\nIn general, I appreciate that the authors highlight the out-of-distribution (OOD) generalization issue for Transformers trained on linear regression, as initially noted by Garg et al. However, the experimental findings in Section 4 could be more impactful with clearer motivations and discussions. The hypothesis regarding induction heads and their role in OOD performance is somewhat interesting, though it could be strengthened with supporting theoretical insights or experimental validations, such as through mechanical interpolation. Presenting this hypothesis with additional rigor could provide more substantial contributions to the community.",
+      "questions": "1. While it seems intuitive that, for instance, \"9L6AH\" refers to a model with 9 layers and 6 attention heads, this notation is somewhat non-standard. It would be helpful if the authors could define this notation explicitly before using it. Many other notations in the paper also follow this informal style, though I haven’t listed each instance. It would be beneficial if the authors could standardize and define these terms clearly at the outset.\n\n2. In line 193, could the authors clarify whether it is $D^T_F$ or $D^t_F$? There are also several other typos throughout the paper that I haven't enumerated. Clarifying these would improve overall readability and precision.\n\n3. In line 190, it’s unclear why the authors mention that the coefficients are in the range $[-1, 1]$, as this differs from the $N(0, 1)$ distribution. Additionally, there is no supporting figure or result indicating that coefficients within $[-1, 1]$ lead to zero MSE error. Given that I generally observe non-zero but small MSE error, it would be helpful if the authors could clarify this paragraph, particularly regarding the model size required to achieve zero average MSE error.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper investigates Transformer behavior when trained from scratch to perform linear regression. It examines out-of-distribution (OOD) generalization across various settings, such as different ranges and distributions of linear functions."
+    },
+    {
+      "note_id": "mOUC80ux20",
+      "replyto": "CCUrU4A92S",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 20:03:54.075000",
+      "modified": "2024-11-12 16:37:05.641000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14174/Reviewer_2Uvx",
+      "actor": "Reviewer 2Uvx",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "The paper has the following strengths:\n\n### 1. Clear Motivation: The paper begins with a well-defined motivation, addressing gaps in the current understanding of in-context learning (ICL) in transformer models, especially for generalization.\n\n### 2. Comprehensive Experiments: The experiments cover various transformer architectures and test them on various distributions.",
+      "weaknesses": "The paper has the following weaknesses:\n\n### 1. Clarify Terminology and Notation: The writing is a little poor. For example, in ``line 047'', there should be a ''.'' after ''training data''. Furthermore, the table should be in a more beautiful structure.\n\n### 2. Explanation for the Problem: Although the paper provides various experiments, it should explain the failures of these models to generalize to data not in the training distribution.\n\n### 3. Novelty: The paper provides robust experiments to show the main point but lacks novelty, such as how to improve this problem.",
+      "questions": "1.. Explanation for the Problem: Could you please explain the failures of these models to generalize to data not in the training distribution?\n2. Could you please provide some methods to improve this problem?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The study investigates in-context learning (ICL) in transformer models, focusing on their ability to learn and generalize linear functions from contextual prompts. Inspired by previous work, the authors examine various transformer models, including small ones trained from scratch, to explore whether they can learn linear functions and generalize beyond the training distribution.\n\nHowever, there are two main problems in this paper:\n\n### 1. The writing problem: There are many typos, e.g., in ``line 047'', there should be a ''.'' after ''training data''.\n### 2. Novelty: The paper indeed provides robust experiments to show the main point, but it lacks novelty, such as how to improve this problem."
+    },
+    {
+      "note_id": "rumG5DaMzT",
+      "replyto": "CCUrU4A92S",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 07:51:55.636000",
+      "modified": "2024-11-12 16:37:05.475000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14174/Reviewer_i5eC",
+      "actor": "Reviewer i5eC",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "1. The paper focuses on an important and challenging problem: understanding the in-context ability of language models.\n2. The writing is clear and easy to understand.\n3. The authors provide code and detailed instructions for reproduction.",
+      "weaknesses": "1. The models and empirical studies in the paper differ significantly from current large language models, potentially creating a gap between the claims and reality.\n2. The findings of the paper have been previously proposed in other works.\n3. The paper is missing some key references.",
+      "questions": "Can you explain how your findings differ from the following paper? In particular, [1] also discusses how distribution influences the in-context learning ability to learn linear functions.\n\n[1] Trained Transformers Learn Linear Models In-Context.\n[2] Transformers as Statisticians: Provable In-Context Learning with In-Context Algorithm Selection",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper investigates in-context learning (ICL) across various training and testing scenarios using different sizes of transformer models trained from scratch. Building on previous work, it highlights systematic failures in these models' ability to generalize to data outside the training distribution, revealing some limitations of ICL."
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "llW4qRsF0o",
+    "forum": "llW4qRsF0o",
+    "title": "Physics-Transfer Learning: A Framework to Address the Accuracy-Performance Dilemma in Modeling Complexity Problems in Engineering Sciences",
+    "authors": "Yingjie Zhao, Zhiping Xu",
+    "keywords": "Physics-Transfer Learning; Accuracy-Performance Dilemma; Engineering Sciences; Complexity; Materials Strength; Brain Development",
+    "abstract": "The development of theoretical sciences traditionally adheres to an observation-assumption-model paradigm, which is effective in simple systems but challenged by the `curse of complexity’ in modern engineering sciences. Advancements in artificial intelligence (AI) and machine learning (ML) offer a data-driven alternative, capable of interpolating and extrapolating scientific inference where direct solutions are intractable. Moreover, feature engineering in ML resembles dimensional analysis in classical physics, suggesting that data-driven ML methods could potentially extract new physics behind complex data. Here we propose a physics-transfer (PT) learning framework to learn physics across digital models of varying fidelities and complexities, which addresses the accuracy-performance dilemma in understanding representative multiscale problems. The capability of our approach is showcased through screening metallic alloys by their strengths and predicting the morphological development of brains. The physics of crystal plasticity is learned from low-fidelity molecular dynamics simulation and the model is then fed by material parameters from high-fidelity, electronic structures level, density functional theory calculations, offering chemically accurate strength predictions with several orders lower computational costs. The physics of bifurcation in the evolution of brain morphologies is learned from simple sphere and ellipsoid models and then applied to predict the morphological development of human brains, showing excellent agreement with longitudinal magnetic resonance imaging (MRI) data. The learned latent variables are shown to be highly relevant to uncovered physical descriptors, explaining the effectiveness of the PT framework, which holds great potential in closing the gaps in understanding complexity problems in engineering sciences.",
+    "pdf_link": "https://openreview.net/pdf/b322fb7dd027df5b022615a17baf5f1134a4cc88.pdf",
+    "submission_date": "2024-09-28 11:56:20.229000"
+  },
+  "reviews": [
+    {
+      "note_id": "Mv1TtzPx5q",
+      "replyto": "llW4qRsF0o",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 02:42:57.860000",
+      "modified": "2024-11-12 16:16:15.511000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14270/Reviewer_QoBw",
+      "actor": "Reviewer QoBw",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 1,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "This model achieves lower computational costs than traditional ML models, with a method that is easy to understand.",
+      "weaknesses": "1. No new models have been proposed.\n2. Why was CNN chosen over other state-of-the-art models?\n3. The comparison methods are insufficient.\n4. Appropriate statistical analysis is required.",
+      "questions": "How is the credibility of the model evaluated?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces a physics-transfer (PT) learning framework designed to bridge digital models of varying fidelities and complexities, effectively addressing the accuracy-performance trade-off in multiscale problem analysis. By leveraging PT learning, the model achieves reduced computational costs compared to traditional machine learning models, making it a more efficient solution for understanding complex, representative physical phenomena."
+    },
+    {
+      "note_id": "hQg8Pfsk3j",
+      "replyto": "llW4qRsF0o",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 01:50:40.533000",
+      "modified": "2024-11-12 16:16:15.500000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14270/Reviewer_3MYx",
+      "actor": "Reviewer 3MYx",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "The PT framework represents a novel integration of physics and machine learning, introducing an approach to the challenges posed by multiscale problems in engineering sciences. By considering both low-fidelity and high-fidelity models, the authors creatively combine existing ideas to form a new methodology. The motivation for the PT framework is articulated clearly, establishing a strong rationale for the research. The paper successfully outlines the accuracy-performance dilemma, making it accessible to readers familiar with the challenges in engineering modeling. Furthermore, the potential applications in materials science and neuroscience could lead to substantial advancements in these fields.",
+      "weaknesses": "The manuscript lacks a comprehensive comparison with existing methods such as $\\Delta$-learning and transfer learning. A more in-depth analysis highlighting the advantages and limitations of the PT framework relative to these approaches may enhance the credibility of the manuscript. Specific metrics and results demonstrating improved performance would provide stronger evidence of the framework's contributions.\nThe manuscript contains sections that are overly technical, which may limit its accessibility to a broader audience. E.g., the explanation of the PT framework's mechanics could benefit from simpler language and additional visual aids to enhance understanding.\nThe manuscript does not adequately address the scalability of the PT framework, particularly regarding its application to larger datasets or more intricate models. A discussion about the challenges and potential solutions for scaling the approach would be valuable.",
+      "questions": "1. Can the authors provide additional metrics or results comparing the PT framework's performance to that of existing methods like $\\Delta$-learning and LFAF? This would help clarify the unique contributions of the PT approach.\n2. What specific strategies do the authors envision for scaling the PT framework to accommodate larger datasets or more complex problems? Insights into this would enhance the practical relevance of the framework.\n3. How do the authors guarantee that the learned physics from the PT framework remains interpretable and relevant in practical applications? A discussion on the interpretability of the model's outputs would be beneficial.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "In this manuscript, the authors present a physics-transfer (PT) learning framework to merge physics-based modeling and machine learning techniques in complex engineering problems. The framework aims to resolve the accuracy-performance dilemma by learning physics across digital models of varying fidelities. The paper demonstrates the framework's capabilities through two case studies: predicting the strength of metallic alloys and modeling the morphological development of human brains. The authors claim that their approach not only enhances predictive accuracy but also provides new insights into the underlying physics of these systems."
+    },
+    {
+      "note_id": "AHc8qRoiyY",
+      "replyto": "llW4qRsF0o",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 14:48:04.420000",
+      "modified": "2024-11-12 16:16:15.869000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14270/Reviewer_81CL",
+      "actor": "Reviewer 81CL",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 1,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "Transfer learning from low to high fidelity systems is an interesting sub-domain within transfer learning at large. I thank the authors for highlighting this problem in their work, even if it is a domain which has already been significantly explored elsewhere.\n\nI do think the core intuition at work in this paper is interesting - the use of lower-fidelity models for developing physics is quite common in the engineering sciences and the sciences at large; however, I think this core insight is marred by a lack of detail or acknowledgement of other related works which approach these problems in similar ways.",
+      "weaknesses": "I am chiefly concerned with the significance of this contribution to the literature on transfer learning and the deep learning community at large. Many approaches to transfer learning using lower-fidelity systems or simulations exist already in the literature, and it is well-understood that such approaches can provide benefits over training directly on the more complex system. It is not clear to me how the approach in this work differs from these methodologies significantly other than in applications.  See [1], [2], [3], [4] for some examples which utilize a very similar underlying approach to that in this work. I would like to challenge the authors to differentiate their work more from this existing literature and consider a resubmission. If anything, the authors should consider these other works as baseline approaches for the sake of comparison. \n\nAdditionally, this paper suffers from a lack of detail regarding the proposed framework. The most obvious omission is any rigorous definition of what the \"learning the physics\" means within this work. In previous literature, \"learning the physics\" more frequently means learning a set of differential equations which describe the system, rather than learning a black-box model with parameters which can predict system changes, but which doesn't provide any direct physical interpretation. Based on the discussion in section 2, the authors seem to be utilizing the latter kind of approach. It is not at all clear to me how learning a simple convolutional neural network provides any manner of learning of the physics of a system. The authors either need to clarify this connection, or clarify that they are doing something other than learning the physics of the system. I am willing to reconsider this point given a very compelling argument from the authors; however, I think even if an argument is provided here, a more significant revision would be needed to further clarify the details omitted in this work.\n\n[1] De, Subhayan, et al. \"On transfer learning of neural networks using bi-fidelity data for uncertainty propagation.\" International Journal for Uncertainty Quantification 10.6 (2020).\n\n[2] Chakraborty, Souvik. \"Transfer learning based multi-fidelity physics informed deep neural network.\" Journal of Computational Physics 426 (2021): 109942.\n\n[3] Liu, Zeyu, Meng Jiang, and Tengfei Luo. \"Leveraging low-fidelity data to improve machine learning of sparse high-fidelity thermal conductivity data via transfer learning.\" Materials Today Physics 28 (2022): 100868.\n\n[4] Song, Dong H., and Daniel M. Tartakovsky. \"Transfer learning on multifidelity data.\" Journal of Machine Learning for Modeling and Computing 3.1 (2022).",
+      "questions": "See above:\n1) how does this framework differ from other existing work in the literature regarding transfer learning from low to high fidelity systems?\n2) how exactly does learning a black-box model which can predict the system count as learning the \"physics\" of the system?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The authors purport to develop a novel framework for modeling physical systems using deep learning architectures in this work. The authors claim that models that first learn the \"physics\" of a given simple system will generalize better to more complex system variants. The authors utilize metallic alloy strength and brain morphological development as two systems of study, providing simple examples of how learning lower-fidelity models can aid in modeling more complex systems."
+    },
+    {
+      "note_id": "PTXjEFSjMU",
+      "replyto": "llW4qRsF0o",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-25 12:05:37.435000",
+      "modified": "2024-11-12 16:16:15.478000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14270/Reviewer_rsNo",
+      "actor": "Reviewer rsNo",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 1,
+      "confidence": 4,
+      "soundness": 1,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "1. The idea of considering ellipsoids in brain morphology analysis is intriguing. With more extensive analysis and theoretical development, this concept has the potential for significant advancement in the field.",
+      "weaknesses": "1. Despite the title \"Physics Transfer,\" the proposed framework does not modify the input data format used in existing Machine Learning Force Field (MLFF) methods or models that embed brain networks. No additional optimization techniques are introduced. The framework does not adequately consider physics principles or employ transfer learning methodologies.\n\n2. The paper lacks any discussion of AI methodologies or competing methods. The absence of comparisons with existing approaches makes it difficult to evaluate the effectiveness and innovation of the proposed framework.\n\n3. There is no illustration or explanation of how the \"physics\" is learned within the model. The paper fails to demonstrate the underlying mechanisms that enable the model to capture or learn physical laws.\n\n4. The structure and composition of the proposed framework remain unclear. The paper does not present a cohesive framework that can be commonly applied across two entirely different domains, such as crystal structures and brain morphologies.",
+      "questions": "1. Model References: Which models did you reference or build upon for your experiments? Specifically, what is the CNN-based crystal model you used, and what Graph Neural Network (GNN) methods were applied? These details are not provided in the paper, and including them would help in understanding and replicating your work.\n\n2. Learning Physics: You claim that your framework learns physics, but how is this achieved? In the context of Physics-Informed Neural Networks (PINNs), learning physics involves incorporating underlying equations to solve partial differential equations (PDEs). Does your approach relate to methods like \"PINNsFormer: A Transformer-Based Framework For Physics-Informed Neural Networks\" (ICLR 2024, Zhao et al.)?\n\n3. Related Work: Why did you not include recent relevant papers in your results? In the MLFF field, numerous models like SchNet, DimeNet, Allegro, and Equiformer are well-established. Methods utilizing crystal lattice parameters, such as Matformer, PotNet, Crystalformer, and Comformer, were also not considered. How does your work compare to these existing methods, and why were they omitted from your analysis?\n\n4. Domain Combination: What is the rationale behind combining two domains with no apparent commonality, such as crystals and brain morphologies? How does this contribute to the generality or applicability of your proposed framework? A clear explanation would help in understanding the motivation and potential benefits.\n\n5. Clarification of Figure 1(a): Could you clarify the content and purpose of Figure 1(a)? The caption reads: \"Machine learning, constrained by data density and coverage, serves as a potent complement to traditional theories for interpolating and extrapolating solutions, especially as data quality and quantity increase.\" However, it's unclear how this statement is represented in the figure. Additionally, the text refers to Figure 1(a) as illustrating recent advancements in ML and AI as a data-driven alternative. A more detailed explanation would enhance the reader's comprehension of your conceptual framework.\n\n6. Brain Morphology Representation: The shape of the brain is highly complex and significantly different from simple spheres or ellipsoids. Can using such simplified geometric shapes genuinely benefit the model in understanding brain morphology? Handling data from different domains is sensitive and typically requires careful adaptation or alignment processes. How do you justify that combining these datasets without such processes would be beneficial to the model's performance?\n\n7. Transfer Learning Techniques: The term \"Physics Transfer\" suggests the use of transfer learning methodologies. What specific transfer learning methods did you employ in your framework? Detailing these techniques would strengthen your contribution and clarify how physics is transferred between domains.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a framework called Physics Transfer Learning (PT) that aims to learn underlying physics from low-fidelity data to enable extrapolation to high-fidelity data. The authors conduct experiments on two entirely different domains: crystal and brain morphologies. While the paper claims to learn the underlying physics through the PT framework, it does not propose any specific method for achieving this beyond simply inputting data and training a model via supervised learning. Furthermore, there is a significant lack of consideration for competing methods and related work in AI, which raises substantial concerns about the contribution and novelty of the work."
+    }
+  ]
+}

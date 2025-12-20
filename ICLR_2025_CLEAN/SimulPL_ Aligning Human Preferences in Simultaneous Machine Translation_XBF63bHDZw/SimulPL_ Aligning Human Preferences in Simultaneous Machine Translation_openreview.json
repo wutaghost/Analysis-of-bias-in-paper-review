@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "XBF63bHDZw",
+    "forum": "XBF63bHDZw",
+    "title": "SimulPL: Aligning Human Preferences in Simultaneous Machine Translation",
+    "authors": "Donglei Yu, Yang Zhao, Jie Zhu, Yangyifan Xu, Yu Zhou, Chengqing Zong",
+    "keywords": "simultaneous machine translation, simultaneous preference optimization, human preferences",
+    "abstract": "Simultaneous Machine Translation (SiMT) generates translations while receiving streaming source inputs. This requires the SiMT model to learn a read/write policy, deciding when to translate and when to wait for more source input. Numerous linguistic studies indicate that audiences in SiMT scenarios have distinct preferences, such as accurate translations, simpler syntax, and no unnecessary latency. Aligning SiMT models with these human preferences is crucial to improve their performances. However, this issue still remains unexplored. Additionally, preference optimization for SiMT task is also challenging. Existing methods focus solely on optimizing the generated responses, ignoring human preferences related to latency and the optimization of read/write policy during the preference optimization phase. To address these challenges, we propose Simultaneous Preference Learning (SimulPL), a preference learning framework tailored for the SiMT task. In the SimulPL framework, we categorize SiMT human preferences into five aspects: **translation quality preference**, **monotonicity preference**, **key point preference**, **simplicity preference**, and **latency preference**. By leveraging the first four preferences, we construct human preference prompts to efficiently guide GPT-4/4o in generating preference data for the SiMT task. In the preference optimization phase, SimulPL integrates **latency preference** into the optimization objective and enables SiMT models to improve the read/write policy, thereby aligning with human preferences more effectively. Experimental results indicate that SimulPL exhibits better alignment with human preferences across all latency levels in Zh$\\rightarrow$En, De$\\rightarrow$En and En$\\rightarrow$Zh SiMT tasks.  Our data and code will be available at https://github.com/EurekaForNLP/SimulPL.",
+    "pdf_link": "https://openreview.net/pdf/f453526ab32bf14b0e2abf0216bf951c4601e7ef.pdf",
+    "submission_date": "2024-09-28 09:41:14.037000"
+  },
+  "reviews": [
+    {
+      "note_id": "W4HGsqMIjM",
+      "replyto": "XBF63bHDZw",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 21:39:00.883000",
+      "modified": "2024-11-27 04:26:57.674000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13982/Reviewer_kP65",
+      "actor": "Reviewer kP65",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "1. This is an intriguing question and a useful framework for practical SiMT scenarios. While SiMT has been extensively studied in the research community, most papers have focused on automatic metrics rather than real human preferences. This work proposed 5 human preferences that are closely related to the end-users of SiMT.\n\n2. The proposed optimization objective aligns well with the proposed human preferences. For example, the output length constraint is applied for latency preference. The derived final objective in Eq(9) is further to improve its read/write policy.",
+      "weaknesses": "1. The data construction relies on GPT-4/4o. What is the cost of construction the training data? Does it mean GPT-4/4o is the upper bound of human preference alignment? Or this work is to GPT-4 preference alignment?  Figure 2 only shows the win-rate between GPT-4 translation and original one. Is there a comparison between GPT-4 and professional interpreter?\n\n2. In the experiments, you only tune the hyper-parameter $\\alpha$, and set $c_t$ as 0.5 to control the read/write. In general, tuning the thresholds of $c_t$ may introduce various read/write strategies. Did you try other threshold?",
+      "questions": "1. Since real-time translation is a key requirement of SiMT, LLM-based SiMT may need to re-translate each partial source sentence, as the decoder-only architecture of LLMs does not permit the insertion of additional source tokens without disrupting the positional indexes of the already translated target tokens. I want the authors to justify this issue.\n\n2. Continued on Weaknesses 1, given some GPT-4/4o translations, is that possible to ask the professional interpreter to select the high quality translation? Then a classifier or reward model can be implemented to filter out the translations align most with human.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This works present a preference learning framework for simultaneous tasks like SiMT. Particularly, the proposed SimulPL framework categorizes SiMT human preferences into five aspects: translation quality preference, monotonicity preference, key point preference, simplicity preference, and latency preference."
+    },
+    {
+      "note_id": "U8xltA4Mp4",
+      "replyto": "XBF63bHDZw",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 11:27:30.712000",
+      "modified": "2024-11-26 14:32:31.196000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13982/Reviewer_TojP",
+      "actor": "Reviewer TojP",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "The paper presents a comprehensive approach to Simultaneous Machine Translation, addressing data construction, model training, and inference.",
+      "weaknesses": "1. The paper lacks a clear emphasis on the innovative aspects of the proposed method. Highlighting specific novel contributions would strengthen the paper.\n\n2. It remains unclear how the quality of the automatic labeling by GPT-4 is ensured, and the consistency rate with human labeling is not provided.\n\n3. The distinction between the uppercase X and lowercase x in equations 6 and 7 needs clarification.\n\n4. According to Figure 6, the improvement of SimulPL over only MSFT is not substantial, raising questions about the effectiveness of the proposed method.",
+      "questions": "please see weaknesses",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces Simultaneous Preference Learning (SimulPL) for the task of Simultaneous Machine Translation. The approach encompasses not only data construction but also model training and inference strategies. However, the novelty of the proposed method appears to be insufficient."
+    },
+    {
+      "note_id": "4tldYhPmiZ",
+      "replyto": "XBF63bHDZw",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 17:57:13",
+      "modified": "2024-11-20 14:55:31.436000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13982/Reviewer_qWwc",
+      "actor": "Reviewer qWwc",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "1. The proposed approach shows performance improvement on the machine translation datasets.\n2. The proposed five aspects for SiMT preference alignment could be useful.\n3. The presentation is clear and easy to understand.",
+      "weaknesses": "1. Heavy reliance on the quality of the GPT-generated preference data, and few effort is done to verify the quality/correctness/trustworthiness of the generated data.\n2. Overall limited novelty for the whole framework, the idea of length penalty term |y| in the proposed SimulDPO loss function come from [1], and nothing much novel is added here.\n3. Scope is very limited to SiMT only, and this method does not seem applicable to more general LLM preference alignment cases.\n4. Some design is arbitrary. For example, in Confidence-Based Policy During Inference, why set the confidence c_t as exactly 0.5? What if your confidence estimation model is biased, e.g., $\\mathbb{E}(c_t)\\neq0.5$?\n5. More experiments and analysis should be done to conduct a comprehensive evaluation. In the current form, experiment analysis are limited.\n\n\nReferences:\n[1] Park, Ryan, et al. \"Disentangling length from quality in direct preference optimization.\" arXiv preprint arXiv:2403.19159 (2024).",
+      "questions": "Why most experiments are done between translation of Zh and En? Should possibly incorporate more languages to demonstrate the effectiveness of the approach.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper studies the problem of Simultaneous Machine Translation (SiMT). To achieve preference alignment for SiMT models, this paper categorizes human preferences in SiMT scenarios and focus on five aspects: translation quality preference, monotonicity preference, key point preference, simplicity preference, and latency preference. Based on this catogorization, this pape rconstructs human preference prompts with GPT to generate preference data for SiMT. After constructing the data, this paper designs a multi-task supervised fine-tuning stage and a simultaneous direct preference optimization stage to achieve preference alignment for the SiMT model. Experiments on text-to-text SiMT tasks show the effectiveness of the proposed approach."
+    },
+    {
+      "note_id": "AzJceDKgvC",
+      "replyto": "XBF63bHDZw",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-28 20:42:38.409000",
+      "modified": "2024-11-12 16:25:04.104000",
+      "signatures": "ICLR.cc/2025/Conference/Submission13982/Reviewer_1TVX",
+      "actor": "Reviewer 1TVX",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 4,
+      "soundness": 4,
+      "presentation": 4,
+      "contribution": 3,
+      "strengths": "The experimental results look impressive.\n\nI think there will also be interest in the experimental materials.  Your arguments about offline machine\ntranslation (OMT)  are convincing.  That said, I didn't see any discussion of sharing those materials.\n\nI like the idea of offering the user choices over preferences, but do we need to restrict ourselves to a single choice?  Could you imagine a speech-to-text scenario where you could offer multiple text windows so the user can look at one window when latency is a priority and another window when BLEU is a priority?",
+      "weaknesses": "I have never been that happy with the standard discussion of latency and BLEU scores in this literature.  I have quite a bit of experience with professional interpreters as well as automatic solutions.  According to a number of standard metrics, the automatic solutions are better than professional interpreters, but I know that I am more engaged in the meeting when I have access to an interpreter.  They tell me what I need to know when I need to know it.  In addition, sometimes the speaker uses a metaphor that requires more explanation.    The professionals understand when then need to do more than just translate what the speaker said.\n\nI never liked average latency.  I can't fault you for doing what others have done, but sometimes latency matters and sometimes it doesn't.  The professionals understand this.  They speed up when necessary and slow down when latency is less of a priority.  Moreover, I probably care more about worst case latency or RMS latency than average latency.\n\nThis literature would benefit by including more input from professional interpreters that have a lot more experience in this area than we have.\n\nI would really like to see some data from schools that teach professional interpreters. We should be able to record what students say in the booth when they learn how to do this task.",
+      "questions": "Do you have any plans to share your benchmark?\n\nDo you have a github that will make it easy for others to replicate your work?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces a new approach to simultaneous interpretation with low latency."
+    }
+  ]
+}

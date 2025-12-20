@@ -1,0 +1,92 @@
+{
+  "paper": {
+    "id": "m5rOrTiuKG",
+    "forum": "m5rOrTiuKG",
+    "title": "ExploraCoder: Advancing code generation for multiple unseen APIs via planning and chained exploration",
+    "authors": "Yunkun Wang, Yue Zhang, Zhen Qin, Chen Zhi, Binhua Li, Fei Huang, Yongbin Li, Shuiguang Deng",
+    "keywords": "Large Language Models, Code Generation, Code Library, Retrieval Augmented Generation",
+    "abstract": "Through training on publicly available source code libraries, large language models (LLMs) can invoke multiple encapsulated APIs to solve complex programming problems.\nHowever, existing models inherently cannot generalize to use APIs that are unseen in their training corpora. As libraries continuously evolve, it becomes impractical to exhaustively retrain LLMs with new API knowledge. This limitation hampers LLMs from solving problems which require newly introduced or privately maintained libraries.\nHuman programmers often explore unfamiliar APIs by writing experimental code before invoking them for a more complex problem.\nInspired by this behavior, we propose $\\textbf{ExploraCoder}$, a training-free framework that empowers LLMs to invoke multiple unseen APIs in code solution by (1) planning a complex problem into several API invocation subtasks, and (2) exploring correct API usage through a novel chain-of-API-exploration.\nConcretely,  ExploraCoder guides the LLM to iteratively generate several experimental API invocations for each simple subtask, where the promising execution experience are exploited by subsequent subtasks. This forms a chained exploration trace that ultimately guides LLM in generating the final solution.\nWe evaluate ExploraCoder on Torchdata-Github benchmark as well as a newly constructed benchmark that involves more complex API interactions.\nExperimental results demonstrate that ExploraCoder significantly improves performance for models lacking prior API knowledge, achieving an absolute increase of 11.24\\% over niave RAG approaches and 14.07\\% over pretraining methods in pass@10. Moreover, the integration of a self-debug mechanism further boosts ExploraCoder's performance on more challenging tasks. Comprehensive ablation and case studies provide further insights into the effectiveness of ExploraCoder.",
+    "pdf_link": "https://openreview.net/pdf/f37146f467bfe36902c538d000a42bf4d0d11d69.pdf",
+    "submission_date": "2024-09-28 10:17:11.375000"
+  },
+  "reviews": [
+    {
+      "note_id": "rKKb0CCv7V",
+      "replyto": "m5rOrTiuKG",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 09:52:39.812000",
+      "modified": "2024-11-12 16:16:06.297000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14053/Reviewer_oLK8",
+      "actor": "Reviewer oLK8",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 2,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "1. The problem of adapting LLMs to work with new APIs is a timely and important as it reflects the real-world need for adaptability in code generation, especially in environments with dynamic or proprietary libraries. Chain of API Exploration is innovative in the context of LLMs.\n2. The framework for handling new APIs -- divide-and-conquer framework combined with iterative API exploration which mimics a human programmer’s exploratory approach is solid and well-supported. Interestingly, the self-debugging mechanism is well-integrated within CoAE.\n3. The experimental design appears thorough, incorporating both existing and newly developed benchmarks to assess performance across tasks of varying complexity. The benchmarks are carefully constructed to highlight the challenges of multi-API invocation.\n4. Results are clearly presented, with ablation studies and comparisons to relevant baselines (e.g., naive RAG, Self-Repair) supporting claims of improved performance",
+      "weaknesses": "1. The use of similarity-based retrieval strategy for identifying appropriate APIs for subtasks may not be effective in case APIs are similar in functionality functionally  but syntactically different (e.g., APIs that share functionalities across domains or are named differently). This inherits the retrieval bias, which may hinder the subtask performance.\n\n2. ExploraCoder may be sensitive to effective task segmentation, or selecting the optimal granularity for subtasks, where over- or under-decomposition may lead to errors or inefficiencies. The paper lacks a proper discussion and evaluation of how accurately they achieve optimal granularity. \n\n* Furthermore, the paper does not specify how the model handles cascading errors in multi-API tasks, especially for the \niterative CoAE mechanism and self-debugging.\n\n3. While the paper sometimes implies that ExploraCoder can generalize across various API types, the benchmarks are limited to the Torchdata library, which may not fully represent and generalize to APIs in other domains. \n\n**Typos and Minor Errors**:\n   - Page 1, Abstract: \"niave\" should be \"naive.\"\n   - Page 2, Section 1: \"self-debug\" is not consistently hyphenated throughout the paper.\n   - Terms like \"experience exploitation\" and \"trace\" are not defined until later sections, which could confuse readers initially.",
+      "questions": "1. How does the framework handle APIs with similar functionality but different syntax? How robust is the similarity-based retrieval in this setting?\n2. Have you evaluated different segmentation strategies, and how did they affect model performance?\n3. How often the framework must retry or debug when errors accumulate across tasks?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "The paper introduces ExploraCoder, a training-free framework designed for large language models (LLMs) to utilize unseen APIs to perform code generation (library-oriented code generation), enabling LLMs’ capabilities to adapt to new or private libraries without retraining. \nExploraCoder decomposes a complex programming task into simpler subtasks, employing a chain-of-API-exploration (CoAE) method that iteratively generates, executes, and refines code snippets for specific API calls for each subtask. \nBy doing so, ExploraCoder builds an experience trace, ultimately guiding the generation of correct final code.\nThe paper demonstrates improved performance in handling unseen APIs on the Torchdata-based benchmarks compared to other training-free methods, achieving competitive Pass@k and Success@k rates."
+    },
+    {
+      "note_id": "Dn55tI9hRN",
+      "replyto": "m5rOrTiuKG",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-03 06:47:36.736000",
+      "modified": "2024-11-25 02:33:08.982000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14053/Reviewer_vaKZ",
+      "actor": "Reviewer vaKZ",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "1.The results demonstrate significant improvements, and the experiments are thorough, covering comparisons with RAG frameworks and API-pretrained models across challenging benchmarks.\n\n2.ExploraCoder operates without additional training, making it resource-efficient and easier to deploy, which is advantageous for real-world applications.\n\n3.Clear and Well-Written Presentation: The paper is well-structured and clearly written, making the concepts and experimental setup easy to understand.",
+      "weaknesses": "1.The iterative API exploration and self-debugging processes increase computational costs, especially for tasks with complex requirements and multiple APIs. While the framework is training-free, the runtime cost for each exploration cycle could be considerable, impacting scalability for larger applications (eg. repo-level?).\n\n2.I understand that creating datasets is expensive, but I am still concerned about the effectiveness of this method on other libraries. Although the paper demonstrates strong results on the Torchdata-Github and Torchdata-Manual benchmarks, without testing on a more diverse set of libraries, the robustness of ExploraCoder in real-world code generation tasks remains uncertain. \n\n3.ExploraCoder relies on timely execution feedback to guide subsequent steps in the API exploration chain. If execution feedback is delayed or unavailable, as might be the case in certain API-limited or high-latency environments, the framework’s performance could be negatively affected.\n\n4.The framework is designed to handle multiple unseen APIs, but it does not address how it would adapt to changes in APIs over time. As APIs evolve (e.g., deprecations, new parameters, or altered behavior), the effectiveness of previously explored solutions may degrade. Without dynamic updating, ExploraCoder could struggle with outdated API knowledge.\n\n5.The framework’s iterative exploration and debugging processes may produce opaque reasoning steps, making it difficult to understand or verify why certain API calls were chosen. This could hinder debugging or modifying generated solutions manually, which may be problematic for developers aiming to understand the rationale behind each API invocation in the final solution.\n\n6.As mentioned in the paper, if an LLM has already learned new APIs, it would be highly competitive. How can you justify that this method remains competitive when compared to knowledge-update approaches?\n\n7.(minor point) Naive RAG seems like a relatively weak baseline for complex multi-API tasks. Is there no better option to demonstrate that the method in this paper is powerful?\n\n8.(minor point) The method appears straightforward and intuitive, but such process-oriented approaches seem to lack transparency, leading to potential uncontrollable risks in intermediate steps. How do you ensure that the intermediate outputs are reasonable?",
+      "questions": "1.Given that iterative API exploration and self-debugging increase computational costs, how does this framework handle large-scale tasks, such as those at the repository level? Have you conducted any efficiency tests or optimizations for such large-scale applications?\n\n2.While the method performs well on the Torchdata benchmarks, how confident are you in its effectiveness for other libraries or domains?\n\n3.If an LLM has already been updated to include new API knowledge, it would naturally perform well. Can you elaborate on how ExploraCoder remains competitive against knowledge-updated models and whether it provides any unique advantages?\n\n4.Are there more suitable baselines that could demonstrate the strengths of ExploraCoder more effectively?",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces ExploraCoder, a framework for code generation that enables large language models to handle tasks involving multiple, previously unseen APIs. Traditional code generation models, even with RAG or API-pretrained knowledge, often struggle with complex tasks that require multiple API interactions due to limitations in retrieving and integrating diverse APIs effectively. Experiments demonstrate that ExploraCoder significantly outperforms traditional methods."
+    },
+    {
+      "note_id": "2eUgEjoEyx",
+      "replyto": "m5rOrTiuKG",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 21:07:49.424000",
+      "modified": "2024-11-12 16:16:06.172000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14053/Reviewer_XmiU",
+      "actor": "Reviewer XmiU",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 5,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "- The problem was formulated clearly as a practical challenge in code generation\n- The authors explain their proposed method clearly \n- Experiments show improvement over baseline models that the authors opt to compare against\n- Various ablations especially on how different components contribute to the system's performance",
+      "weaknesses": "The most significant concern I have is the limited novelty of this paper. The proposed ExploraCoder framework seems closely resembling existing code agent frameworks that can perform operations that cover what has been discussed in the paper, e.g., planning, reading code and code documentation, chain/tree-of-thought reasoing, and code execution, and iterations of all above. The core components of the proposed method, e.g., task planning, API recommendation, Chain of API Exploration, solution generator, etc. are methodologically similar to existing approaches in code agents. The paper does not sufficiently demonstrate how its approach fundamentally differs from or improves upon these existing methods, beyond applying similar techniques to the specific domain of unseen API usage.\n\nA related weakness is the paper's related work. The authors have notably omitted discussion of recent advances in code agents, e.g., from swe-agent to AutoCodeRover to the leading ones on swebench. Without comparing against these relevant approaches, it's difficult to assess the true contribution of ExploraCoder to the field. \n\nFurther, the comparison in experiments setting might not be fair. the proposed method requires significantly more model calls than the baseline approaches noted in the paper, as it involves multiple rounds of code generation, execution, and debugging for each subtask. However, this aspect is neither analyzed nor discussed in the paper. The authors should provide a detailed and transparent analysis of the computational overhead.\n\nFinally, both benchmarks mentioned in the paper (Torchdata-Github and Torchdata-Manual) contain only 50 problems each, which is relatively small for drawing statistically significant conclusions. While the problems themselves may be complex and requires multiple API usage, the robustness and generalizability of the results are debatable given the small size of the benchmark and domain.",
+      "questions": "See weaknesses above for the most critical ones on novelty, comparison of baseline methods, fairness in benchmarking, and scalability of the dataset.\n\nIn addition,\n\n- Could the authors provide qualititive examples on 1) the benchmarks and 2) where the proposed method demonstrate improvements over baselines?\n\n- On the dataset curation part (Line 843 onwards in A.5): could you elaboreate on 1) how the example programming tasks was created, and 2) how the expert review was done?\n\n- A lot of useful content has been presented in appendix only. This creates troubles in the flow of the presentation. Please consider re-arrange the paper to make sure that the most critical and logically important topics are presented in the main content without the need of frequently referring to the Appendix.\n\n- nit: there are some typos throughout the paper. Please fix them in next iteration. Some examples: 1) L30 niave->naive 2) L116 the citation should be We et al. 2022 instead of 2024. 3) L397: abosolue->absolute 4) L524 performe->perform 5) L922 sematics->sematics",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper introduces ExploraCoder, a framework that enables Large Language Models (LLMs) to generate code involving multiple unseen APIs through planning and exploration. The framework breaks down complex programming tasks into simpler subtasks, explores API usage through experimental code generation and execution, and leverages successful experiences to guide final solution generation. The authors curated two benchmarks: Torchdata-Github and the more chanllenging Torchdata-Manual. Authors evaluate their approach on two benchmarks, demonstrating significant improvements over baseline methods and conducting comprehensive ablation studies to validate their design choices."
+    }
+  ]
+}

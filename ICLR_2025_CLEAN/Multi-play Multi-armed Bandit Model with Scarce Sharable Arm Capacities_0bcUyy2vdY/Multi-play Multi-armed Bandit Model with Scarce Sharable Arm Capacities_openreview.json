@@ -1,0 +1,118 @@
+{
+  "paper": {
+    "id": "0bcUyy2vdY",
+    "forum": "0bcUyy2vdY",
+    "title": "Multi-play Multi-armed Bandit Model with Scarce Sharable Arm Capacities",
+    "authors": "Hanyang LI, Hong Xie, Defu Lian, Enhong Chen",
+    "keywords": "Multi-play multi-armed bandit, scarce sharable arm capacity, regret bounds",
+    "abstract": "This paper revisits multi-play multi-armed bandit with shareable arm capacities problem (MP-MAB-SAC), for the purpose of \nrevealing fundamental insights on the statistical limits and data efficient learning. The MP-MAB-SAC is tailored for resource allocation problems arising from LLM inference serving, edge intelligence, etc. It consists of $K$ arms and each arm $k$ is associated with an unknown but deterministic capacity $m_k$ and per-unit capacity reward with mean $\\mu_k$ and $\\sigma$ sub-Gaussian noise.  The aggregate reward mean of an arm scales linearly with the number of plays assigned to it until the number of plays hit the capacity limit $m_k$, and then the aggregate reward mean is fixed to $m_k \\mu_k$. At each round only the aggregate reward is revealed to the learner. \nOur contributions are three folds.   1) \\textit{Sample complexity:} we prove a minmax lower bound for the sample complexity of learning the arm capacity  $\\Omega(\\frac{\\sigma^2}{\\mu^2_k} \\log \\delta^{-1})$, and propose an algorithm to exactly match this lower bound. \nThis result closes the sample complexity gap of Wang et al. (2022a), whose lower and upper bounds are $\\Omega(\\log \\delta^{-1})$ and  $O (\\frac{m^2_k \\sigma^2}{\\mu^2_k} \\log \\delta^{-1})$ respectively.  2) \\textit{Regret lower bounds:}  we prove an instance-independent regret lower bound   $\\Omega( \\sigma \\sqrt{TK} )$  and instance-dependent regret lower bound $\\Omega(\\sum_{k=1}^K\\frac{c\\sigma^2}{\\mu_k^2} \\log T)$.  This result provides the first instance-independent regret lower bound and strengths the instance-dependent regret lower bound of Wang et al. (2022a) $\\Omega(\\sum_{k=1}^K \\log T)$.   3) \\textit{Data efficient exploration:}we propose an algorithm named \\texttt{PC-CapUL}, in which we use prioritized coordination of arm capacities upper/lower confidence bound (UCB/LCB) to efficiently balance the exploration vs. exploitation trade-off.  We prove both instance-dependent and instance-independent upper bounds for \\texttt{PC-CapUL}, which match the lower bounds up to some acceptable model-dependent factors. This result provides the first instance-independent upper bound, and has the same dependency on $m_k$ and $\\mu_k$ as Wang et al. (2022a) with respect to instance-dependent upper bound.But there is less information about arm capacity in our aggregate reward setting.  Numerical experiments validate the data efficiency of \\texttt{PC-CapUL}.",
+    "pdf_link": "https://openreview.net/pdf/a36eb2864f2504d52bdd52f3dbdf111d07ee7de3.pdf",
+    "submission_date": "2024-09-28 11:00:35.718000"
+  },
+  "reviews": [
+    {
+      "note_id": "jL1CT2cWD9",
+      "replyto": "0bcUyy2vdY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-05 21:26:54.084000",
+      "modified": "2024-11-12 16:42:46.430000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14140/Reviewer_P6Qi",
+      "actor": "Reviewer P6Qi",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 1,
+      "contribution": 3,
+      "strengths": "1. The work closes the sample complexity gap and narrow the regret gap for the MP-MAB problem. Although the techniques used in the proof are not particularly unique (mostly based on regular UCB and LCB), the conclusions are still very interesting and make sense.\n2. The work propose numerical simulation to show the advantages of their algorithms.",
+      "weaknesses": "1. The writing is a bit poor. The paper contains many colloquial expressions, i.e., line 383 \"But if\", line 390, 403, 405 \"And furthermore\" \"And this\". \n2. The author states in the introduction that the algorithm has applications to LLM inference serving. I believe it’s necessary to provide some LLM-related experiments to support this statement.",
+      "questions": "1. should we assume that $\\mu_k\\ge c$ for all $k$? The authors state that the optimal action is always $(m_1,\\dots, m_K)$ in line 211. It seems that this only holds when $\\mu_k\\ge c$ for all $k$.\n2. what is \\mu in Theorem 1. I did not find the definition.\n3. I am curious about how could the sample complexity in Theorem 2 gets rid of the dependence of N. Intuitively, even there is no noise (sigma = 0), for any algorithm, it still need at least $\\log N$ rounds to find the true $m_k$ by binary search. Is the dependence on $N$ hidden in $\\xi$?\n\n\nTypos:\nline 224: $a_{k,t}$ instead of $a_k$\nline 289: for large probability -> with high probability\nline 383: to played with -> to play with",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper revisits multi-play multi-armed bandit with shareable arm capacities problem. Improved on previous work Wang et al. (2022a), the paper proposes refined lower and upper bounds for both sample complexity and regret. For sample complexity, the authors propose a minmax lower bound, and give an algorithm that matches the bound. For regret, the authors provide both instance dependent and instance independent regret lower bounds, and find algorithms that match the bounds up to some model-dependent factors."
+    },
+    {
+      "note_id": "ArVEqKYpgw",
+      "replyto": "0bcUyy2vdY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 08:47:06.542000",
+      "modified": "2024-11-12 16:42:46.639000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14140/Reviewer_fizY",
+      "actor": "Reviewer fizY",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 4,
+      "soundness": 4,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "•\tThe problem of Multi play multi-armed bandit problem is an interesting setting to study and improve the foundation of it as it pertains to main real-world settings including LLM inference serving. The work re-establishes that with emphasis on theoretical guarantees.\n\n•\tThe work provides theoretical improvements in sample complexity compared to the existing work on  MP-MAB-SAC. It tends to close the sample complexity gap found in the previous work in Reference A\n\n•\tThe authors also provide a new Improved algorithm, PC-CapUL that performs much better than other existing algorithms and have a solid theoretical backing to it with proved theoretical Regret bound guarantees.\n\n•\tThe experiments cover the regimes where the number of arms is larger which predominantly requires more exploration to take place. The developed algorithm provides much better performance in terms of regret compared to other existing algorithms in this experimental setting.\n\nReference:\n [A] Xuchuang Wang, Hong Xie, and John C. S. Lui. Multiple-play stochastic bandits with shareable finite-capacity arms. International Conference on Machine Learning, ICML 2022.",
+      "weaknesses": "•\tThe experimentation design could have been done much better with the inclusion of better baseline comparison in addition to the algorithm found in Reference A . Also, utilizing a real-world dataset for evaluation would have further complemented these theoretical results.\n\n•\tThe readability of the paper could be much improved. Also, a brief intuitive explanation like a proof sketch could be added in the main text to help the reader get the intuitive logic and understanding of the proof techniques. \n\n•\tA more detailed theoretical comparative analysis like how regret fares against the regret of other algorithms would make the argument much stronger for the developed PC-CapUL algorithm. Moreover, having such a discussion would also help us uncover insights like how the regret bound behaves in different regimes.\n\nReference:\n [A] Xuchuang Wang, Hong Xie, and John C. S. Lui. Multiple-play stochastic bandits with shareable finite-capacity arms. International Conference on Machine Learning, ICML 2022.",
+      "questions": "1.\t$m_k$ is deterministic and well known beforehand as to how many pulls can be made in a round. However, there is a constant movement cost $c$ associated to an arm. In case of LLM query, the number of pulls is associated to the amount of query a server instance can handle.\n\nAre $m_k$ and moving cost $c$ dependent in this scenario? If so, how do this implication sit with all the theoretical proof, or do they have to be independent? A clarification on this would help the readers utilize the developed algorithms on many scenarios where the dependencies are crucial. \n\n2.\tWhy is ordering of plays of arm selection important in $a_t$, providing some details on it will avoid ambiguity around its objective of whether to maximize the resource utilization or to maximum capacity of the arm?\n\n3.\tAlso, with respect to movement cost, in the experiment setting, it has been assigned to an arbitrary value of 0.1 .  Is there any fundamental reason for that? Also, how can they be evaluated in a practical scenario when they are also coupled with reward formulation? Adding some details around them can greatly improve the clarity of the work.  \n\n4.\tIt would be nice to see how the experiments scale up with varying parameters like changing the $m_k$ and changing the movement cost etc ? This will help us understand the empirical performance of the algorithm much better.\n\nReference:\n [A] Xuchuang Wang, Hong Xie, and John C. S. Lui. Multiple-play stochastic bandits with shareable finite-capacity arms. International Conference on Machine Learning, ICML 2022.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper studies the multi play multi-armed bandit problem having shared arm capacity where the in each round, the learner gets to select the arm for a number of pulls capped by the capacity limit with the goal of maximizing the total reward at the end of the play. The authors propose a new reward function and develop a new algorithm PC-CapUL for this problem setting. The developed algorithm provides tighter bounds on sample complexity and regret in comparison to the existing works, efficiently balances exploration and exploitation. The work is applicable in resource allocation problem with capacity constraint scenarios such as LLM inference and many other real world scenarios."
+    },
+    {
+      "note_id": "byR9n8Cuyl",
+      "replyto": "0bcUyy2vdY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-31 20:44:16.155000",
+      "modified": "2024-11-12 16:42:46.787000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14140/Reviewer_HpxS",
+      "actor": "Reviewer HpxS",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 5,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 2,
+      "strengths": "- This paper first considers this problem with scarce shareable arm capacities and proposes both lower and upper bound for both sample complexity and the regret bound.\n- Based on the parts that I checked, the proofs look correct to me.\n- The experiments are also conducted to show superior performance compared to the previous work.",
+      "weaknesses": "- One main concern is the motivation of this paper to consider the case where $N\\geq \\sum m_k$. In this case, the problem seems to be easier (in the sense of algorithm design) since you will definitely explore each action sufficiently enough to figure out the exact $m_k$ while in the opposite case $N< \\sum m_k$, the problem seems to be harder since you need to decide the exploration amount for the suboptimal $k$. Can the authors explicitly justify the choice of studying the $N\\geq \\sum m_k$ case and why it is challenging compared to the previous case?\n- This also leads to the question about the comparison between the lower/upper bound shown in this paper and [Wang et al., 2022a]. While the authors claim better lower bound, I wonder whether the upper/lower bound are comparable in these two cases? Can the algorithm that is derived in this setting adapted to the other? Moreover, I am not sure why equation (5) is more reasonable since it makes sense to me to have the noise's variance larger when $m_k$ or $a_k$ is large.\n- As for the upper bound, the bounds in Theorem 5 seems to be suboptimal since it seems to be dependent on $\\frac{\\max_i \\mu_i}{\\min_i \\mu_i}$, which can be large.\n- I do not understand the lower bound argument shown in Theorem 4. When the cost $c=0$, then this ratio becomes 0, which is surely not informative. In addition, why is the ratio independent of $m_k$? Can the authors explain more on this?\n- Typos:\n  - Line 223: it -> if\n  - Line 224: a_k -> a_{t,k}?\n  - Line 471: depended -> dependent \n  - Line 751: missing lemma reference.\n  - missing periods at the end of many theorem statements (e.g. Theorem 4,5,6..)",
+      "questions": "See \"Weakness\" Section for questions.\n\n- I wonder whether the dependency on the cost parameter $c$ can be improved for the regret lower bound.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper considers the problem of multi-play multi-armed bandits with scarce shareable arm capacities. Specifically, different from [Wang et al., 2022a], this paper considers the problem where $N\\geq \\sum_k m_k$ where $m_k$ is the capacity of action $k$. With a modification on the reward function, this paper proposes new sample complexity lower/upper bound that is tight as well as regret lower/upper bound for this problem. Specifically, the author claims that the sample complexity lower bound proven in this paper improves upon the one shown in [Wang et al., 2022a]. Empirical results are also shown to strengthen their theoretical findings."
+    },
+    {
+      "note_id": "RZj0oIbxnD",
+      "replyto": "0bcUyy2vdY",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-17 14:27:57.311000",
+      "modified": "2024-11-12 16:42:46.985000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14140/Reviewer_Xyas",
+      "actor": "Reviewer Xyas",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 2,
+      "contribution": 3,
+      "strengths": "The theoretical contributions are nontrivial. This paper shows tighter lower bounds, and then proposes new algorithms to match them. Furthermore, the experiments verified the theories.",
+      "weaknesses": "I have the following concerns: \n\n1. The writing quality of this paper falls below the standards required for publication in ICLR. Issues such as clarity, rigor, and basic grammatical correctness are prevalent. It appears that the authors did not thoroughly review the paper before submission. From a writing perspective, the paper remains in draft form: numerous typos, confusing notations, and grammatical errors hinder readability. For example,  (1) in Lemma 2, $\\epsilon^{uE}$ should be $\\epsilon^{UE}$; (2) in the proof of Lemma 2 “Bourel et al., 2020” is even not cited; (3) in the proof of Theorem 1, which lemma is used here? Besides, this theorem should be proved more formally; (4) What is the first baseline “MP-MAB-SA” in the experiments?\n\n2. The explanations provided in the paper are insufficient. (1) In Section 1, more concrete examples of the model's practical applications are needed. (2) The claim that certain changes in settings make the model more suitable for LLMs requires stronger evidence. For instance, the movement cost $c$ (which is known to the learner) seems irrelevant. (3) The paper should provide a more in-depth analysis of the experimental results, going beyond mere statements of fact.\n\n3. The comparison with the previous work seems not fair. (1) Since $N \\ge M$ makes the learner only need to learn the capacity $m_k$, without needing to learn the rank of the arms, the learning task seems easier. (2) In lines 307~310, is there any evidence to show stability is getting better? Besides, I’m kind of confused about this result because the robustness v.s. regret usually has some trade-off, which means the increasing of stability may (not always) lead to the decreasing of performance.",
+      "questions": "Please try to solve the problems in weaknesses. In addition, since the improvement in results achieved in this paper mainly comes from the careful selection of UCB, I would like to know what kind of inspiration it will bring to future work? This is not necessary as the theoretical improvement itself is interesting.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper discusses the problem of the Multi-play Multi-armed Bandit Model with Shareable Arm Capacities (MP-MAB-SAC). It tightens the lower bounds for both sample complexity and the cumulative regret compared to the previous work. Besides, this paper proposes corresponding algorithms to match the lower bounds. Finally, the numerical experiments show that the proposed algorithms outperform the existing ones."
+    }
+  ]
+}

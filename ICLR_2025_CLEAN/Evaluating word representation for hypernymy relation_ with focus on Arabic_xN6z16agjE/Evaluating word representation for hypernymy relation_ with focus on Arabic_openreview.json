@@ -1,0 +1,92 @@
+{
+  "paper": {
+    "id": "xN6z16agjE",
+    "forum": "xN6z16agjE",
+    "title": "Evaluating word representation for hypernymy relation: with focus on Arabic",
+    "authors": "Randah Alharbi, Husni A. Al-Muhtaseb",
+    "keywords": "Word representation, hypernymy relation, hypernymy specific embedding, hypernymy detection.",
+    "abstract": "Hypernymy relation is one of the fundamental relations for many natural language processing and information extraction tasks. A key component of the performance of any hypernymy-related task is word representation. Traditional word embeddings capture word similarity but fall short of representing more complex lexical-semantic relationships between terms, such as hypernymy. To overcome this, recent studies have proposed hypernymy-specific representations. In this study, we conduct an evaluation of several types of word representations to determine the most effective approach for modeling hypernymy relationships in Arabic. We use an Arabic training corpus and several datasets to assess traditional embedding, hypernymy-specific embedding, and contextual embedding across several hypernymy-related tasks, including hypernymy detection. The results indicate that different embeddings have different effects on the performance. Moreover, the performance is affected by the selected datasets. This highlights that there is a need for further research to develop more robust word representation and benchmark datasets.",
+    "pdf_link": "https://openreview.net/pdf/55acc670c2c4b632099e99b36f7e87c11e2bf3e9.pdf",
+    "submission_date": "2024-09-28 10:43:04.935000"
+  },
+  "reviews": [
+    {
+      "note_id": "eOXcxAUGqj",
+      "replyto": "xN6z16agjE",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-04 10:24:16.191000",
+      "modified": "2024-11-12 16:09:16.619000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14112/Reviewer_SeDp",
+      "actor": "Reviewer SeDp",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 3,
+      "presentation": 1,
+      "contribution": 2,
+      "strengths": "1. The goal of the paper is easy to understand, as it provides valuable insight into which representations are best for hypernym-based tasks (none are best overall)\n\n2. Experiment design makes sense and is mostly without issues. There is a minor issue stemming from the limited resources available to the authors of the paper, but I will touch upon them in the weaknesses part of the review.",
+      "weaknesses": "1. Authors are very constrained in resources, having to resort to halving the size of the training dataset for some of the algorithms. This raises questions to the validity of the collected information, since Poincare GloVe, the best algorithm in Hypernymy Directionality and Hypernymy Detection tasks, has seen only half as many data samples, which can possibly make the results non-representative. However, due to the simplicity of the Poincare GloVe, most likely it won’t impact the results as much, thus, making this just a minor issue.\n\n2. The quality of the text's presentation is poor; it contains numerous typos and improperly formatted tables. Table 7 has incorrectly formatted items in header, Table 8 has incorrectly formatted dataset names, in table 7 the highest F1 score for ASRD dataset is incorrectly attributed to 100D Poincare GloVe, which has the score of 0.88 instead of Poincare Embedding, which have the score of 0.89. On the line 070 BERT has no citation available, on the line 220 the sentence starts from lowercase, on the line 291 the word Assess is incorrectly capitalized, line 480 is cut in half, etc. Both Introduction and Related Work sections are hard to read, since they are written in a big wall of text instead of separate paragraphs on groups of algorithms. Some of the citation years are in brackets (lines 065-068), some are not (line 079).",
+      "questions": "Please, correct the formatting of the paper, it is very hard to read in current condition.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "Authors try to evaluate different algorithms, which create hypernymy relation representations in Arabic. They select AraBERT corpus as a base for training all embedding models and train several models on this data. As a baseline for contextual embeddings, BERT is used, while for classic embeddings GloVe is used. For hypernymy-specific embedding LEAR, GLEN, Princare and Poincare Glove is used. After that, a simple feedforward models are trained for all embeddings for three tasks: hypernymy detection, hypernymy directionality detection and semantic relation classification. Results show, that Poincare GloVe performs best on hypernomy detection and hypernomy directionality detection tasks. In semantic relation classification tasks Poincare GloVe performs worse. Overall, there is no best representation for all tasks."
+    },
+    {
+      "note_id": "jhkN2c8bpn",
+      "replyto": "xN6z16agjE",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-30 10:12:13.561000",
+      "modified": "2024-11-12 16:09:16.585000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14112/Reviewer_yyTA",
+      "actor": "Reviewer yyTA",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 3,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 1,
+      "strengths": "1. **Relevance**: Focusing on hypernym in Arabic is timely and relevant, and it addresses a less explored area of NLP.\n2. **Experiments**: The paper presents a comprehensive experimental evaluation of multiple word representation techniques, demonstrating a solid methodological framework.\n3. **New findings**: The findings presented in the paper provide new insights into how Arabic word embeddings can be enhanced to better detect hypernym.",
+      "weaknesses": "1. **Literature Review**: Although the paper discusses related work, a more comprehensive literature review would have positioned the paper's contribution more effectively. I suggest the authors report precision and recall specifically for elements that have both spatial and logical relationships, compared to those with only one type of relationship.\n2. **Clarity**: Some sections may lack clarity, particularly in explaining the significance of the research methodology and findings. \n3. **Results Interpretation**: The results section may need to discuss the significance of the findings in more depth, especially in the context of existing models.",
+      "questions": "1. How do the results of your study compare to existing models in other languages, especially in terms of applicability to Arabic?\n3. What are the advantages of your study over previous studies? Is a new methodology or a new dataset proposed?\n### Additional feedback\n- Consider revising the introduction to better outline the motivation for the study and its significance in the broader context of NLP research.\n- It may be helpful to include more hypernym examples in Arabic throughout the paper to illustrate your points.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper focuses on evaluating and improving word vector representations specialized for hypernym relations in Arabic. Your research captures the gaps in hypernym aspects of performance by conducting multiple sets of experiments on different datasets, and this aspect of the research is important for the NLP task."
+    },
+    {
+      "note_id": "QPDd4YxnSL",
+      "replyto": "xN6z16agjE",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-27 05:43:56.087000",
+      "modified": "2024-11-12 16:09:16.521000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14112/Reviewer_DU1q",
+      "actor": "Reviewer DU1q",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 3,
+      "confidence": 4,
+      "soundness": 2,
+      "presentation": 2,
+      "contribution": 2,
+      "strengths": "1. Word representations for hypernymy are essential for a variety of tasks in NLP and information extraction.\n\n2. By concentrating on the Arabic language, the paper contributes to a less explored area, providing insights for non-English NLP research.\n\n3. The research conducts an evaluation of multiple types of embeddings, including traditional, hypernymy-specific and contextual embeddings.",
+      "weaknesses": "1. The paper primarily focuses on evaluating existing word representations rather than introducing a novel approach or method for hypernymy modeling. The novelty is very limited.\n\n2. The written quality of this paper is poor. The authors should carefully revise this paper for better presentations. For example, the citation format is incorrect.\n\n3. The paper seems to provide an evaluation of performance effects without a deep analysis of why certain embeddings perform better or worse in specific contexts or tasks.\n\n4. The impact of this work in the ICLR community is limited. Maybe an NLP workshop on the Arabic language is more suitable.",
+      "questions": "There are no specific questions here. But I suggest that the authors might consider proposing a novel method or modification in word representation tailored to hypernymy in Arabic instead of solely focusing on evaluation. In addition, this work may be better suited for a specialized venue, such as an NLP workshop focused on the Arabic language. This could provide a more appropriate audience that appreciates the linguistic specificity.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper addresses the challenge of modeling hypernymy relations specifically focusing on Arabic. The authors evaluate various word representation methods to determine the most effective for Arabic hypernymy tasks. They compare traditional embeddings, hypernymy-specific embeddings, and contextual embeddings using an Arabic corpus and multiple datasets to assess their impact on tasks such as hypernymy detection."
+    }
+  ]
+}

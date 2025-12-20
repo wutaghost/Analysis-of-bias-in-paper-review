@@ -1,0 +1,92 @@
+{
+  "paper": {
+    "id": "sb1HgVDLjN",
+    "forum": "sb1HgVDLjN",
+    "title": "Offline Model-Based Optimization by Learning to Rank",
+    "authors": "Rong-Xi Tan, Ke Xue, Shen-Huan Lyu, Haopu Shang, yaowang, Yaoyuan Wang, Fu Sheng, Chao Qian",
+    "keywords": "Offline model-based optimization, black-box optimization, learning to rank, learning to optimize",
+    "abstract": "Offline model-based optimization (MBO) aims to identify a design that maximizes a black-box function using only a fixed, pre-collected dataset of designs and their corresponding scores. This problem has garnered significant attention from both scientific and industrial domains. A common approach in offline MBO is to train a regression-based surrogate model by minimizing mean squared error (MSE) and then find the best design within this surrogate model by different optimizers (e.g., gradient ascent). However, a critical challenge is the risk of out-of-distribution errors, i.e., the surrogate model may typically overestimate the scores and mislead the optimizers into suboptimal regions. Prior works have attempted to address this issue in various ways, such as using regularization techniques and ensemble learning to enhance the robustness of the model, but it still remains. In this paper, we argue that regression models trained with MSE are not well-aligned with the primary goal of offline MBO, which is to \\textit{select} promising designs rather than to predict their scores precisely. Notably, if a surrogate model can maintain the order of candidate designs based on their relative score relationships, it can produce the best designs even without precise predictions. To validate it, we conduct experiments to compare the relationship between the quality of the final designs and MSE, finding that the correlation is really very weak. In contrast, a metric that measures order-maintaining quality shows a significantly stronger correlation. Based on this observation, we propose learning a ranking-based model that leverages learning to rank techniques to prioritize promising designs based on their relative scores. We show that the generalization error on ranking loss can be well bounded. Empirical results across diverse tasks demonstrate the superior performance of our proposed ranking-based method than twenty existing methods. Our implementation is available at \\url{https://github.com/lamda-bbo/Offline-RaM}.",
+    "pdf_link": "https://openreview.net/pdf/cab089fdc71f81b0b8706e716323b829292e6eca.pdf",
+    "submission_date": "2024-09-28 10:19:10.980000"
+  },
+  "reviews": [
+    {
+      "note_id": "Af13NM3Xsg",
+      "replyto": "sb1HgVDLjN",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-02 14:07:36.070000",
+      "modified": "2024-11-23 17:08:57.922000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14057/Reviewer_9jkq",
+      "actor": "Reviewer 9jkq",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "**Originality**: This paper utilizes the existing LTR loss functions for offline MBO problems. This is a novel way to approach the offline MBO problem.\n\n**Quality**: I found some concerns which I will raise in the weakness section.\n\n**Clarity**: Overall, the paper has clarity.\n\n**Significance**: This new approach to offline MBO could be of significance, if the following questions are answered.",
+      "weaknesses": "Although the approach is novel, there are concerns regarding how it can generalize performance and alleviate the out-of-distribution issue. It is not convincing that just plugging an LTR loss would address would solve the problem.\n(See Questions)",
+      "questions": "- In MBO problems, the exact value of the objective function is often critical. For example, when optimizing GPU performance, the goal is not only to minimize latency but also to know the precise latency value to assess the suitability of the design. Using LTR losses, however, does not guarantee that the output will match the true objective. Therefore, a potential drawback of the proposed approach is its failure to accurately estimate the objective function, which is highly relevant in real-world applications.\n- I am a bit puzzled by the definitions of Precision and Recall in Definition 1. In machine learning, Precision typically measures the ratio of true positives to all instances classified as positive, while Recall measures the ratio of true positives to the total number of ground-truth positives.  If a design is included in the top-k set, it should be considered a true positive. This suggests the numerator should be the same for both Precision and Recall, the dimension of the intersection and the denominator for both Precision and Recall should be k.\n- The out-of-distribution issue in MBO has been well studied. Adversarial weight perturbation [1] is one approach. Perturbing and minimizing the worst case performance among the performance is crucial to have better out-of-distribution issue and to improve generalization. Do you claim that the proposed approach do not require such perturbations?\n- To achieve generalization, methods like regularization, ensembling weak learners, and training under adversarial inputs are commonly used. It’s unclear how using an LTR loss alone could eliminate the need for such approaches. Even when training with an LTR loss on a static offline dataset, how you can guarantee that the ranking will generalize to out-of-distribution data.\n\n[1]: Yu, Tianhe, et al. \"Combo: Conservative offline model-based policy optimization.\" Advances in neural information processing systems 34 (2021): 28954-28967.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "Offline model-based optimization (MBO) is concerned with the goal of maximizing an unknown objective function using an offline dataset. \n$\\min_{x \\in X} f(x)$ with unknown $f(.)$. The goal is to learn a proxy function $\\hat{f} (.)$. \nA dataset from past observations is available $[  (x_i, f(x_i) ]_{i=1}^n$. The training has to be done completely offline, because online evaluation is not possible in this setup.\nThe rudimentary approach is to train $\\hat{f} (.)$ by minimizing the MSE loss between $\\hat{f} (x_i)$ and $f (x_i)$. This vanilla approach has the problem of out-of-distribution issue, because $\\hat{f} (.)$ does not approximate well on unseen space within $X$.\nThis paper proposes to minimize a learning-to-rank (LTR) loss instead of the MSE loss and experimentally compare the proposed RankCosine and ListNet losses with the existing approaches."
+    },
+    {
+      "note_id": "aZFbOQNVUi",
+      "replyto": "sb1HgVDLjN",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-11-01 19:47:58.971000",
+      "modified": "2024-11-25 23:04:43.690000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14057/Reviewer_ChpN",
+      "actor": "Reviewer ChpN",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 6,
+      "confidence": 4,
+      "soundness": 3,
+      "presentation": 4,
+      "contribution": 3,
+      "strengths": "Paper was clearly written and original. To the best of my knowledge, the LTR framework was not previously used for offline optimization. Empirical results show positive improvement over previous baselines.",
+      "weaknesses": "I think the idea that MSE is not always optimal for offline opt was recently pointed out in the MATCH-OPT paper (Hoang et al., 2024) (in which they use the term \"value-matching surrogates\" to describe model trained with MSE loss). Personally, I think that MSE is not worse than any other metric for optimization, but it could be harder to be estimated accurately for OOD samples. This seems to have been acknowledged in the MATCH-OPT paper. Section 3.1 and 3.2 of this paper seems to focus on justifying this insight using empirical evidence. 3.3 describes the LTR algorithm (which is not original), and 3.4 quotes some generalization result of LTR.\n\nRegarding 3.1 and 3.2, it makes no sense to compare the two metrics MSE and AUPRC. MSE evaluation does not use info about the top-k design (which has very strong correlation with the rank of the 100th percentile candidate), whereas AUPRC explicitly uses this info. It seems obvious to me that the latter would have higher Pearson correlation. Additionally, one cannot use the top-k info during training, so this would have little relevance to the actual method (which uses the ListNet loss). Most offline opt frameworks don't simply rely on the MSE loss though. As pointed out in the intro, there are some that use generative modeling or regularization to condition the surrogate model. How do those techniques relate to the idea of ranking samples?\n \nThe theory is, unfortunately, quite shallow and needs some extension. Theorem 1 (which is more of a proposition), states an equivalence, so the reverse argument could also be put forward -- why not MSE instead of ranking? As mentioned, I think the key challenge of offline opt is that we cannot control the surrogate's behavior OOD. Early error can lead the gradient search astray, so one should focus on quantifying this compounding effect.\n\nTheorem 2 is a direct quote from previous work, but it seems to add no value to the current setting. Does LTR generalize better than MSE on OOD data? I doubt that we can conclude anything general like that without a particular set of assumptions. So, the right question is, in which scenario will LTR generalize better than MSE on OOD data? I think this is important to answer this, especially when this paper is trying to advocate for a paradigm shift in offline opt. \n\nEmpirical results seem reasonable. However, given the landscape of offline opt research, in which every recent paper seems to report a different set of results on the Design Bench (typically suggesting that it is best), I find it hard to conclude that any method is more significant and robust than the others without proper theoretical backing. The paper should also compare with the recent DDOM method (Krisnamoorthy et al., 2023) which is representative of the generative modeling line of work.",
+      "questions": "Please see above.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper proposes a new approach for offline optimization which focuses on training a surrogate to rank samples rather than to accurately predict their values. This surrogate is trained using the LTR framework with ListNet loss."
+    },
+    {
+      "note_id": "3UKfRwqF4O",
+      "replyto": "sb1HgVDLjN",
+      "invitation": "",
+      "note_type": null,
+      "decision_label": null,
+      "created": "2024-10-30 08:24:40.681000",
+      "modified": "2024-11-21 02:07:40.995000",
+      "signatures": "ICLR.cc/2025/Conference/Submission14057/Reviewer_wgm9",
+      "actor": "Reviewer wgm9",
+      "readers": "everyone",
+      "title": null,
+      "rating_or_recommendation": 8,
+      "confidence": 5,
+      "soundness": 3,
+      "presentation": 3,
+      "contribution": 3,
+      "strengths": "- Utilizing ranking scores in place of MSE to train the offline optimization surrogate model is an innovative approach. It aligns more intuitively with the objectives of offline optimization, making it a fitting metric for this context.\n\n- The algorithm is very clear and easy to understand. At the same time, this paper conducts a theoretical analysis of generalization error bound.\n\n- The authors conducte a wide range of experiments, providing comprehensive comparisons with the latest methods. The experimental results show the feasibility and effectiveness of the proposed approach.\n\n- This article is well-structured, with clear logic and easy-to-follow explanations that enhance readability and comprehension. \n\n- The supplementary material is sufficient and the algorithm can be fully reproduced without any problems. The appendices contain ample additional experiments and ablation studies. The appendices also contain a very comprehensive review of related work.",
+      "weaknesses": "- Some concepts need to be clarified, such as OOD in the ranking model and Recall@k in Definition 1. These are raised in the \"questions\" below.\n\n- Typos. For example, \"e.g\" in line 48 should be \"e.g.\", \"caculated\" in line 241 should be \"calculated\". A thorough proofreading is recommended.",
+      "questions": "1. As mentioned by the authors in the introduction, one of the key challenges in offline optimization is Out-of-Distribution (OOD) data. While this ranking approach offers a better indication than the traditional OOD-MSE and aligns well with the offline optimization context, how do the authors address the OOD issue in the ranking setting? Could you provide a detailed analysis of the OOD problem in this context?\n\n2. In Definition 1, regarding Recall@k, why does the Recall@k value depend solely on k and N, with no relation to the model's predictions or true ranking? Additionally, this definition does not seem to reflect the model’s recall performance. Should the authors consider revising the definition, or reconsider using the term \"recall\" to refer to this variable?\n\n3. In Table 2, the results for backward methods like BONET[1] and GTG[2] appear to be much lower than those in the original paper (Table 2 in [1] and Table 1 in [2]). Could this be due to differences in experimental settings? If so, why don't the authors use the same configuration?\n\n[1] Generative pretraining for black-box optimization. ICML 2023. \n\n[2] Guided trajectory generation with diffusion models for offline model-based optimization. NeurIPS 2024.",
+      "ethics_flag": [
+        "No ethics review needed."
+      ],
+      "code_of_conduct": "Yes",
+      "body": "This paper challenges the use of MSE for training surrogate models in offline MBO, demonstrating its weak correlation with final performance. Instead, the authors propose a ranking-based model leveraging AUPRC, which achieves superior results compared to existing methods and suggests promising new directions for offline MBO."
+    }
+  ]
+}
