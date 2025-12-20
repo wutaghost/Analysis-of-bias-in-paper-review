@@ -25,7 +25,7 @@ This project aims to quantitatively analyze bias in academic paper reviews using
 4. **偏差分析 / Bias Analysis**: 计算期望分数与实际分数的差异
 5. **可视化 / Visualization**: 生成统计图表展示偏差分布
 
-## 安装步骤 / Installation
+## 步骤 / Installation
 
 ```bash
 # 1. 克隆仓库
