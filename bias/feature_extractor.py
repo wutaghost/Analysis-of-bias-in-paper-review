@@ -78,7 +78,7 @@ class FeatureExtractor:
         paper_abstract: str
     ) -> Dict[str, List[Dict[str, str]]]:
         """
-        从单条审稿意见中提取优缺点（直接从结构化文本中解析，无需LLM）
+        使用LLM从单条审稿意见中提取优缺点
         
         Args:
             review: 审稿记录
@@ -90,86 +90,55 @@ class FeatureExtractor:
         """
         logger.debug(f"正在提取审稿人 {review.reviewer_id} 的优缺点...")
         
-        # 直接从review_text中解析strengths和weaknesses
-        pros = []
-        cons = []
-        
-        review_text = review.review_text
-        
-        # 提取Strengths部分
-        if "Strengths:" in review_text:
-            strengths_start = review_text.find("Strengths:")
-            strengths_end = review_text.find("\n\n", strengths_start)
-            if strengths_end == -1:
-                strengths_end = len(review_text)
-            
-            strengths_text = review_text[strengths_start:strengths_end]
-            # 移除标题
-            strengths_text = strengths_text.replace("Strengths:", "").strip()
-            
-            # 按行或按项分割
-            if strengths_text:
-                # 尝试多种分隔方式
-                lines = strengths_text.replace("\n-", "\n•").replace("\n*", "\n•").split("\n")
-                for line in lines:
-                    line = line.strip().lstrip("•-*123456789.() ").strip()
-                    if line and len(line) > 10:  # 过滤太短的行
-                        pros.append({
-                            "description": line,
-                            "category": "未分类"  # 默认类别
-                        })
-        
-        # 提取Weaknesses部分
-        if "Weaknesses:" in review_text:
-            weaknesses_start = review_text.find("Weaknesses:")
-            weaknesses_end = review_text.find("\n\n", weaknesses_start)
-            if weaknesses_end == -1:
-                # 找下一个部分（如Questions）
-                for marker in ["\n\nQuestions:", "\n\nReview Body:"]:
-                    idx = review_text.find(marker, weaknesses_start)
-                    if idx != -1:
-                        weaknesses_end = idx
-                        break
-                if weaknesses_end == -1:
-                    weaknesses_end = len(review_text)
-            
-            weaknesses_text = review_text[weaknesses_start:weaknesses_end]
-            # 移除标题
-            weaknesses_text = weaknesses_text.replace("Weaknesses:", "").strip()
-            
-            # 按行或按项分割
-            if weaknesses_text:
-                lines = weaknesses_text.replace("\n-", "\n•").replace("\n*", "\n•").split("\n")
-                for line in lines:
-                    line = line.strip().lstrip("•-*123456789.() ").strip()
-                    if line and len(line) > 10:  # 过滤太短的行
-                        cons.append({
-                            "description": line,
-                            "category": "未分类"  # 默认类别
-                        })
-        
-        # 如果没有找到结构化的优缺点，使用简单的规则
-        if not pros and not cons:
-            # 尝试从整个文本中提取（作为后备方案）
-            if "strength" in review_text.lower() or "good" in review_text.lower():
-                pros.append({
-                    "description": "审稿人对论文有正面评价",
-                    "category": "未分类"
-                })
-            if "weakness" in review_text.lower() or "issue" in review_text.lower() or "problem" in review_text.lower():
-                cons.append({
-                    "description": "审稿人指出了一些问题",
-                    "category": "未分类"
-                })
-        
-        result = {"pros": pros, "cons": cons}
-        
-        logger.debug(
-            f"提取到 {len(result['pros'])} 个优点，"
-            f"{len(result['cons'])} 个缺点"
+        # 构建提示词
+        categories_str = ", ".join(Config.CATEGORIES)
+        prompt = PromptTemplates.EXTRACT_PROS_CONS.format(
+            title=paper_title,
+            abstract=paper_abstract,
+            review_text=review.review_text,
+            categories=categories_str
         )
         
-        return result
+        # 调用LLM
+        try:
+            response = self._call_llm(prompt)
+            
+            # 解析JSON响应
+            result = safe_json_parse(response, default={
+                "pros": [],
+                "cons": []
+            })
+            
+            # 验证结果
+            if "pros" not in result:
+                result["pros"] = []
+            if "cons" not in result:
+                result["cons"] = []
+            
+            # 确保每个优缺点都有必需的字段
+            for pro in result["pros"]:
+                if "category" not in pro:
+                    pro["category"] = "未分类"
+                if "description" not in pro:
+                    pro["description"] = ""
+            
+            for con in result["cons"]:
+                if "category" not in con:
+                    con["category"] = "未分类"
+                if "description" not in con:
+                    con["description"] = ""
+            
+            logger.debug(
+                f"提取到 {len(result['pros'])} 个优点，"
+                f"{len(result['cons'])} 个缺点"
+            )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"LLM提取优缺点失败: {e}")
+            # 返回空结果
+            return {"pros": [], "cons": []}
     
     def extract_from_paper(self, paper: Paper) -> Paper:
         """
