@@ -234,26 +234,126 @@ class LLMQuantifier:
         
         return paper
     
-    def quantify_papers(self, papers: List[Paper]) -> List[Paper]:
+    def quantify_unified_paper(self, paper: Paper) -> Paper:
+        """
+        为论文的统一优缺点量化权重，并计算每个审稿人的预期分数
+        
+        Args:
+            paper: 论文对象（必须已提取unified_pros和unified_cons）
+            
+        Returns:
+            更新后的论文对象
+        """
+        logger.info(f"正在量化论文统一权重: {paper.title}")
+        
+        if not paper.unified_pros and not paper.unified_cons:
+            logger.warning(f"论文 {paper.title} 没有统一优缺点，跳过量化")
+            for review in paper.reviews:
+                review.expected_score = Config.BASE_SCORE
+                review.bias = review.actual_score - Config.BASE_SCORE
+            return paper
+
+        # 1. 为统一优缺点获取权重
+        pros_text = "\n".join([
+            f"{i+1}. [{p.get('category', '未分类')}] {p.get('description', '')}"
+            for i, p in enumerate(paper.unified_pros)
+        ]) if paper.unified_pros else "(无)"
+        
+        cons_text = "\n".join([
+            f"{i+1}. [{c.get('category', '未分类')}] {c.get('description', '')}"
+            for i, c in enumerate(paper.unified_cons)
+        ]) if paper.unified_cons else "(无)"
+        
+        prompt = PromptTemplates.QUANTIFY_WEIGHTS.format(
+            title=paper.title,
+            abstract=paper.abstract,
+            paper_content=paper.paper_content or "(未提供正文内容)",
+            pros_text=pros_text,
+            cons_text=cons_text,
+            min_score=Config.MIN_SCORE,
+            max_score=Config.MAX_SCORE,
+            base_score=Config.BASE_SCORE
+        )
+        
+        try:
+            response = self._call_llm(prompt)
+            result = safe_json_parse(response, default={})
+            
+            pros_weights = result.get("pros_weights", [])
+            cons_weights = result.get("cons_weights", [])
+            
+            # 将权重映射回统一列表
+            for i, p in enumerate(paper.unified_pros):
+                if i < len(pros_weights):
+                    p["weight"] = pros_weights[i].get("weight", 0)
+                    p["reasoning"] = pros_weights[i].get("reasoning", "")
+                else:
+                    p["weight"] = 0
+            
+            for i, c in enumerate(paper.unified_cons):
+                if i < len(cons_weights):
+                    c["weight"] = cons_weights[i].get("weight", 0)
+                    c["reasoning"] = cons_weights[i].get("reasoning", "")
+                else:
+                    c["weight"] = 0
+                    
+            # 2. 为每个审稿人计算分数
+            for review in paper.reviews:
+                # 找出该审稿人提到的优缺点
+                review_pros = [p for p in paper.unified_pros if review.reviewer_id in p.get("reviewers", [])]
+                review_cons = [c for c in paper.unified_cons if review.reviewer_id in c.get("reviewers", [])]
+                
+                review.pros_weights = review_pros
+                review.cons_weights = review_cons
+                
+                # 线性相加计算预期分数
+                total_pro_weight = sum(p.get("weight", 0) for p in review_pros)
+                total_con_weight = sum(c.get("weight", 0) for c in review_cons)
+                
+                expected = Config.BASE_SCORE + total_pro_weight + total_con_weight
+                review.expected_score = max(Config.MIN_SCORE, min(Config.MAX_SCORE, expected))
+                review.bias = review.actual_score - review.expected_score
+                
+                logger.info(
+                    f"  审稿人 {review.reviewer_id}: "
+                    f"提及{len(review_pros)}优点/{len(review_cons)}缺点, "
+                    f"期望={review.expected_score:.2f}, 实际={review.actual_score:.2f}, 偏差={review.bias:+.2f}"
+                )
+                
+        except Exception as e:
+            logger.error(f"量化统一权重失败: {e}")
+            for review in paper.reviews:
+                review.expected_score = Config.BASE_SCORE
+                review.bias = review.actual_score - Config.BASE_SCORE
+                
+        return paper
+
+    def quantify_papers(self, papers: List[Paper], unified: bool = True) -> List[Paper]:
         """
         批量量化多篇论文的权重
         
         Args:
             papers: 论文列表（会被原地修改）
+            unified: 是否使用统一量化模式
             
         Returns:
             更新后的论文列表
         """
-        logger.info(f"开始批量量化 {len(papers)} 篇论文的权重...")
+        mode_desc = "统一权重量化" if unified else "独立权重量化"
+        logger.info(f"开始批量 {mode_desc}，共 {len(papers)} 篇论文...")
         
         tracker = ProgressTracker(
-            total=sum(len(p.reviews) for p in papers),
-            description="权重量化"
+            total=len(papers) if unified else sum(len(p.reviews) for p in papers),
+            description=mode_desc
         )
         
         for paper in papers:
-            self.quantify_paper(paper)
-            tracker.update(len(paper.reviews))
+            if unified:
+                self.quantify_unified_paper(paper)
+                tracker.update(1)
+            else:
+                self.quantify_paper(paper)
+                tracker.update(len(paper.reviews))
         
         tracker.finish()
         

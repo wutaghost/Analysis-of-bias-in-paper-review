@@ -159,6 +159,8 @@ def main():
         
         if "quantify" in steps:
             pipeline.quantify_weights()
+            # 保存每篇论文的详细报告
+            pipeline.save_individual_reports()
         
         if "analyze" in steps:
             pipeline.analyze_bias()

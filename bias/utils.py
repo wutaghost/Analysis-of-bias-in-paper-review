@@ -296,6 +296,27 @@ def truncate_text(text: str, max_length: int = 100) -> str:
     return text[:max_length] + "..."
 
 
+def extract_text_from_pdf(pdf_path: Path) -> str:
+    """
+    从PDF文件中提取文本
+    使用 PyPDF2
+    """
+    try:
+        from PyPDF2 import PdfReader
+        text = ""
+        with open(pdf_path, 'rb') as f:
+            reader = PdfReader(f)
+            for page in reader.pages:
+                text += page.extract_text() + "\n"
+        return text
+    except ImportError:
+        logger.warning("未安装 PyPDF2，无法从 PDF 提取文本。请运行: pip install PyPDF2")
+        return ""
+    except Exception as e:
+        logger.error(f"从 PDF {pdf_path} 提取文本失败: {e}")
+        return ""
+
+
 def count_tokens(text: str, model: str = "gpt-4") -> int:
     """
     估算token数量

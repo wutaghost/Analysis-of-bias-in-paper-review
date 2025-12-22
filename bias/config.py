@@ -50,6 +50,7 @@ class Config:
     
     # ========== 输出配置 ==========
     OUTPUT_DIR: Path = Path("./results")
+    DETAILS_DIR: Path = Path("./results/paper_details")
     FIGURE_DPI: int = 300
     FIGURE_FORMAT: str = "png"
     
@@ -65,6 +66,7 @@ class Config:
         # 创建必要的目录
         cls.CACHE_DIR.mkdir(parents=True, exist_ok=True)
         cls.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        cls.DETAILS_DIR.mkdir(parents=True, exist_ok=True)
         
         return True
     
@@ -131,11 +133,55 @@ class PromptTemplates:
 请严格按照上述JSON格式返回，不要添加任何额外的解释文字。
 """
 
-    # ========== 权重量化Prompt ==========
-    QUANTIFY_WEIGHTS = """你是一位客观公正的学术评审专家。现在需要你为论文审稿中的优缺点赋予量化权重。
+    # ========== 统一特征提取Prompt ==========
+    EXTRACT_UNIFIED_FEATURES = """你是一位资深的学术论文审稿专家。请仔细阅读以下论文的全文内容以及多位审稿人的审稿意见，整合提取出该论文所有的优点（Pros）和缺点（Cons）。
 
 论文标题: {title}
 论文摘要: {abstract}
+
+论文全文内容 (参考):
+{paper_content}
+
+审稿人意见列表:
+{reviews_text}
+
+要求:
+1. 对所有审稿人的意见进行深度整合，参考论文正文内容，提取出一份**统一的、不重复**的优点和缺点全集。
+2. **非常重要**：对于每个提取出的优点或缺点，必须准确标明是哪些审稿人提到了这一点。使用审稿人的完整 ID（如 "Reviewer gs65"）。
+3. 为每个优缺点分配一个合适的类别，类别必须从以下列表中选择：
+   {categories}
+4. 优点和缺点应该具体、可量化。
+5. 按JSON格式返回结果，确保 `reviewers` 字段是一个包含审稿人 ID 的列表。
+
+返回格式示例:
+{{
+  "unified_pros": [
+    {{
+      "description": "提出了创新的自适应权重生成机制",
+      "category": "创新性 (Novelty/Originality)",
+      "reviewers": ["Reviewer gs65", "Reviewer CxNP"]
+    }}
+  ],
+  "unified_cons": [
+    {{
+      "description": "基准对比实验中缺少与最新 SOTA 方法的比较",
+      "category": "实验充分性 (Experimental Rigor)",
+      "reviewers": ["Reviewer gs65", "Reviewer Fidh"]
+    }}
+  ]
+}}
+
+请严格按照上述JSON格式返回，不要添加任何额外的解释文字。
+"""
+
+    # ========== 权重量化Prompt ==========
+    QUANTIFY_WEIGHTS = """你是一位客观公正的学术评审专家。现在需要你结合论文全文内容，为审稿中提取出的优缺点赋予量化权重。
+
+论文标题: {title}
+论文摘要: {abstract}
+
+论文全文内容 (参考):
+{paper_content}
 
 已识别的优点:
 {pros_text}

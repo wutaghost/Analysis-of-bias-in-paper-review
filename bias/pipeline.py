@@ -105,47 +105,78 @@ class ReviewBiasAnalysisPipeline:
     
     # ========== 特征提取 ==========
     
-    def extract_pros_cons(self) -> 'ReviewBiasAnalysisPipeline':
+    def load_paper_pdfs(self) -> 'ReviewBiasAnalysisPipeline':
+        """
+        为当前列表中的所有论文加载 PDF 内容（如果尚未加载）
+        实现适配性优化：仅处理需要分析的论文
+        """
+        logger.info(f"\n{'='*70}")
+        logger.info(f"适配性优化：正在为 {len(self.papers)} 篇待分析论文提取 PDF 文本")
+        logger.info(f"{'='*70}")
+        
+        for paper in self.papers:
+            if not paper.paper_content and paper.source_dir:
+                self.data_loader._load_pdf_content(paper, paper.source_dir)
+        
+        return self
+
+    def extract_pros_cons(self, unified: bool = True) -> 'ReviewBiasAnalysisPipeline':
         """
         提取优缺点
         
+        Args:
+            unified: 是否使用统一提取模式
+            
         Returns:
             self（支持链式调用）
         """
         logger.info(f"\n{'='*70}")
-        logger.info("步骤 2: 特征提取（提取优缺点）")
+        logger.info(f"步骤 2: 特征提取（{'统一整合模式' if unified else '独立提取模式'}）")
         logger.info(f"{'='*70}")
         
         if not self.papers:
             raise ValueError("请先加载数据")
         
-        self.papers = self.feature_extractor.extract_from_papers(self.papers)
-        self.feature_extractor.display_extraction_summary(self.papers)
+        self.papers = self.feature_extractor.extract_from_papers(self.papers, unified=unified)
+        
+        if not unified:
+            self.feature_extractor.display_extraction_summary(self.papers)
         
         return self
     
     # ========== 权重量化 ==========
     
-    def quantify_weights(self) -> 'ReviewBiasAnalysisPipeline':
+    def quantify_weights(self, unified: bool = True) -> 'ReviewBiasAnalysisPipeline':
         """
         量化优缺点权重
         
+        Args:
+            unified: 是否使用统一量化模式
+            
         Returns:
             self（支持链式调用）
         """
         logger.info(f"\n{'='*70}")
-        logger.info("步骤 3: 权重量化")
+        logger.info(f"步骤 3: 权重量化（{'统一量化模式' if unified else '独立量化模式'}）")
         logger.info(f"{'='*70}")
         
         if not self.papers:
             raise ValueError("请先加载数据")
         
         # 检查是否已提取优缺点
-        if not self.papers[0].reviews[0].pros and not self.papers[0].reviews[0].cons:
+        has_extracted = False
+        if unified:
+            if any(p.unified_pros or p.unified_cons for p in self.papers):
+                has_extracted = True
+        else:
+            if any(r.pros or r.cons for p in self.papers for r in p.reviews):
+                has_extracted = True
+                
+        if not has_extracted:
             logger.warning("未检测到已提取的优缺点，将先执行特征提取步骤")
-            self.extract_pros_cons()
+            self.extract_pros_cons(unified=unified)
         
-        self.papers = self.quantifier.quantify_papers(self.papers)
+        self.papers = self.quantifier.quantify_papers(self.papers, unified=unified)
         self.quantifier.display_quantification_summary(self.papers)
         
         return self
@@ -199,30 +230,39 @@ class ReviewBiasAnalysisPipeline:
     
     # ========== 完整流程 ==========
     
-    def run_full_analysis(self) -> dict:
+    def run_full_analysis(self, unified: bool = True) -> dict:
         """
         运行完整的分析流程
         
+        Args:
+            unified: 是否使用统一整合模式
+            
         Returns:
             分析结果摘要字典
         """
         logger.info("\n" + "="*70)
-        logger.info("开始完整分析流程")
+        logger.info(f"开始完整分析流程 ({'统一整合模式' if unified else '独立模式'})")
         logger.info("="*70)
         
+        # 0. 适配性优化：仅提取当前需要分析的论文 PDF 文本
+        self.load_paper_pdfs()
+        
         # 1. 特征提取
-        self.extract_pros_cons()
+        self.extract_pros_cons(unified=unified)
         
         # 2. 权重量化
-        self.quantify_weights()
+        self.quantify_weights(unified=unified)
         
-        # 3. 偏差分析
+        # 3. 保存每篇论文的详细报告
+        self.save_individual_reports()
+        
+        # 4. 偏差分析
         self.analyze_bias()
         
-        # 4. 生成可视化
+        # 5. 生成可视化
         self.generate_visualizations()
         
-        # 5. 生成摘要
+        # 6. 生成摘要
         summary = {
             "data_statistics": self.data_loader.get_statistics(),
             "extraction_summary": self.feature_extractor.get_extraction_summary(self.papers),
@@ -238,6 +278,80 @@ class ReviewBiasAnalysisPipeline:
     
     # ========== 结果保存 ==========
     
+    def save_individual_reports(self, output_dir: Optional[Union[str, Path]] = None):
+        """
+        为每篇论文保存详细的分析报告
+        
+        Args:
+            output_dir: 输出目录，默认为 Config.DETAILS_DIR
+        """
+        logger.info(f"\n{'='*70}")
+        logger.info("额外步骤: 保存每篇论文的详细分析报告")
+        logger.info(f"{'='*70}")
+        
+        if not self.papers:
+            logger.warning("没有论文数据，跳过详细报告保存")
+            return
+            
+        details_dir = Path(output_dir) if output_dir else Config.DETAILS_DIR
+        details_dir.mkdir(parents=True, exist_ok=True)
+        
+        logger.info(f"正在保存详细报告到: {details_dir}")
+        
+        for paper in self.papers:
+            file_name = f"{paper.paper_id.replace('/', '_')}_details.md"
+            file_path = details_dir / file_name
+            
+            content = self._generate_paper_report_content(paper)
+            
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+                
+        logger.info(f"已成功保存 {len(self.papers)} 篇论文的详细报告")
+
+    def _generate_paper_report_content(self, paper: Paper) -> str:
+        """生成单篇论文的报告内容"""
+        content = [
+            f"# 论文详细分析报告: {paper.title}",
+            f"\n**论文ID:** {paper.paper_id}",
+            f"\n## 摘要\n{paper.abstract}",
+            f"\n## 审稿分析\n"
+        ]
+        
+        for i, review in enumerate(paper.reviews):
+            content.append(f"### 审稿人 {review.reviewer_id}")
+            content.append(f"- **实际分数:** {review.actual_score}")
+            content.append(f"- **量化期望分数:** {review.expected_score:.2f}" if review.expected_score is not None else "- **量化期望分数:** 未计算")
+            content.append(f"- **偏差 (Actual - Expected):** {review.bias:+.2f}" if review.bias is not None else "- **偏差:** 未计算")
+            
+            content.append("\n#### 优点 (Pros)")
+            if review.pros_weights:
+                for pw in review.pros_weights:
+                    content.append(f"- **[{pw.get('category', '未分类')}]** {pw.get('description', '')}")
+                    content.append(f"  - 权重: `{pw.get('weight', 0):+.2f}`")
+                    content.append(f"  - 理由: {pw.get('reasoning', '无')}")
+            elif review.pros:
+                for p in review.pros:
+                    content.append(f"- **[{p.get('category', '未分类')}]** {p.get('description', '')}")
+            else:
+                content.append("- (无)")
+                
+            content.append("\n#### 缺点 (Cons)")
+            if review.cons_weights:
+                for cw in review.cons_weights:
+                    content.append(f"- **[{cw.get('category', '未分类')}]** {cw.get('description', '')}")
+                    content.append(f"  - 权重: `{cw.get('weight', 0):+.2f}`")
+                    content.append(f"  - 理由: {cw.get('reasoning', '无')}")
+            elif review.cons:
+                for c in review.cons:
+                    content.append(f"- **[{c.get('category', '未分类')}]** {c.get('description', '')}")
+            else:
+                content.append("- (无)")
+            
+            content.append("\n" + "-"*30 + "\n")
+            
+        return "\n".join(content)
+
     def save_results(self, output_file: Optional[Union[str, Path]] = None):
         """
         保存分析结果

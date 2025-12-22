@@ -15,13 +15,13 @@ from data_loader import Paper
 from bias_analyzer import BiasAnalysisResult
 from utils import logger
 
-# 设置中文字体支持
-plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans', 'Arial Unicode MS']
-plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
-
 # 设置seaborn样式
 sns.set_style("whitegrid")
 sns.set_palette("husl")
+
+# Standard font settings for plots
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'Helvetica', 'sans-serif']
+plt.rcParams['axes.unicode_minus'] = False  # Solve minus sign issue
 
 
 class Visualizer:
@@ -29,15 +29,15 @@ class Visualizer:
     
     def __init__(self, output_dir: Optional[Path] = None):
         """
-        初始化可视化工具
+        Initialize the visualizer
         
         Args:
-            output_dir: 输出目录
+            output_dir: Output directory
         """
         self.output_dir = output_dir or Config.OUTPUT_DIR / "figures"
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        logger.info(f"可视化工具已初始化，输出目录: {self.output_dir}")
+        logger.info(f"Visualizer initialized. Output directory: {self.output_dir}")
     
     def _save_figure(self, filename: str, dpi: int = None):
         """保存图表"""
@@ -53,32 +53,32 @@ class Visualizer:
         filename: str = "bias_distribution.png"
     ):
         """
-        绘制偏差分布图（直方图 + KDE）
+        Plot bias distribution (Histogram + KDE)
         
         Args:
-            results: 偏差分析结果列表
-            filename: 保存文件名
+            results: List of bias analysis results
+            filename: Output filename
         """
-        # 收集所有偏差
+        # Collect all biases
         all_biases = []
         for result in results:
             all_biases.extend(result.biases)
         
         fig, ax = plt.subplots(figsize=(10, 6))
         
-        # 绘制直方图和KDE
+        # Plot histogram and KDE
         sns.histplot(all_biases, kde=True, bins=30, ax=ax)
         
-        # 添加均值线
+        # Add mean line
         mean_bias = np.mean(all_biases)
         ax.axvline(mean_bias, color='red', linestyle='--', 
-                   label=f'均值: {mean_bias:+.2f}', linewidth=2)
+                   label=f'Mean: {mean_bias:+.2f}', linewidth=2)
         ax.axvline(0, color='green', linestyle='-', 
-                   label='零偏差线', linewidth=1.5, alpha=0.7)
+                   label='Zero Bias Line', linewidth=1.5, alpha=0.7)
         
-        ax.set_xlabel('偏差 (实际分数 - 期望分数)', fontsize=12)
-        ax.set_ylabel('频数', fontsize=12)
-        ax.set_title('审稿偏差分布', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Bias (Actual Score - Expected Score)', fontsize=12)
+        ax.set_ylabel('Frequency', fontsize=12)
+        ax.set_title('Review Bias Distribution', fontsize=14, fontweight='bold')
         ax.legend(fontsize=10)
         ax.grid(True, alpha=0.3)
         
@@ -91,13 +91,14 @@ class Visualizer:
         filename: str = "score_comparison.png"
     ):
         """
-        绘制期望分数 vs 实际分数散点图
+        Plot Expected Score vs Actual Score scatter plot.
+        For large datasets, uses transparency and 2D density to handle overlap.
         
         Args:
-            results: 偏差分析结果列表
-            filename: 保存文件名
+            results: List of bias analysis results
+            filename: Output filename
         """
-        # 收集数据
+        # Collect data
         expected_scores = []
         actual_scores = []
         biases = []
@@ -109,33 +110,66 @@ class Visualizer:
         
         fig, ax = plt.subplots(figsize=(10, 10))
         
-        # 根据偏差大小设置颜色
+        # Adjust alpha and markersize for large datasets
+        alpha = 0.6 if len(expected_scores) < 100 else 0.3
+        s = 100 if len(expected_scores) < 100 else 40
+        
+        # Color by bias magnitude
         scatter = ax.scatter(expected_scores, actual_scores, 
                            c=biases, cmap='RdBu_r', 
-                           alpha=0.6, s=100, edgecolors='black', linewidth=0.5)
+                           alpha=alpha, s=s, edgecolors='black', linewidth=0.5)
         
-        # 添加对角线（完美匹配线）
+        # Add diagonal line (perfect match)
         min_score = min(min(expected_scores), min(actual_scores))
         max_score = max(max(expected_scores), max(actual_scores))
         ax.plot([min_score, max_score], [min_score, max_score], 
-                'k--', label='完美匹配线', linewidth=2, alpha=0.5)
+                'k--', label='Perfect Match Line', linewidth=2, alpha=0.5)
         
-        # 添加颜色条
+        # Add colorbar
         cbar = plt.colorbar(scatter, ax=ax)
-        cbar.set_label('偏差', fontsize=12)
+        cbar.set_label('Bias', fontsize=12)
         
-        # 计算相关系数
+        # Calculate correlation
         correlation = np.corrcoef(expected_scores, actual_scores)[0, 1]
         
-        ax.set_xlabel('期望分数', fontsize=12)
-        ax.set_ylabel('实际分数', fontsize=12)
+        ax.set_xlabel('Expected Score (LLM Prediction)', fontsize=12)
+        ax.set_ylabel('Actual Score (Human Review)', fontsize=12)
         ax.set_title(
-            f'期望分数 vs 实际分数 (r={correlation:.3f})', 
+            f'Expected Score vs Actual Score (N={len(expected_scores)}, r={correlation:.3f})', 
             fontsize=14, fontweight='bold'
         )
         ax.legend(fontsize=10)
         ax.grid(True, alpha=0.3)
         ax.set_aspect('equal', adjustable='box')
+        
+        self._save_figure(filename)
+        plt.close()
+
+    def plot_bias_by_reviewer_count(
+        self,
+        results: List[BiasAnalysisResult],
+        filename: str = "bias_by_reviewer_count.png"
+    ):
+        """
+        Plot how bias varies with the number of reviews a paper received.
+        
+        Args:
+            results: List of bias analysis results
+            filename: Output filename
+        """
+        counts = [r.num_reviews for r in results]
+        biases = [r.bias_mean for r in results]
+        
+        fig, ax = plt.subplots(figsize=(10, 6))
+        
+        sns.boxplot(x=counts, y=biases, ax=ax, palette="Set3")
+        sns.stripplot(x=counts, y=biases, ax=ax, color='black', alpha=0.3, size=3)
+        
+        ax.axhline(0, color='red', linestyle='--', alpha=0.6)
+        ax.set_xlabel('Number of Reviews', fontsize=12)
+        ax.set_ylabel('Average Bias', fontsize=12)
+        ax.set_title('Average Bias by Reviewer Count', fontsize=14, fontweight='bold')
+        ax.grid(True, alpha=0.3, axis='y')
         
         self._save_figure(filename)
         plt.close()
@@ -147,52 +181,57 @@ class Visualizer:
         filename: str = "bias_by_paper.png"
     ):
         """
-        绘制每篇论文的平均偏差（柱状图）
+        Plot bias distribution across papers.
+        For small datasets, shows individual bars.
+        For large datasets, shows top/bottom outliers and a general distribution.
         
         Args:
-            results: 偏差分析结果列表
-            top_n: 显示前N篇（按偏差绝对值排序）
-            filename: 保存文件名
+            results: List of bias analysis results
+            top_n: Number of top/bottom papers to show as outliers
+            filename: Output filename
         """
-        # 按偏差绝对值排序
-        sorted_results = sorted(
-            results, 
-            key=lambda x: abs(x.bias_mean), 
-            reverse=True
-        )[:top_n]
-        
-        # 准备数据
-        paper_labels = [
-            f"{r.paper_title[:30]}..." if len(r.paper_title) > 30 
-            else r.paper_title 
-            for r in sorted_results
-        ]
-        bias_means = [r.bias_mean for r in sorted_results]
-        colors = ['red' if b > 0 else 'blue' for b in bias_means]
-        
-        fig, ax = plt.subplots(figsize=(12, max(8, top_n * 0.4)))
-        
-        y_pos = np.arange(len(paper_labels))
-        ax.barh(y_pos, bias_means, color=colors, alpha=0.7)
-        
-        ax.set_yticks(y_pos)
-        ax.set_yticklabels(paper_labels, fontsize=9)
-        ax.set_xlabel('平均偏差', fontsize=12)
-        ax.set_title(
-            f'各论文平均偏差 (Top {top_n})', 
-            fontsize=14, fontweight='bold'
-        )
-        ax.axvline(0, color='black', linestyle='-', linewidth=1)
-        ax.grid(True, alpha=0.3, axis='x')
-        
-        # 添加图例
-        from matplotlib.patches import Patch
-        legend_elements = [
-            Patch(facecolor='red', alpha=0.7, label='正偏差（高估）'),
-            Patch(facecolor='blue', alpha=0.7, label='负偏差（低估）')
-        ]
-        ax.legend(handles=legend_elements, fontsize=10)
-        
+        if len(results) <= 50:
+            # Original behavior for small datasets
+            sorted_results = sorted(results, key=lambda x: abs(x.bias_mean), reverse=True)[:top_n]
+            paper_labels = [f"{r.paper_title[:30]}..." if len(r.paper_title) > 30 else r.paper_title for r in sorted_results]
+            bias_means = [r.bias_mean for r in sorted_results]
+            colors = ['red' if b > 0 else 'blue' for b in bias_means]
+            
+            fig, ax = plt.subplots(figsize=(12, max(8, len(sorted_results) * 0.4)))
+            y_pos = np.arange(len(paper_labels))
+            ax.barh(y_pos, bias_means, color=colors, alpha=0.7)
+            ax.set_yticks(y_pos)
+            ax.set_yticklabels(paper_labels, fontsize=9)
+            ax.set_title(f'Average Bias by Paper (Top {top_n})', fontsize=14, fontweight='bold')
+        else:
+            # Summary view for large datasets
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 12), gridspec_kw={'height_ratios': [1, 1.5]})
+            
+            # 1. Distribution of average biases
+            all_means = [r.bias_mean for r in results]
+            sns.histplot(all_means, kde=True, ax=ax1, color='purple')
+            ax1.axvline(0, color='black', linestyle='-')
+            ax1.set_title('Distribution of Average Bias across All Papers', fontsize=14, fontweight='bold')
+            ax1.set_xlabel('Mean Bias')
+            
+            # 2. Top and Bottom Outliers
+            top_positive = sorted(results, key=lambda x: x.bias_mean, reverse=True)[:top_n//2]
+            top_negative = sorted(results, key=lambda x: x.bias_mean)[:top_n//2]
+            outliers = top_positive + top_negative
+            outliers = sorted(outliers, key=lambda x: x.bias_mean)
+            
+            paper_labels = [f"{r.paper_title[:30]}..." if len(r.paper_title) > 30 else r.paper_title for r in outliers]
+            bias_means = [r.bias_mean for r in outliers]
+            colors = ['red' if b > 0 else 'blue' for b in bias_means]
+            
+            y_pos = np.arange(len(outliers))
+            ax2.barh(y_pos, bias_means, color=colors, alpha=0.7)
+            ax2.set_yticks(y_pos)
+            ax2.set_yticklabels(paper_labels, fontsize=9)
+            ax2.set_title(f'Extreme Bias Cases (Top {top_n//2} Pos/Neg Outliers)', fontsize=14, fontweight='bold')
+            ax2.axvline(0, color='black', linestyle='-')
+
+        plt.tight_layout()
         self._save_figure(filename)
         plt.close()
     
@@ -202,44 +241,55 @@ class Visualizer:
         filename: str = "consistency_comparison.png"
     ):
         """
-        绘制一致性比较图
+        Plot consistency comparison.
+        For large datasets, use a scatter plot of Expected vs Actual Std.
         
         Args:
-            results: 偏差分析结果列表
-            filename: 保存文件名
+            results: List of bias analysis results
+            filename: Output filename
         """
-        # 准备数据
-        data = []
-        for result in results:
-            data.append({
-                'paper': result.paper_title[:30] + "...",
-                '期望分数标准差': result.expected_std,
-                '实际分数标准差': result.actual_std,
-            })
+        expected_stds = [r.expected_std for r in results]
+        actual_stds = [r.actual_std for r in results]
         
-        df = pd.DataFrame(data)
+        fig, ax = plt.subplots(figsize=(10, 10))
         
-        # 选择前20个论文
-        df = df.head(20)
-        
-        fig, ax = plt.subplots(figsize=(12, 8))
-        
-        x = np.arange(len(df))
-        width = 0.35
-        
-        ax.bar(x - width/2, df['期望分数标准差'], width, 
-               label='期望分数标准差', alpha=0.8)
-        ax.bar(x + width/2, df['实际分数标准差'], width,
-               label='实际分数标准差', alpha=0.8)
-        
-        ax.set_xlabel('论文', fontsize=12)
-        ax.set_ylabel('标准差（越小越一致）', fontsize=12)
-        ax.set_title('期望分数 vs 实际分数的一致性对比', fontsize=14, fontweight='bold')
-        ax.set_xticks(x)
-        ax.set_xticklabels(df['paper'], rotation=45, ha='right', fontsize=8)
+        if len(results) <= 50:
+            # Original bar chart for small datasets
+            data = [{'paper': r.paper_title[:30] + "...", 'Expected Std': r.expected_std, 'Actual Std': r.actual_std} for r in results[:20]]
+            df = pd.DataFrame(data)
+            x = np.arange(len(df))
+            width = 0.35
+            ax.bar(x - width/2, df['Expected Std'], width, label='Expected Score Std', alpha=0.8)
+            ax.bar(x + width/2, df['Actual Std'], width, label='Actual Score Std', alpha=0.8)
+            ax.set_xticks(x)
+            ax.set_xticklabels(df['paper'], rotation=45, ha='right', fontsize=8)
+            ax.set_title('Expected vs Actual Score Consistency (Sample)', fontsize=14, fontweight='bold')
+        else:
+            # Scatter plot for large datasets
+            scatter = ax.scatter(expected_stds, actual_stds, alpha=0.5, c='blue', edgecolors='white')
+            
+            # Add identity line
+            max_std = max(max(expected_stds), max(actual_stds))
+            ax.plot([0, max_std], [0, max_std], 'r--', label='Equal Consistency')
+            
+            # Add trend line
+            z = np.polyfit(expected_stds, actual_stds, 1)
+            p = np.poly1d(z)
+            ax.plot(np.unique(expected_stds), p(np.unique(expected_stds)), "g-", alpha=0.8, label='Trend Line')
+            
+            ax.set_title(f'Consistency Comparison (N={len(results)} Papers)', fontsize=14, fontweight='bold')
+            ax.set_xlabel('Expected Score Std (LLM Consistency)', fontsize=12)
+            ax.set_ylabel('Actual Score Std (Human Consistency)', fontsize=12)
+            ax.set_aspect('equal')
+            
+            # Add counts for which side is more consistent
+            more_consistent_human = sum(1 for e, a in zip(expected_stds, actual_stds) if a < e)
+            more_consistent_llm = sum(1 for e, a in zip(expected_stds, actual_stds) if e < a)
+            ax.text(0.05, 0.95, f'Humans more consistent: {more_consistent_human}\nLLM more consistent: {more_consistent_llm}', 
+                    transform=ax.transAxes, verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.5))
+
         ax.legend(fontsize=10)
-        ax.grid(True, alpha=0.3, axis='y')
-        
+        ax.grid(True, alpha=0.3)
         self._save_figure(filename)
         plt.close()
     
@@ -249,18 +299,31 @@ class Visualizer:
         filename: str = "bias_heatmap.png"
     ):
         """
-        绘制偏差热力图（论文 x 审稿人）
+        Plot bias heatmap.
+        For large datasets, show a representative sample or the most biased ones.
         
         Args:
-            results: 偏差分析结果列表
-            filename: 保存文件名
+            results: List of bias analysis results
+            filename: Output filename
         """
-        # 准备数据矩阵
-        max_reviews = max(r.num_reviews for r in results)
+        # Select papers to show
+        if len(results) <= 30:
+            display_results = results
+            title_suffix = ""
+        else:
+            # Mix of most biased and random ones
+            top_biased = sorted(results, key=lambda x: abs(x.bias_mean), reverse=True)[:15]
+            random_sample = np.random.choice([r for r in results if r not in top_biased], 
+                                            size=min(15, len(results)-len(top_biased)), 
+                                            replace=False).tolist()
+            display_results = sorted(top_biased + random_sample, key=lambda x: x.bias_mean, reverse=True)
+            title_suffix = " (Selected Sample: Outliers + Random)"
+            
+        max_reviews = max(r.num_reviews for r in display_results)
         bias_matrix = []
         paper_labels = []
         
-        for result in results[:30]:  # 最多显示30篇论文
+        for result in display_results:
             row = result.biases + [np.nan] * (max_reviews - len(result.biases))
             bias_matrix.append(row)
             label = result.paper_title[:40] + "..." if len(result.paper_title) > 40 else result.paper_title
@@ -271,21 +334,15 @@ class Visualizer:
         fig, ax = plt.subplots(figsize=(max(10, max_reviews * 1.5), 
                                        max(8, len(paper_labels) * 0.3)))
         
-        # 绘制热力图
-        sns.heatmap(bias_matrix, 
-                   cmap='RdBu_r', 
-                   center=0,
+        sns.heatmap(bias_matrix, cmap='RdBu_r', center=0,
                    yticklabels=paper_labels,
                    xticklabels=[f'R{i+1}' for i in range(max_reviews)],
-                   annot=True, 
-                   fmt='.2f',
-                   cbar_kws={'label': '偏差'},
-                   ax=ax,
-                   linewidths=0.5)
+                   annot=True if len(display_results) <= 30 else False, 
+                   fmt='.2f', cbar_kws={'label': 'Bias'}, ax=ax, linewidths=0.5)
         
-        ax.set_xlabel('审稿人', fontsize=12)
-        ax.set_ylabel('论文', fontsize=12)
-        ax.set_title('审稿偏差热力图', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Reviewer Index', fontsize=12)
+        ax.set_ylabel('Paper', fontsize=12)
+        ax.set_title(f'Review Bias Heatmap{title_suffix}', fontsize=14, fontweight='bold')
         
         self._save_figure(filename)
         plt.close()
@@ -296,30 +353,30 @@ class Visualizer:
         filename: str = "score_boxplot.png"
     ):
         """
-        绘制期望分数和实际分数的箱线图对比
+        Plot boxplot comparison of Expected and Actual scores
         
         Args:
-            results: 偏差分析结果列表
-            filename: 保存文件名
+            results: List of bias analysis results
+            filename: Output filename
         """
-        # 准备数据
+        # Prepare data
         data = []
         for result in results:
             for exp, act in zip(result.expected_scores, result.actual_scores):
-                data.append({'分数类型': '期望分数', '分数': exp})
-                data.append({'分数类型': '实际分数', '分数': act})
+                data.append({'Score Type': 'Expected Score', 'Score': exp})
+                data.append({'Score Type': 'Actual Score', 'Score': act})
         
         df = pd.DataFrame(data)
         
         fig, ax = plt.subplots(figsize=(10, 6))
         
-        sns.boxplot(x='分数类型', y='分数', data=df, ax=ax)
-        sns.swarmplot(x='分数类型', y='分数', data=df, 
+        sns.boxplot(x='Score Type', y='Score', data=df, ax=ax)
+        sns.swarmplot(x='Score Type', y='Score', data=df, 
                      color='black', alpha=0.3, size=3, ax=ax)
         
-        ax.set_ylabel('分数', fontsize=12)
+        ax.set_ylabel('Score', fontsize=12)
         ax.set_xlabel('', fontsize=12)
-        ax.set_title('期望分数 vs 实际分数分布对比', fontsize=14, fontweight='bold')
+        ax.set_title('Expected vs Actual Score Distribution', fontsize=14, fontweight='bold')
         ax.grid(True, alpha=0.3, axis='y')
         
         self._save_figure(filename)
@@ -331,43 +388,43 @@ class Visualizer:
         filename: str = "category_analysis.png"
     ):
         """
-        绘制优缺点类别统计图
+        Plot statistics of Pro/Con categories
         
         Args:
-            papers: 论文列表
-            filename: 保存文件名
+            papers: List of papers
+            filename: Output filename
         """
-        # 统计各类别
+        # Count categories
         category_pros = {}
         category_cons = {}
         
         for paper in papers:
             for review in paper.reviews:
                 for pro in review.pros:
-                    cat = pro.get('category', '其他')
+                    cat = pro.get('category', 'Others')
                     category_pros[cat] = category_pros.get(cat, 0) + 1
                 
                 for con in review.cons:
-                    cat = con.get('category', '其他')
+                    cat = con.get('category', 'Others')
                     category_cons[cat] = category_cons.get(cat, 0) + 1
         
-        # 准备数据
+        # Prepare data
         categories = list(set(list(category_pros.keys()) + list(category_cons.keys())))
         pros_counts = [category_pros.get(cat, 0) for cat in categories]
-        cons_counts = [-category_cons.get(cat, 0) for cat in categories]  # 负值用于对称显示
+        cons_counts = [-category_cons.get(cat, 0) for cat in categories]  # Negative for symmetric display
         
         fig, ax = plt.subplots(figsize=(12, max(6, len(categories) * 0.4)))
         
         y_pos = np.arange(len(categories))
         
-        # 绘制对称柱状图
-        ax.barh(y_pos, pros_counts, label='优点', color='green', alpha=0.7)
-        ax.barh(y_pos, cons_counts, label='缺点', color='red', alpha=0.7)
+        # Plot symmetric bar chart
+        ax.barh(y_pos, pros_counts, label='Pros', color='green', alpha=0.7)
+        ax.barh(y_pos, cons_counts, label='Cons', color='red', alpha=0.7)
         
         ax.set_yticks(y_pos)
         ax.set_yticklabels(categories, fontsize=10)
-        ax.set_xlabel('数量', fontsize=12)
-        ax.set_title('各类别优缺点分布', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Count', fontsize=12)
+        ax.set_title('Distribution of Pro/Con Categories', fontsize=14, fontweight='bold')
         ax.axvline(0, color='black', linestyle='-', linewidth=1)
         ax.legend(fontsize=10)
         ax.grid(True, alpha=0.3, axis='x')
@@ -381,13 +438,13 @@ class Visualizer:
         filename: str = "bias_vs_actual_score.png"
     ):
         """
-        绘制偏差与实际分数的关系
+        Plot relationship between bias and actual score
         
         Args:
-            results: 偏差分析结果列表
-            filename: 保存文件名
+            results: List of bias analysis results
+            filename: Output filename
         """
-        # 收集数据
+        # Collect data
         actual_scores = []
         biases = []
         
@@ -397,23 +454,23 @@ class Visualizer:
         
         fig, ax = plt.subplots(figsize=(10, 6))
         
-        # 散点图
+        # Scatter plot
         ax.scatter(actual_scores, biases, alpha=0.5, s=50)
         
-        # 添加回归线
+        # Add regression line
         z = np.polyfit(actual_scores, biases, 1)
         p = np.poly1d(z)
         x_line = np.linspace(min(actual_scores), max(actual_scores), 100)
         ax.plot(x_line, p(x_line), "r--", linewidth=2, 
-                label=f'回归线: y={z[0]:.3f}x+{z[1]:.3f}')
+                label=f'Regression: y={z[0]:.3f}x+{z[1]:.3f}')
         
-        # 添加零偏差线
+        # Add zero bias line
         ax.axhline(0, color='green', linestyle='-', 
-                  label='零偏差线', linewidth=1.5, alpha=0.7)
+                  label='Zero Bias Line', linewidth=1.5, alpha=0.7)
         
-        ax.set_xlabel('实际分数', fontsize=12)
-        ax.set_ylabel('偏差', fontsize=12)
-        ax.set_title('偏差与实际分数的关系', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Actual Score', fontsize=12)
+        ax.set_ylabel('Bias', fontsize=12)
+        ax.set_title('Bias vs Actual Score', fontsize=14, fontweight='bold')
         ax.legend(fontsize=10)
         ax.grid(True, alpha=0.3)
         
@@ -426,23 +483,24 @@ class Visualizer:
         results: List[BiasAnalysisResult]
     ):
         """
-        生成所有可视化图表
+        Generate all visualization plots
         
         Args:
-            papers: 论文列表
-            results: 偏差分析结果列表
+            papers: List of papers
+            results: List of bias analysis results
         """
-        logger.info("开始生成所有可视化图表...")
+        logger.info("Generating all visualization plots...")
         
         plots = [
-            (self.plot_bias_distribution, (results,), "偏差分布图"),
-            (self.plot_score_comparison, (results,), "分数对比散点图"),
-            (self.plot_bias_by_paper, (results,), "论文偏差柱状图"),
-            (self.plot_consistency_comparison, (results,), "一致性对比图"),
-            (self.plot_heatmap, (results,), "偏差热力图"),
-            (self.plot_box_comparison, (results,), "箱线图对比"),
-            (self.plot_category_analysis, (papers,), "类别统计图"),
-            (self.plot_bias_vs_score, (results,), "偏差-分数关系图"),
+            (self.plot_bias_distribution, (results,), "Bias Distribution"),
+            (self.plot_score_comparison, (results,), "Score Comparison"),
+            (self.plot_bias_by_paper, (results,), "Bias by Paper"),
+            (self.plot_consistency_comparison, (results,), "Consistency Comparison"),
+            (self.plot_heatmap, (results,), "Bias Heatmap"),
+            (self.plot_box_comparison, (results,), "Score Boxplot"),
+            (self.plot_category_analysis, (papers,), "Category Analysis"),
+            (self.plot_bias_vs_score, (results,), "Bias vs Score"),
+            (self.plot_bias_by_reviewer_count, (results,), "Bias by Reviewer Count"),
         ]
         
         for plot_func, args, description in plots:

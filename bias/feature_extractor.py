@@ -179,26 +179,89 @@ class FeatureExtractor:
         
         return paper
     
-    def extract_from_papers(self, papers: List[Paper]) -> List[Paper]:
+    def extract_unified_from_paper(self, paper: Paper) -> Paper:
+        """
+        整合提取论文所有审稿人的统一优缺点
+        
+        Args:
+            paper: 论文对象（会被原地修改）
+            
+        Returns:
+            更新后的论文对象
+        """
+        logger.info(f"正在为论文提取统一特征: {paper.title}")
+        
+        # 构建审稿文本列表
+        reviews_text_list = []
+        for i, review in enumerate(paper.reviews):
+            reviews_text_list.append(
+                f"--- 审稿人 {i+1} (ID: {review.reviewer_id}) ---\n{review.review_text}"
+            )
+        reviews_text = "\n\n".join(reviews_text_list)
+        
+        # 构建提示词
+        categories_str = ", ".join(Config.CATEGORIES)
+        prompt = PromptTemplates.EXTRACT_UNIFIED_FEATURES.format(
+            title=paper.title,
+            abstract=paper.abstract,
+            paper_content=paper.paper_content or "(未提供正文内容)",
+            reviews_text=reviews_text,
+            categories=categories_str
+        )
+        
+        # 调用LLM
+        try:
+            response = self._call_llm(prompt)
+            
+            # 解析JSON响应
+            result = safe_json_parse(response, default={
+                "unified_pros": [],
+                "unified_cons": []
+            })
+            
+            # 存储到paper对象
+            paper.unified_pros = result.get("unified_pros", [])
+            paper.unified_cons = result.get("unified_cons", [])
+            
+            logger.info(
+                f"  完成整合提取: {len(paper.unified_pros)} 统一优点, "
+                f"{len(paper.unified_cons)} 统一缺点"
+            )
+            
+            return paper
+            
+        except Exception as e:
+            logger.error(f"LLM整合提取优缺点失败: {e}")
+            paper.unified_pros = []
+            paper.unified_cons = []
+            return paper
+    
+    def extract_from_papers(self, papers: List[Paper], unified: bool = True) -> List[Paper]:
         """
         批量提取多篇论文的优缺点
         
         Args:
             papers: 论文列表（会被原地修改）
+            unified: 是否使用统一提取模式
             
         Returns:
             更新后的论文列表
         """
-        logger.info(f"开始批量提取 {len(papers)} 篇论文的优缺点...")
+        mode_desc = "统一特征提取" if unified else "独立特征提取"
+        logger.info(f"开始批量 {mode_desc}，共 {len(papers)} 篇论文...")
         
         tracker = ProgressTracker(
-            total=sum(len(p.reviews) for p in papers),
-            description="特征提取"
+            total=len(papers) if unified else sum(len(p.reviews) for p in papers),
+            description=mode_desc
         )
         
         for paper in papers:
-            self.extract_from_paper(paper)
-            tracker.update(len(paper.reviews))
+            if unified:
+                self.extract_unified_from_paper(paper)
+                tracker.update(1)
+            else:
+                self.extract_from_paper(paper)
+                tracker.update(len(paper.reviews))
         
         tracker.finish()
         

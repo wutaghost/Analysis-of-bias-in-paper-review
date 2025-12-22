@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Union
 from dataclasses import dataclass, field, asdict
 
-from utils import logger
+from utils import logger, extract_text_from_pdf
 
 
 @dataclass
@@ -43,7 +43,12 @@ class Paper:
     title: str
     abstract: str
     paper_content: Optional[str] = None
+    source_dir: Optional[Path] = None  # 记录源目录以便延迟加载 PDF
     reviews: List[Review] = field(default_factory=list)
+    
+    # 统一特征提取结果
+    unified_pros: List[Dict[str, Any]] = field(default_factory=list)
+    unified_cons: List[Dict[str, Any]] = field(default_factory=list)
     
     # 统计信息（后续填充）
     avg_actual_score: Optional[float] = None
@@ -325,9 +330,12 @@ class DataLoader:
                     paper.add_review(review)
                 
                 if paper.reviews:  # 只添加有有效审稿记录的论文
+                    # 仅记录源目录，不再此处直接提取 PDF 内容（优化为按需提取）
+                    paper.source_dir = json_file.parent
+                    
                     papers.append(paper)
                     logger.debug(
-                        f"✓ 加载论文: {title[:50]}{'...' if len(title) > 50 else ''} "
+                        f"✓ 加载论文数据: {title[:50]}{'...' if len(title) > 50 else ''} "
                         f"({len(paper.reviews)} 条审稿)"
                     )
                 else:
@@ -347,6 +355,37 @@ class DataLoader:
         
         return papers
     
+    def _load_pdf_content(self, paper: Paper, directory: Path):
+        """尝试查找并加载论文的 PDF 内容"""
+        # 1. 尝试基于 paper_id 查找
+        pdf_candidates = [
+            directory / f"{paper.paper_id}.pdf",
+            directory / f"{paper.paper_id}_openreview.pdf",
+            directory / f"{paper.paper_id.replace('/', '_')}.pdf"
+        ]
+        
+        for pdf_path in pdf_candidates:
+            if pdf_path.exists():
+                logger.info(f"  找到 PDF 文件 (ID匹配): {pdf_path.name}")
+                paper.paper_content = extract_text_from_pdf(pdf_path)
+                if paper.paper_content:
+                    logger.info(f"    成功提取 {len(paper.paper_content)} 字符")
+                    return
+        
+        # 2. 如果没找到，尝试在目录下找任何 PDF 文件
+        all_pdfs = list(directory.glob("*.pdf"))
+        if all_pdfs:
+            # 优先选择最像论文的一个（比如不是 openreview 结尾的，或者名字最长的）
+            # 这里简单取第一个
+            pdf_path = all_pdfs[0]
+            logger.info(f"  找到 PDF 文件 (目录匹配): {pdf_path.name}")
+            paper.paper_content = extract_text_from_pdf(pdf_path)
+            if paper.paper_content:
+                logger.info(f"    成功提取 {len(paper.paper_content)} 字符")
+                return
+        
+        logger.debug(f"  未找到论文 {paper.paper_id} 的 PDF 文件")
+
     def save_to_json(self, file_path: Union[str, Path]):
         """保存数据到JSON文件"""
         file_path = Path(file_path)
