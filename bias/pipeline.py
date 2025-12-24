@@ -1,16 +1,24 @@
 """
 主Pipeline模块
 整合所有模块，提供完整的审稿偏差分析流程
+
+新流程（四步骤）:
+1. 特征提取: 使用LLM提取每个审稿人的优缺点 -> 输出文件
+2. 匿名化处理: 去除审稿人信息，打乱顺序 -> 输出新文件
+3. 权重量化: 基于匿名化文件+PDF内容，使用LLM量化 -> 输出量化文件
+4. 匹配计算: 代码逻辑匹配回审稿人，线性相加得分数
 """
 
 from typing import List, Optional, Union
 from pathlib import Path
 import json
+import time
 
 from config import Config
 from data_loader import DataLoader, Paper
 from feature_extractor import FeatureExtractor
 from llm_quantifier import LLMQuantifier
+from pros_cons_processor import ProsConsProcessor
 from bias_analyzer import BiasAnalyzer, BiasAnalysisResult
 from visualizer import Visualizer
 from utils import logger
@@ -43,12 +51,19 @@ class ReviewBiasAnalysisPipeline:
         self.data_loader = DataLoader()
         self.feature_extractor = FeatureExtractor(api_key, base_url, model)
         self.quantifier = LLMQuantifier(api_key, base_url, model)
+        self.processor = ProsConsProcessor()
         self.analyzer = BiasAnalyzer()
         self.visualizer = Visualizer(output_dir)
         
         # 数据存储
         self.papers: List[Paper] = []
         self.analysis_results: List[BiasAnalysisResult] = []
+        
+        # 中间文件路径
+        self.extraction_file: Optional[Path] = None
+        self.anonymized_file: Optional[Path] = None
+        self.mapping_file: Optional[Path] = None
+        self.quantified_file: Optional[Path] = None
         
         logger.info("=" * 70)
         logger.info("审稿偏差分析Pipeline已初始化")
@@ -72,7 +87,7 @@ class ReviewBiasAnalysisPipeline:
             self（支持链式调用）
         """
         logger.info(f"\n{'='*70}")
-        logger.info("步骤 1: 数据加载")
+        logger.info("步骤 0: 数据加载")
         logger.info(f"{'='*70}")
         
         if format == "json":
@@ -103,83 +118,503 @@ class ReviewBiasAnalysisPipeline:
         """
         return self.load_data(directory, format="openreview_json")
     
-    # ========== 特征提取 ==========
-    
     def load_paper_pdfs(self) -> 'ReviewBiasAnalysisPipeline':
         """
         为当前列表中的所有论文加载 PDF 内容（如果尚未加载）
         实现适配性优化：仅处理需要分析的论文
         """
         logger.info(f"\n{'='*70}")
-        logger.info(f"适配性优化：正在为 {len(self.papers)} 篇待分析论文提取 PDF 文本")
+        logger.info(f"PDF提取: 正在为 {len(self.papers)} 篇待分析论文提取 PDF 文本")
         logger.info(f"{'='*70}")
         
+        loaded_count = 0
         for paper in self.papers:
             if not paper.paper_content and paper.source_dir:
                 self.data_loader._load_pdf_content(paper, paper.source_dir)
+                if paper.paper_content:
+                    loaded_count += 1
+        
+        logger.info(f"成功提取 {loaded_count} 篇论文的 PDF 内容")
         
         return self
-
-    def extract_pros_cons(self, unified: bool = True) -> 'ReviewBiasAnalysisPipeline':
+    
+    # ========== 步骤1: 特征提取 ==========
+    
+    def step1_extract_features(self) -> 'ReviewBiasAnalysisPipeline':
         """
-        提取优缺点
+        步骤1: 使用LLM提取每个审稿人的优缺点
         
-        Args:
-            unified: 是否使用统一提取模式
-            
         Returns:
             self（支持链式调用）
         """
         logger.info(f"\n{'='*70}")
-        logger.info(f"步骤 2: 特征提取（{'统一整合模式' if unified else '独立提取模式'}）")
+        logger.info("步骤 1: 特征提取（独立提取每个审稿人的优缺点）")
         logger.info(f"{'='*70}")
         
         if not self.papers:
             raise ValueError("请先加载数据")
         
-        self.papers = self.feature_extractor.extract_from_papers(self.papers, unified=unified)
+        # 提取优缺点
+        self.papers = self.feature_extractor.extract_from_papers(self.papers)
         
-        if not unified:
-            self.feature_extractor.display_extraction_summary(self.papers)
+        # 保存提取结果到文件
+        self.extraction_file = self.feature_extractor.save_extraction_results(self.papers)
+        
+        # 显示摘要
+        self.feature_extractor.display_extraction_summary(self.papers)
         
         return self
     
-    # ========== 权重量化 ==========
+    # ========== 步骤2: 匿名化处理 ==========
     
-    def quantify_weights(self, unified: bool = True) -> 'ReviewBiasAnalysisPipeline':
+    def step2_anonymize_and_shuffle(self) -> 'ReviewBiasAnalysisPipeline':
         """
-        量化优缺点权重
+        步骤2: 处理提取结果，去除审稿人信息，打乱顺序
         
-        Args:
-            unified: 是否使用统一量化模式
-            
         Returns:
             self（支持链式调用）
         """
         logger.info(f"\n{'='*70}")
-        logger.info(f"步骤 3: 权重量化（{'统一量化模式' if unified else '独立量化模式'}）")
+        logger.info("步骤 2: 匿名化处理（去除审稿人信息，打乱顺序）")
         logger.info(f"{'='*70}")
         
-        if not self.papers:
-            raise ValueError("请先加载数据")
+        if not self.extraction_file:
+            raise ValueError("请先执行步骤1（特征提取）")
         
-        # 检查是否已提取优缺点
-        has_extracted = False
-        if unified:
-            if any(p.unified_pros or p.unified_cons for p in self.papers):
-                has_extracted = True
-        else:
-            if any(r.pros or r.cons for p in self.papers for r in p.reviews):
-                has_extracted = True
-                
-        if not has_extracted:
-            logger.warning("未检测到已提取的优缺点，将先执行特征提取步骤")
-            self.extract_pros_cons(unified=unified)
+        # 处理并输出匿名化文件
+        self.anonymized_file, mapping = self.processor.process_extraction_file(
+            self.extraction_file
+        )
         
-        self.papers = self.quantifier.quantify_papers(self.papers, unified=unified)
+        # 保存映射文件路径
+        self.mapping_file = Config.ANONYMIZED_DIR / "original_mapping.json"
+        
+        logger.info(f"✓ 匿名化完成，优缺点顺序已随机打乱")
+        
+        return self
+    
+    # ========== 步骤3: 权重量化 ==========
+    
+    def step3_quantify_weights(self) -> 'ReviewBiasAnalysisPipeline':
+        """
+        步骤3: 基于匿名化文件和PDF内容，使用LLM量化权重
+        
+        Returns:
+            self（支持链式调用）
+        """
+        logger.info(f"\n{'='*70}")
+        logger.info("步骤 3: 权重量化（基于匿名优缺点+论文全文）")
+        logger.info(f"{'='*70}")
+        
+        if not self.anonymized_file:
+            raise ValueError("请先执行步骤2（匿名化处理）")
+        
+        # 量化并输出结果
+        self.quantified_file = self.quantifier.quantify_anonymized_file(
+            self.anonymized_file,
+            self.papers
+        )
+        
+        return self
+    
+    # ========== 步骤4: 匹配并计算分数 ==========
+    
+    def step4_match_and_calculate(self) -> 'ReviewBiasAnalysisPipeline':
+        """
+        步骤4: 代码逻辑匹配回审稿人，线性相加得分数
+        
+        注意: 此步骤不使用LLM，完全使用代码逻辑
+        
+        Returns:
+            self（支持链式调用）
+        """
+        logger.info(f"\n{'='*70}")
+        logger.info("步骤 4: 匹配计算（代码逻辑匹配审稿人，线性相加）")
+        logger.info(f"{'='*70}")
+        
+        if not self.quantified_file or not self.mapping_file:
+            raise ValueError("请先执行步骤3（权重量化）")
+        
+        # 匹配并计算分数
+        self.papers = self.processor.match_and_calculate_scores(
+            self.quantified_file,
+            self.mapping_file,
+            self.papers
+        )
+        
+        # 显示量化摘要
         self.quantifier.display_quantification_summary(self.papers)
         
         return self
+    
+    # ========== 批次处理 ==========
+    
+    def _split_into_batches(self, papers: List[Paper], batch_size: int) -> List[List[Paper]]:
+        """将论文列表分割成批次"""
+        batches = []
+        for i in range(0, len(papers), batch_size):
+            batches.append(papers[i:i + batch_size])
+        return batches
+    
+    def _process_batch(
+        self, 
+        batch_papers: List[Paper], 
+        batch_index: int, 
+        total_batches: int
+    ) -> tuple:
+        """
+        处理单个批次的论文（步骤1-3）
+        
+        Args:
+            batch_papers: 当前批次的论文列表
+            batch_index: 批次索引（从0开始）
+            total_batches: 总批次数
+            
+        Returns:
+            (extraction_data, anonymized_data, quantified_data, mapping_data)
+        """
+        batch_num = batch_index + 1
+        logger.info(f"\n{'='*70}")
+        logger.info(f"🔄 处理批次 {batch_num}/{total_batches} (共 {len(batch_papers)} 篇论文)")
+        logger.info(f"{'='*70}")
+        
+        # 临时存储当前批次的论文
+        original_papers = self.papers
+        self.papers = batch_papers
+        
+        # 0. 提取PDF内容
+        self.load_paper_pdfs()
+        
+        # 1. 特征提取
+        logger.info(f"\n[批次{batch_num}] 步骤1: 特征提取")
+        self.papers = self.feature_extractor.extract_from_papers(self.papers)
+        
+        # 收集提取数据
+        extraction_data = []
+        for paper in self.papers:
+            paper_data = {
+                "paper_id": paper.paper_id,
+                "title": paper.title,
+                "abstract": paper.abstract,
+                "reviews": []
+            }
+            for review in paper.reviews:
+                review_data = {
+                    "reviewer_id": review.reviewer_id,
+                    "actual_score": review.actual_score,
+                    "pros": review.pros,
+                    "cons": review.cons
+                }
+                paper_data["reviews"].append(review_data)
+            extraction_data.append(paper_data)
+        
+        # 2. 匿名化处理（直接在内存中处理）
+        logger.info(f"\n[批次{batch_num}] 步骤2: 匿名化处理")
+        anonymized_data, mapping_data = self.processor.anonymize_in_memory(extraction_data)
+        
+        # 步骤之间添加延迟，避免API请求过于密集
+        logger.info(f"  ⏳ 步骤间隔等待 {Config.BATCH_DELAY:.1f} 秒...")
+        time.sleep(Config.BATCH_DELAY)
+        
+        # 3. 权重量化
+        logger.info(f"\n[批次{batch_num}] 步骤3: 权重量化")
+        quantified_data = self._quantify_batch_in_memory(anonymized_data, self.papers)
+        
+        # 恢复原始论文列表
+        self.papers = original_papers
+        
+        logger.info(f"\n✓ 批次 {batch_num}/{total_batches} 处理完成")
+        
+        return extraction_data, anonymized_data, quantified_data, mapping_data
+    
+    def _quantify_batch_in_memory(
+        self, 
+        anonymized_data: List[dict], 
+        papers: List[Paper]
+    ) -> List[dict]:
+        """在内存中量化单个批次，支持智能延迟"""
+        from utils import safe_json_parse, ProgressTracker
+        
+        paper_content_map = {p.paper_id: p.paper_content for p in papers}
+        quantified_results = []
+        consecutive_failures = 0
+        max_consecutive_failures = 3
+        
+        for idx, paper_data in enumerate(anonymized_data):
+            paper_id = paper_data["paper_id"]
+            title = paper_data["title"]
+            abstract = paper_data["abstract"]
+            pros = paper_data["pros"]
+            cons = paper_data["cons"]
+            
+            paper_content = paper_content_map.get(paper_id, "")
+            
+            logger.info(f"  [{idx+1}/{len(anonymized_data)}] 正在量化: {title[:45]}...")
+            
+            pros_count = len(pros)
+            cons_count = len(cons)
+            
+            pros_text = "\n".join([
+                f"{i+1}. [{p.get('category', '未分类')}] {p.get('description', '')}"
+                for i, p in enumerate(pros)
+            ]) if pros else "(无)"
+            
+            cons_text = "\n".join([
+                f"{i+1}. [{c.get('category', '未分类')}] {c.get('description', '')}"
+                for i, c in enumerate(cons)
+            ]) if cons else "(无)"
+            
+            from config import PromptTemplates
+            prompt = PromptTemplates.QUANTIFY_WEIGHTS.format(
+                title=title,
+                abstract=abstract,
+                paper_content=paper_content[:15000] if paper_content else "(未提供论文全文)",
+                pros_text=pros_text,
+                cons_text=cons_text,
+                pros_count=pros_count,
+                cons_count=cons_count,
+                min_score=Config.MIN_SCORE,
+                max_score=Config.MAX_SCORE,
+                base_score=Config.BASE_SCORE
+            )
+            
+            try:
+                response = self.quantifier._call_llm(prompt)
+                result = safe_json_parse(response, default={
+                    "pros_weights": [],
+                    "cons_weights": [],
+                    "expected_score_breakdown": {}
+                })
+                
+                pros_weights = result.get("pros_weights", [])
+                cons_weights = result.get("cons_weights", [])
+                
+                # 补齐缺失的权重
+                while len(pros_weights) < pros_count:
+                    i = len(pros_weights)
+                    pros_weights.append({
+                        "description": pros[i].get("description", "") if i < len(pros) else "",
+                        "category": pros[i].get("category", "") if i < len(pros) else "",
+                        "weight": 0.5,
+                        "reasoning": "LLM未返回，使用默认值"
+                    })
+                
+                while len(cons_weights) < cons_count:
+                    i = len(cons_weights)
+                    cons_weights.append({
+                        "description": cons[i].get("description", "") if i < len(cons) else "",
+                        "category": cons[i].get("category", "") if i < len(cons) else "",
+                        "weight": -0.5,
+                        "reasoning": "LLM未返回，使用默认值"
+                    })
+                
+                quantified_results.append({
+                    "paper_id": paper_id,
+                    "title": title,
+                    "pros_weights": pros_weights,
+                    "cons_weights": cons_weights,
+                    "expected_score_breakdown": result.get("expected_score_breakdown", {})
+                })
+                
+                logger.info(f"    ✓ 完成: {len(pros_weights)} 优点, {len(cons_weights)} 缺点")
+                consecutive_failures = 0
+                
+                # 智能延迟
+                if idx < len(anonymized_data) - 1:
+                    if (idx + 1) % 10 == 0:
+                        # 每10篇长休息
+                        logger.info(f"  ⏳ 长休息 {Config.BATCH_DELAY:.0f} 秒...")
+                        time.sleep(Config.BATCH_DELAY)
+                    else:
+                        time.sleep(Config.REQUEST_DELAY)
+                
+            except Exception as e:
+                consecutive_failures += 1
+                logger.error(f"  ✗ 量化失败: {e}")
+                
+                quantified_results.append({
+                    "paper_id": paper_id,
+                    "title": title,
+                    "pros_weights": [
+                        {"description": p.get("description", ""), "category": p.get("category", ""), "weight": 0, "reasoning": "量化失败"}
+                        for p in pros
+                    ],
+                    "cons_weights": [
+                        {"description": c.get("description", ""), "category": c.get("category", ""), "weight": 0, "reasoning": "量化失败"}
+                        for c in cons
+                    ],
+                    "expected_score_breakdown": {}
+                })
+                
+                # 连续失败时增加等待
+                if consecutive_failures >= max_consecutive_failures:
+                    wait_time = Config.BATCH_DELAY * 3
+                    logger.warning(f"⚠️ 连续失败 {consecutive_failures} 次，等待 {wait_time:.0f} 秒...")
+                    time.sleep(wait_time)
+                    consecutive_failures = 0
+        
+        return quantified_results
+    
+    def _merge_batch_results(
+        self,
+        all_extraction: List[List[dict]],
+        all_anonymized: List[List[dict]],
+        all_quantified: List[List[dict]],
+        all_mapping: List[dict]
+    ) -> tuple:
+        """合并所有批次的结果"""
+        merged_extraction = []
+        merged_anonymized = []
+        merged_quantified = []
+        merged_mapping = {}
+        
+        for batch_ext in all_extraction:
+            merged_extraction.extend(batch_ext)
+        
+        for batch_anon in all_anonymized:
+            merged_anonymized.extend(batch_anon)
+        
+        for batch_quant in all_quantified:
+            merged_quantified.extend(batch_quant)
+        
+        for batch_map in all_mapping:
+            merged_mapping.update(batch_map)
+        
+        return merged_extraction, merged_anonymized, merged_quantified, merged_mapping
+    
+    # ========== 完整流程 ==========
+    
+    def run_full_analysis(self, batch_size: int = None) -> dict:
+        """
+        运行完整的四步骤分析流程（支持批次处理）
+        
+        流程:
+        1. 分批处理（每批10篇）:
+           - 特征提取 -> 输出文件
+           - 匿名化处理 -> 输出新文件
+           - 权重量化 -> 输出量化文件
+        2. 合并所有批次结果
+        3. 匹配计算 -> 更新论文数据
+        4. 偏差分析
+        5. 可视化
+        
+        Args:
+            batch_size: 每批处理的论文数量，默认为 Config.BATCH_SIZE
+        
+        Returns:
+            分析结果摘要字典
+        """
+        batch_size = batch_size or Config.BATCH_SIZE
+        
+        logger.info("\n" + "="*70)
+        logger.info(f"开始完整分析流程（批次处理，每批 {batch_size} 篇）")
+        logger.info("="*70)
+        
+        # 分割成批次
+        batches = self._split_into_batches(self.papers, batch_size)
+        total_batches = len(batches)
+        
+        logger.info(f"共 {len(self.papers)} 篇论文，分为 {total_batches} 个批次处理")
+        
+        # 存储所有批次的结果
+        all_extraction = []
+        all_anonymized = []
+        all_quantified = []
+        all_mapping = []
+        
+        # 处理每个批次
+        for i, batch_papers in enumerate(batches):
+            extraction_data, anonymized_data, quantified_data, mapping_data = \
+                self._process_batch(batch_papers, i, total_batches)
+            
+            all_extraction.append(extraction_data)
+            all_anonymized.append(anonymized_data)
+            all_quantified.append(quantified_data)
+            all_mapping.append(mapping_data)
+            
+            # 批次之间的延迟
+            if i < total_batches - 1:
+                logger.info(f"\n⏳ 等待 {Config.BATCH_DELAY} 秒后处理下一批次...")
+                time.sleep(Config.BATCH_DELAY)
+        
+        # 合并所有批次的结果
+        logger.info(f"\n{'='*70}")
+        logger.info("合并所有批次结果")
+        logger.info(f"{'='*70}")
+        
+        merged_extraction, merged_anonymized, merged_quantified, merged_mapping = \
+            self._merge_batch_results(all_extraction, all_anonymized, all_quantified, all_mapping)
+        
+        # 保存合并后的结果到文件
+        self.extraction_file = Config.EXTRACTION_DIR / "extraction_results.json"
+        with open(self.extraction_file, 'w', encoding='utf-8') as f:
+            json.dump(merged_extraction, f, ensure_ascii=False, indent=2)
+        logger.info(f"  已保存提取结果: {self.extraction_file}")
+        
+        self.anonymized_file = Config.ANONYMIZED_DIR / "anonymized_pros_cons.json"
+        with open(self.anonymized_file, 'w', encoding='utf-8') as f:
+            json.dump(merged_anonymized, f, ensure_ascii=False, indent=2)
+        logger.info(f"  已保存匿名化结果: {self.anonymized_file}")
+        
+        self.mapping_file = Config.ANONYMIZED_DIR / "original_mapping.json"
+        with open(self.mapping_file, 'w', encoding='utf-8') as f:
+            json.dump(merged_mapping, f, ensure_ascii=False, indent=2)
+        logger.info(f"  已保存映射文件: {self.mapping_file}")
+        
+        self.quantified_file = Config.QUANTIFIED_DIR / "quantified_weights.json"
+        with open(self.quantified_file, 'w', encoding='utf-8') as f:
+            json.dump(merged_quantified, f, ensure_ascii=False, indent=2)
+        logger.info(f"  已保存量化结果: {self.quantified_file}")
+        
+        # 4. 匹配计算（使用合并后的文件）
+        self.step4_match_and_calculate()
+        
+        # 5. 显示摘要
+        self.feature_extractor.display_extraction_summary(self.papers)
+        self.quantifier.display_quantification_summary(self.papers)
+        
+        # 6. 保存每篇论文的详细报告
+        self.save_individual_reports()
+        
+        # 7. 偏差分析
+        self.analyze_bias()
+        
+        # 8. 生成可视化
+        self.generate_visualizations()
+        
+        # 9. 生成摘要
+        summary = {
+            "data_statistics": self.data_loader.get_statistics(),
+            "extraction_summary": self.feature_extractor.get_extraction_summary(self.papers),
+            "quantification_summary": self.quantifier.get_quantification_summary(self.papers),
+            "bias_statistics": self.analyzer.global_statistics(self.analysis_results),
+            "batch_info": {
+                "batch_size": batch_size,
+                "total_batches": total_batches,
+                "total_papers": len(self.papers)
+            },
+            "output_files": {
+                "extraction": str(self.extraction_file),
+                "anonymized": str(self.anonymized_file),
+                "mapping": str(self.mapping_file),
+                "quantified": str(self.quantified_file)
+            }
+        }
+        
+        logger.info("\n" + "="*70)
+        logger.info("完整分析流程已完成！")
+        logger.info("="*70)
+        logger.info(f"\n批次处理信息:")
+        logger.info(f"  每批大小: {batch_size} 篇")
+        logger.info(f"  总批次数: {total_batches}")
+        logger.info(f"  总论文数: {len(self.papers)}")
+        logger.info(f"\n中间文件:")
+        logger.info(f"  步骤1 提取结果: {self.extraction_file}")
+        logger.info(f"  步骤2 匿名化文件: {self.anonymized_file}")
+        logger.info(f"  步骤2 映射文件: {self.mapping_file}")
+        logger.info(f"  步骤3 量化结果: {self.quantified_file}")
+        
+        return summary
     
     # ========== 偏差分析 ==========
     
@@ -191,16 +626,16 @@ class ReviewBiasAnalysisPipeline:
             偏差分析结果列表
         """
         logger.info(f"\n{'='*70}")
-        logger.info("步骤 4: 偏差分析")
+        logger.info("步骤 5: 偏差分析")
         logger.info(f"{'='*70}")
         
         if not self.papers:
             raise ValueError("请先加载数据")
         
-        # 检查是否已量化权重
+        # 检查是否已计算期望分数
         if self.papers[0].reviews[0].expected_score is None:
-            logger.warning("未检测到已量化的权重，将先执行权重量化步骤")
-            self.quantify_weights()
+            logger.warning("未检测到期望分数，请先执行步骤1-4")
+            return []
         
         self.analysis_results = self.analyzer.analyze_papers(self.papers)
         self.analyzer.display_summary(self.analysis_results)
@@ -217,64 +652,16 @@ class ReviewBiasAnalysisPipeline:
             self（支持链式调用）
         """
         logger.info(f"\n{'='*70}")
-        logger.info("步骤 5: 生成可视化")
+        logger.info("步骤 6: 生成可视化")
         logger.info(f"{'='*70}")
         
         if not self.analysis_results:
-            logger.warning("未检测到分析结果，将先执行偏差分析步骤")
-            self.analyze_bias()
+            logger.warning("未检测到分析结果，跳过可视化")
+            return self
         
         self.visualizer.generate_all_plots(self.papers, self.analysis_results)
         
         return self
-    
-    # ========== 完整流程 ==========
-    
-    def run_full_analysis(self, unified: bool = True) -> dict:
-        """
-        运行完整的分析流程
-        
-        Args:
-            unified: 是否使用统一整合模式
-            
-        Returns:
-            分析结果摘要字典
-        """
-        logger.info("\n" + "="*70)
-        logger.info(f"开始完整分析流程 ({'统一整合模式' if unified else '独立模式'})")
-        logger.info("="*70)
-        
-        # 0. 适配性优化：仅提取当前需要分析的论文 PDF 文本
-        self.load_paper_pdfs()
-        
-        # 1. 特征提取
-        self.extract_pros_cons(unified=unified)
-        
-        # 2. 权重量化
-        self.quantify_weights(unified=unified)
-        
-        # 3. 保存每篇论文的详细报告
-        self.save_individual_reports()
-        
-        # 4. 偏差分析
-        self.analyze_bias()
-        
-        # 5. 生成可视化
-        self.generate_visualizations()
-        
-        # 6. 生成摘要
-        summary = {
-            "data_statistics": self.data_loader.get_statistics(),
-            "extraction_summary": self.feature_extractor.get_extraction_summary(self.papers),
-            "quantification_summary": self.quantifier.get_quantification_summary(self.papers),
-            "bias_statistics": self.analyzer.global_statistics(self.analysis_results),
-        }
-        
-        logger.info("\n" + "="*70)
-        logger.info("完整分析流程已完成！")
-        logger.info("="*70)
-        
-        return summary
     
     # ========== 结果保存 ==========
     
@@ -286,7 +673,7 @@ class ReviewBiasAnalysisPipeline:
             output_dir: 输出目录，默认为 Config.DETAILS_DIR
         """
         logger.info(f"\n{'='*70}")
-        logger.info("额外步骤: 保存每篇论文的详细分析报告")
+        logger.info("保存每篇论文的详细分析报告")
         logger.info(f"{'='*70}")
         
         if not self.papers:
@@ -315,15 +702,23 @@ class ReviewBiasAnalysisPipeline:
             f"# 论文详细分析报告: {paper.title}",
             f"\n**论文ID:** {paper.paper_id}",
             f"\n## 摘要\n{paper.abstract}",
-            f"\n## 审稿分析\n"
         ]
+        
+        # 添加论文全文信息
+        if paper.paper_content:
+            content.append(f"\n## 论文全文内容 (截取前500字)\n{paper.paper_content[:500]}...")
+        else:
+            content.append("\n## 论文全文内容\n(未提取到论文全文)")
+        
+        content.append(f"\n## 各审稿人详细分析\n")
         
         for i, review in enumerate(paper.reviews):
             content.append(f"### 审稿人 {review.reviewer_id}")
             content.append(f"- **实际分数:** {review.actual_score}")
-            content.append(f"- **量化期望分数:** {review.expected_score:.2f}" if review.expected_score is not None else "- **量化期望分数:** 未计算")
-            content.append(f"- **偏差 (Actual - Expected):** {review.bias:+.2f}" if review.bias is not None else "- **偏差:** 未计算")
+            content.append(f"- **期望分数:** {review.expected_score:.2f}" if review.expected_score is not None else "- **期望分数:** 未计算")
+            content.append(f"- **偏差 (实际 - 期望):** {review.bias:+.2f}" if review.bias is not None else "- **偏差:** 未计算")
             
+            # 优点
             content.append("\n#### 优点 (Pros)")
             if review.pros_weights:
                 for pw in review.pros_weights:
@@ -335,7 +730,8 @@ class ReviewBiasAnalysisPipeline:
                     content.append(f"- **[{p.get('category', '未分类')}]** {p.get('description', '')}")
             else:
                 content.append("- (无)")
-                
+            
+            # 缺点
             content.append("\n#### 缺点 (Cons)")
             if review.cons_weights:
                 for cw in review.cons_weights:
@@ -349,9 +745,9 @@ class ReviewBiasAnalysisPipeline:
                 content.append("- (无)")
             
             content.append("\n" + "-"*30 + "\n")
-            
+        
         return "\n".join(content)
-
+    
     def save_results(self, output_file: Optional[Union[str, Path]] = None):
         """
         保存分析结果
@@ -420,56 +816,6 @@ class ReviewBiasAnalysisPipeline:
     
     # ========== 高级功能 ==========
     
-    def analyze_review_similarity(self) -> dict:
-        """
-        分析审稿相似度
-        
-        Returns:
-            相似度分析结果
-        """
-        logger.info(f"\n{'='*70}")
-        logger.info("额外分析: 审稿相似度")
-        logger.info(f"{'='*70}")
-        
-        similarities = []
-        
-        for paper in self.papers:
-            paper_similarities = self.feature_extractor.analyze_paper_review_similarity(paper)
-            similarities.extend(paper_similarities)
-        
-        if not similarities:
-            logger.warning("没有足够的审稿数据进行相似度分析")
-            return {}
-        
-        # 统计分析
-        import numpy as np
-        
-        overall_sims = [s['overall_similarity'] for s in similarities]
-        score_diffs = [s['score_diff'] for s in similarities]
-        
-        # 计算相关性：相似度 vs 分数差异
-        correlation = np.corrcoef(overall_sims, score_diffs)[0, 1]
-        
-        summary = {
-            "total_comparisons": len(similarities),
-            "avg_similarity": np.mean(overall_sims),
-            "avg_score_diff": np.mean(score_diffs),
-            "correlation": correlation,
-            "interpretation": (
-                "相似度越高，分数差异越小" if correlation < -0.3
-                else "相似度越高，分数差异越大（反常）" if correlation > 0.3
-                else "相似度与分数差异无明显关系"
-            ),
-            "details": similarities
-        }
-        
-        logger.info(f"平均相似度: {summary['avg_similarity']:.3f}")
-        logger.info(f"平均分数差异: {summary['avg_score_diff']:.2f}")
-        logger.info(f"相关系数: {summary['correlation']:.3f}")
-        logger.info(f"结论: {summary['interpretation']}")
-        
-        return summary
-    
     def identify_problematic_papers(self, threshold: float = 2.0) -> List[dict]:
         """
         识别问题论文（高偏差）
@@ -519,21 +865,22 @@ if __name__ == "__main__":
     
     # 创建测试数据
     test_papers = []
-    for i in range(3):
+    for i in range(2):
         paper = Paper(
             paper_id=f"paper_{i}",
             title=f"Test Paper {i}: An Innovative Approach",
-            abstract="This paper presents a novel method for solving complex problems."
+            abstract="This paper presents a novel method for solving complex problems.",
+            paper_content="Full paper content here..."
         )
         
-        for j in range(3):
+        for j in range(2):
             review = Review(
                 reviewer_id=f"reviewer_{j}",
                 review_text=f"""
                 This paper has several strengths and weaknesses.
                 
                 Strengths:
-                - Novel approach
+                - Novel approach to the problem
                 - Good experimental design
                 
                 Weaknesses:
@@ -566,8 +913,10 @@ pipeline.load_data("test_reviews.json")
 # results = pipeline.run_full_analysis()
 
 # 或分步执行
-# pipeline.extract_pros_cons()
-# pipeline.quantify_weights()
+# pipeline.step1_extract_features()
+# pipeline.step2_anonymize_and_shuffle()
+# pipeline.step3_quantify_weights()
+# pipeline.step4_match_and_calculate()
 # pipeline.analyze_bias()
 # pipeline.generate_visualizations()
 
@@ -578,7 +927,3 @@ pipeline.load_data("test_reviews.json")
     
     # 清理
     test_data_file.unlink()
-
-
-
-

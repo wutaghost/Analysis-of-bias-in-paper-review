@@ -6,7 +6,7 @@
 
 ### 步骤1: 安装依赖
 ```bash
-cd /home/xingzhuang/workplace/yls/bias
+cd bias
 pip install -r requirements.txt
 ```
 
@@ -16,14 +16,67 @@ pip install -r requirements.txt
 echo "OPENAI_API_KEY=sk-your-api-key-here" > .env
 ```
 
-### 步骤3: 运行快速检查
+### 步骤3: 运行快速测试（仅2篇论文）
 ```bash
-python quick_start.py
+python quick_test.py
 ```
 
-如果看到 `✓ 系统检查完成！`，说明安装成功！
+如果看到 `✅ 快速测试完成！`，说明系统正常工作！
 
-## 📊 开始分析ICLR数据
+---
+
+## 📊 四步骤分析流程
+
+本系统采用四步骤流程进行偏差分析：
+
+```
+步骤1: 特征提取     ──[LLM]──→  提取每个审稿人的优缺点
+                                  ↓
+步骤2: 匿名化处理   ──[代码]──→  去除审稿人信息，打乱顺序
+                                  ↓
+步骤3: 权重量化     ──[LLM]──→  基于论文全文量化权重
+                                  ↓
+步骤4: 匹配计算     ──[代码]──→  匹配回审稿人，线性相加
+```
+
+**关键特点**：步骤2和步骤4使用代码逻辑，不调用LLM，确保客观公正。
+
+---
+
+## 🧪 快速测试（推荐首次使用）
+
+### 测试脚本
+```bash
+python quick_test.py
+```
+
+这个脚本会：
+- 自动加载 ICLR_2025_CLEAN 目录的数据
+- **仅处理前2篇论文**（节省时间和费用）
+- 运行完整的四步骤分析
+- 显示详细的分析结果
+
+### 预期输出
+```
+🧪 快速测试脚本 - 仅分析2篇论文
+======================================================================
+📂 数据目录: ../ICLR_2025_CLEAN
+✓ 配置验证成功
+
+📝 测试论文:
+   1. Paper Title 1...
+      审稿人数: 3
+   2. Paper Title 2...
+      审稿人数: 4
+
+🚀 开始四步骤分析...
+...
+✅ 快速测试完成！
+```
+
+---
+
+## 📈 完整分析ICLR数据
 
 ### 方式1: 使用专用脚本（推荐）
 ```bash
@@ -32,7 +85,8 @@ python run_iclr_analysis.py
 
 这个脚本会：
 - 自动加载ICLR_2025_CLEAN目录的数据
-- 运行完整的偏差分析
+- 询问是否只处理部分数据（测试用）
+- 运行完整的四步骤偏差分析
 - 生成所有可视化图表
 - 保存详细报告
 
@@ -40,9 +94,6 @@ python run_iclr_analysis.py
 ```bash
 # 完整分析
 python main.py --input ../ICLR_2025_CLEAN --format openreview_json
-
-# 包含相似度分析
-python main.py --input ../ICLR_2025_CLEAN --format openreview_json --similarity
 
 # 指定输出目录
 python main.py --input ../ICLR_2025_CLEAN --format openreview_json --output results/my_analysis
@@ -58,50 +109,91 @@ pipeline = ReviewBiasAnalysisPipeline()
 # 加载ICLR数据
 pipeline.load_from_openreview("../ICLR_2025_CLEAN")
 
-# 运行分析
+# 限制测试数量（可选）
+pipeline.papers = pipeline.papers[:10]
+
+# 运行完整四步骤分析
 results = pipeline.run_full_analysis()
 
-# 查看结果
-print("平均偏差:", results['bias_statistics']['bias_statistics']['mean'])
+# 或分步执行
+pipeline.step1_extract_features()       # LLM提取优缺点
+pipeline.step2_anonymize_and_shuffle()  # 代码处理匿名化
+pipeline.step3_quantify_weights()       # LLM量化权重
+pipeline.step4_match_and_calculate()    # 代码计算分数
+
+# 后续分析
+pipeline.analyze_bias()
+pipeline.generate_visualizations()
 
 # 保存结果
 pipeline.save_results()
 pipeline.generate_report()
 ```
 
+---
+
 ## 📁 查看结果
 
 分析完成后，查看 `results/` 目录：
 
 ```bash
+# 查看目录结构
+ls -la results/
+
+# 查看中间文件
+ls results/extraction/        # 步骤1输出
+ls results/anonymized/        # 步骤2输出
+ls results/quantified/        # 步骤3输出
+
+# 查看每篇论文的详细报告
+ls results/paper_details/
+
 # 查看文本报告
 cat results/analysis_report.txt
 
 # 查看图表
 ls results/figures/
-
-# 查看详细数据
-cat results/analysis_results.json
 ```
+
+### 输出文件说明
+
+| 目录/文件 | 说明 |
+|-----------|------|
+| `extraction/extraction_results.json` | 步骤1: 每个审稿人的优缺点（含审稿人ID） |
+| `anonymized/anonymized_pros_cons.json` | 步骤2: 匿名化后的优缺点（无审稿人信息） |
+| `anonymized/original_mapping.json` | 步骤2: 映射关系（用于步骤4匹配） |
+| `quantified/quantified_weights.json` | 步骤3: 量化后的权重 |
+| `paper_details/*.md` | 每篇论文的详细分析报告 |
+| `analysis_results.json` | 完整分析结果 |
+| `analysis_report.txt` | 文本格式报告 |
+
+---
 
 ## 🎯 核心功能
 
-### 1. 提取优缺点
+### 1. 特征提取（步骤1）
 系统使用LLM从审稿文本中自动提取：
 - 优点列表（包含描述和类别）
 - 缺点列表（包含描述和类别）
 
-### 2. 量化权重
+### 2. 匿名化处理（步骤2）
+**代码逻辑处理**，不使用LLM：
+- 去除审稿人信息
+- 随机打乱优缺点顺序
+- 保留映射关系用于后续匹配
+
+### 3. 权重量化（步骤3）
 为每个优缺点赋予量化权重：
 - 优点：正权重（+0.1 到 +2.0）
 - 缺点：负权重（-0.1 到 -2.0）
+- 基于论文全文内容进行评估
 
-### 3. 计算期望分数
-```
-期望分数 = 基准分数(5.0) + 所有优点权重之和 + 所有缺点权重之和
-```
+### 4. 匹配计算（步骤4）
+**代码逻辑处理**，不使用LLM：
+- 根据映射文件匹配回审稿人
+- 线性相加计算期望分数
 
-### 4. 分析偏差
+### 5. 偏差分析
 ```
 偏差 = 实际分数 - 期望分数
 ```
@@ -109,43 +201,28 @@ cat results/analysis_results.json
 - 负偏差：审稿人给分偏低
 - 零偏差：给分合理
 
-### 5. 生成可视化
-8种统计图表，全面展示偏差情况
-
-## 📖 详细文档
-
-- **README.md**: 项目完整说明
-- **QUICK_REFERENCE.md**: 快速参考手册
-- **PROJECT_STRUCTURE.md**: 项目结构和技术细节
-- **example_usage.py**: 代码使用示例
+---
 
 ## 🔧 常见场景
 
-### 场景1: 只想看看结果，不想等太久
+### 场景1: 快速验证系统是否正常
 ```bash
-# 只分析前10篇论文（测试用）
-python -c "
-from pipeline import ReviewBiasAnalysisPipeline
-pipeline = ReviewBiasAnalysisPipeline()
-pipeline.load_from_openreview('../ICLR_2025_CLEAN')
-pipeline.papers = pipeline.papers[:10]  # 限制为10篇
-pipeline.run_full_analysis()
-pipeline.save_results()
-"
+python quick_test.py
 ```
 
-### 场景2: 已有审稿数据，想分析偏差
-1. 准备JSON或CSV格式数据（参考README.md中的格式说明）
-2. 运行：`python main.py --input your_data.json`
-
-### 场景3: 想对比不同会议的偏差
+### 场景2: 只想测试少量论文
 ```python
-conferences = ['ICLR_2025', 'NeurIPS_2024', 'ICML_2024']
+from pipeline import ReviewBiasAnalysisPipeline
 
-for conf in conferences:
-    pipeline = ReviewBiasAnalysisPipeline(output_dir=f"results/{conf}")
-    pipeline.load_from_openreview(f"../{conf}_CLEAN")
-    pipeline.run_full_analysis()
+pipeline = ReviewBiasAnalysisPipeline()
+pipeline.load_from_openreview('../ICLR_2025_CLEAN')
+pipeline.papers = pipeline.papers[:5]  # 限制为5篇
+pipeline.run_full_analysis()
+```
+
+### 场景3: 查看单篇论文的详细分析
+```bash
+cat results/paper_details/{paper_id}_details.md
 ```
 
 ### 场景4: 导出到Excel进行进一步分析
@@ -155,6 +232,7 @@ from pipeline import ReviewBiasAnalysisPipeline
 
 pipeline = ReviewBiasAnalysisPipeline()
 pipeline.load_from_openreview("../ICLR_2025_CLEAN")
+pipeline.papers = pipeline.papers[:10]
 pipeline.run_full_analysis()
 
 # 创建DataFrame
@@ -167,6 +245,8 @@ for paper in pipeline.papers:
             '实际分数': review.actual_score,
             '期望分数': review.expected_score,
             '偏差': review.bias,
+            '优点数': len(review.pros_weights),
+            '缺点数': len(review.cons_weights),
         })
 
 df = pd.DataFrame(data)
@@ -174,24 +254,29 @@ df.to_excel('results/analysis.xlsx', index=False)
 print("已导出到 results/analysis.xlsx")
 ```
 
+---
+
 ## ⚠️ 重要提示
 
 ### 关于API费用
 - 本系统会调用OpenAI API，会产生费用
 - 使用 `gpt-4o-mini` 模型成本较低（默认）
 - 系统自动启用缓存，避免重复调用
-- 建议先用小样本测试（5-10篇论文）
+- **建议先用 `quick_test.py` 测试（仅2篇论文）**
 
 ### 关于处理时间
-- 提取优缺点：约5-10秒/审稿
-- 量化权重：约5-10秒/审稿
-- 总时间 = 审稿数量 × 10-20秒
-- 例如：100条审稿约需15-30分钟
+| 数据量 | 预计时间 |
+|--------|----------|
+| 2篇论文（快速测试） | 2-5分钟 |
+| 10篇论文 | 10-20分钟 |
+| 100篇论文 | 60-120分钟 |
 
 ### 关于数据隐私
 - 所有数据在本地处理
 - LLM调用通过OpenAI API
 - 注意不要上传敏感数据
+
+---
 
 ## 🐛 遇到问题？
 
@@ -203,28 +288,30 @@ pip install -r requirements.txt
 ### 问题2: API调用失败
 - 检查API密钥是否正确
 - 检查网络连接
-- 查看 `results/logs/` 中的错误日志
+- 查看错误日志
 
-### 问题3: 内存不足
-- 减少处理的论文数量
+### 问题3: 找不到数据目录
+```bash
+# 确保在正确的目录下运行
+cd bias
+ls ../ICLR_2025_CLEAN  # 应该能看到论文文件夹
+```
+
+### 问题4: 内存不足
+- 减少处理的论文数量: `pipeline.papers = pipeline.papers[:10]`
 - 分批处理数据
 
-### 问题4: 中文乱码
-- 确保系统安装了中文字体
-- 或修改 `visualizer.py` 中的字体配置
-
-### 问题5: 结果不理想
-- 检查输入数据格式是否正确
-- 查看提取的优缺点是否合理
-- 可能需要调整Prompt模板（在`config.py`中）
+---
 
 ## 💡 技巧和建议
 
-1. **首次使用**: 用5-10篇论文测试，确认流程正常
+1. **首次使用**: 运行 `quick_test.py` 测试2篇论文
 2. **节省费用**: 确保缓存启用（默认启用）
 3. **加速分析**: 第二次运行相同数据会很快（使用缓存）
-4. **清空缓存**: `python main.py --clear-cache`
-5. **监控进度**: 系统会实时显示进度和ETA
+4. **监控进度**: 系统会实时显示进度
+5. **查看中间结果**: 检查 `results/extraction/` 等目录
+
+---
 
 ## 📞 获取帮助
 
@@ -232,15 +319,14 @@ pip install -r requirements.txt
 # 查看命令行帮助
 python main.py --help
 
-# 运行测试
-python quick_start.py
+# 运行快速测试
+python quick_test.py
 
 # 查看示例
 python example_usage.py
-
-# 查看文档
-cat README.md
 ```
+
+---
 
 ## 🎓 理解结果
 
@@ -254,24 +340,18 @@ cat README.md
    - 越大：不同审稿人之间差异越大
    - 越小：审稿相对一致
 
-3. **一致性比率**:
-   - \>1：期望分数比实际分数更一致（支持偏差假设）
-   - <1：实际分数比期望分数更一致
-
-4. **Pearson相关系数**:
+3. **Pearson相关系数**:
    - 接近1：期望分数与实际分数高度正相关
    - 接近0：两者关系不大
 
+---
+
 ## 下一步
 
-- ✅ 运行 `python quick_start.py` 检查系统
+- ✅ 运行 `python quick_test.py` 快速测试（2篇论文）
 - ✅ 运行 `python run_iclr_analysis.py` 分析ICLR数据
 - ✅ 查看 `results/` 目录中的结果
-- ✅ 阅读生成的报告和图表
+- ✅ 阅读 `results/paper_details/` 中的详细报告
 - ✅ 根据需要调整分析参数
 
 祝您使用愉快！🎉
-
-
-
-

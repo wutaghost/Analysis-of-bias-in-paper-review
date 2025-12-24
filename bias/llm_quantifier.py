@@ -1,9 +1,12 @@
 """
 LLM分值量化模块
-使用LLM为每个优缺点赋予量化权重
+步骤3: 使用LLM为匿名化后的优缺点赋予量化权重
 """
 
+import json
+import time
 from typing import List, Dict, Any
+from pathlib import Path
 from openai import OpenAI
 
 from config import Config, PromptTemplates
@@ -71,293 +74,174 @@ class LLMQuantifier:
             logger.error(f"LLM调用失败: {e}")
             raise
     
-    def quantify_review(
+    def quantify_anonymized_file(
         self,
-        review: Review,
-        paper_title: str,
-        paper_abstract: str
-    ) -> Dict[str, Any]:
+        anonymized_file: Path,
+        papers: List[Paper],
+        output_dir: Path = None
+    ) -> Path:
         """
-        为单条审稿意见的优缺点赋予权重
+        步骤3: 对匿名化的优缺点进行量化
         
         Args:
-            review: 审稿记录（必须已提取pros和cons）
-            paper_title: 论文标题
-            paper_abstract: 论文摘要
+            anonymized_file: 步骤2输出的匿名化文件
+            papers: 论文列表（用于获取PDF内容）
+            output_dir: 输出目录，默认为 Config.QUANTIFIED_DIR
             
         Returns:
-            包含权重信息的字典
+            量化结果文件路径
         """
-        # 检查是否已提取优缺点
-        if not hasattr(review, 'pros') or not hasattr(review, 'cons'):
-            raise ValueError("Review必须先通过FeatureExtractor提取优缺点")
+        output_dir = output_dir or Config.QUANTIFIED_DIR
+        output_dir.mkdir(parents=True, exist_ok=True)
         
-        if not review.pros and not review.cons:
-            logger.warning(f"审稿人 {review.reviewer_id} 没有优缺点，跳过量化")
-            return {
-                "pros_weights": [],
-                "cons_weights": [],
-                "expected_score_breakdown": {
-                    "base_score": Config.BASE_SCORE,
-                    "total_pros_weight": 0.0,
-                    "total_cons_weight": 0.0,
-                    "expected_score": Config.BASE_SCORE
-                }
-            }
+        logger.info(f"步骤3: 开始量化匿名优缺点")
+        logger.info(f"读取匿名化文件: {anonymized_file}")
         
-        # 格式化优缺点文本
-        pros_text = "\n".join([
-            f"{i+1}. [{p.get('category', '未分类')}] {p.get('description', '')}"
-            for i, p in enumerate(review.pros)
-        ]) if review.pros else "(无)"
+        # 读取匿名化数据
+        with open(anonymized_file, 'r', encoding='utf-8') as f:
+            anonymized_data = json.load(f)
         
-        cons_text = "\n".join([
-            f"{i+1}. [{c.get('category', '未分类')}] {c.get('description', '')}"
-            for i, c in enumerate(review.cons)
-        ]) if review.cons else "(无)"
+        # 构建论文内容索引
+        paper_content_map = {p.paper_id: p.paper_content for p in papers}
         
-        # 构建提示词
-        prompt = PromptTemplates.QUANTIFY_WEIGHTS.format(
-            title=paper_title,
-            abstract=paper_abstract,
-            pros_text=pros_text,
-            cons_text=cons_text,
-            min_score=Config.MIN_SCORE,
-            max_score=Config.MAX_SCORE,
-            base_score=Config.BASE_SCORE
+        quantified_results = []
+        
+        tracker = ProgressTracker(
+            total=len(anonymized_data),
+            description="权重量化"
         )
         
-        # 调用LLM
-        logger.debug(f"正在量化审稿人 {review.reviewer_id} 的优缺点权重...")
-        response = self._call_llm(prompt)
-        
-        # 解析JSON响应
-        result = safe_json_parse(response, default={
-            "pros_weights": [],
-            "cons_weights": [],
-            "expected_score_breakdown": {
-                "base_score": Config.BASE_SCORE,
-                "total_pros_weight": 0.0,
-                "total_cons_weight": 0.0,
-                "expected_score": Config.BASE_SCORE
-            }
-        })
-        
-        # 验证和补充结果
-        if "pros_weights" not in result:
-            result["pros_weights"] = []
-        if "cons_weights" not in result:
-            result["cons_weights"] = []
-        
-        # 确保权重数量匹配
-        if len(result["pros_weights"]) != len(review.pros):
-            logger.warning(
-                f"优点权重数量不匹配: 期望{len(review.pros)}, "
-                f"实际{len(result['pros_weights'])}"
-            )
-        
-        if len(result["cons_weights"]) != len(review.cons):
-            logger.warning(
-                f"缺点权重数量不匹配: 期望{len(review.cons)}, "
-                f"实际{len(result['cons_weights'])}"
-            )
-        
-        # 计算期望分数
-        if "expected_score_breakdown" not in result:
-            total_pros = sum(
-                w.get("weight", 0) for w in result["pros_weights"]
-            )
-            total_cons = sum(
-                w.get("weight", 0) for w in result["cons_weights"]
-            )
-            expected = Config.BASE_SCORE + total_pros + total_cons
+        for idx, paper_data in enumerate(anonymized_data):
+            paper_id = paper_data["paper_id"]
+            title = paper_data["title"]
+            abstract = paper_data["abstract"]
+            pros = paper_data["pros"]
+            cons = paper_data["cons"]
             
-            # 确保分数在合理范围内
-            expected = max(Config.MIN_SCORE, min(Config.MAX_SCORE, expected))
+            # 获取论文全文内容
+            paper_content = paper_content_map.get(paper_id, "")
             
-            result["expected_score_breakdown"] = {
-                "base_score": Config.BASE_SCORE,
-                "total_pros_weight": total_pros,
-                "total_cons_weight": total_cons,
-                "expected_score": expected
-            }
-        
-        logger.debug(
-            f"量化完成: 期望分数={result['expected_score_breakdown']['expected_score']:.2f}, "
-            f"实际分数={review.actual_score:.2f}"
-        )
-        
-        return result
-    
-    def quantify_paper(self, paper: Paper) -> Paper:
-        """
-        为论文的所有审稿意见量化权重
-        
-        Args:
-            paper: 论文对象（会被原地修改）
+            logger.info(f"正在量化论文: {title[:50]}...")
             
-        Returns:
-            更新后的论文对象
-        """
-        logger.info(f"正在量化论文: {paper.title}")
-        
-        for review in paper.reviews:
+            # 构建优缺点文本（只有描述和类别，无审稿人信息）
+            pros_count = len(pros)
+            cons_count = len(cons)
+            
+            pros_text = "\n".join([
+                f"{i+1}. [{p.get('category', '未分类')}] {p.get('description', '')}"
+                for i, p in enumerate(pros)
+            ]) if pros else "(无)"
+            
+            cons_text = "\n".join([
+                f"{i+1}. [{c.get('category', '未分类')}] {c.get('description', '')}"
+                for i, c in enumerate(cons)
+            ]) if cons else "(无)"
+            
+            logger.info(f"  输入: {pros_count} 个优点, {cons_count} 个缺点")
+            
+            # 构建提示词（包含论文全文）
+            prompt = PromptTemplates.QUANTIFY_WEIGHTS.format(
+                title=title,
+                abstract=abstract,
+                paper_content=paper_content[:15000] if paper_content else "(未提供论文全文)",
+                pros_text=pros_text,
+                cons_text=cons_text,
+                pros_count=pros_count,
+                cons_count=cons_count,
+                min_score=Config.MIN_SCORE,
+                max_score=Config.MAX_SCORE,
+                base_score=Config.BASE_SCORE
+            )
+            
             try:
-                result = self.quantify_review(
-                    review=review,
-                    paper_title=paper.title,
-                    paper_abstract=paper.abstract
-                )
+                response = self._call_llm(prompt)
+                result = safe_json_parse(response, default={
+                    "pros_weights": [],
+                    "cons_weights": [],
+                    "expected_score_breakdown": {}
+                })
                 
-                # 更新review对象
-                review.pros_weights = result["pros_weights"]
-                review.cons_weights = result["cons_weights"]
-                review.expected_score = result["expected_score_breakdown"]["expected_score"]
-                review.bias = review.actual_score - review.expected_score
+                # 确保权重列表长度匹配
+                pros_weights = result.get("pros_weights", [])
+                cons_weights = result.get("cons_weights", [])
+                
+                # 检查并警告数量不匹配
+                if len(pros_weights) < pros_count:
+                    logger.warning(
+                        f"  ⚠ LLM返回的优点权重数量不足: "
+                        f"期望 {pros_count}, 实际 {len(pros_weights)}"
+                    )
+                if len(cons_weights) < cons_count:
+                    logger.warning(
+                        f"  ⚠ LLM返回的缺点权重数量不足: "
+                        f"期望 {cons_count}, 实际 {len(cons_weights)}"
+                    )
+                
+                # 补齐缺失的权重（使用默认值）
+                while len(pros_weights) < pros_count:
+                    i = len(pros_weights)
+                    pros_weights.append({
+                        "description": pros[i].get("description", "") if i < len(pros) else "",
+                        "category": pros[i].get("category", "") if i < len(pros) else "",
+                        "weight": 0.5,
+                        "reasoning": "LLM未返回，使用默认值"
+                    })
+                
+                while len(cons_weights) < cons_count:
+                    i = len(cons_weights)
+                    cons_weights.append({
+                        "description": cons[i].get("description", "") if i < len(cons) else "",
+                        "category": cons[i].get("category", "") if i < len(cons) else "",
+                        "weight": -0.5,
+                        "reasoning": "LLM未返回，使用默认值"
+                    })
+                
+                quantified_results.append({
+                    "paper_id": paper_id,
+                    "title": title,
+                    "pros_weights": pros_weights,
+                    "cons_weights": cons_weights,
+                    "expected_score_breakdown": result.get("expected_score_breakdown", {})
+                })
                 
                 logger.info(
-                    f"  审稿人 {review.reviewer_id}: "
-                    f"期望={review.expected_score:.2f}, "
-                    f"实际={review.actual_score:.2f}, "
-                    f"偏差={review.bias:+.2f}"
+                    f"  完成: {len(pros_weights)} 优点权重, "
+                    f"{len(cons_weights)} 缺点权重"
                 )
                 
             except Exception as e:
-                logger.error(
-                    f"处理审稿人 {review.reviewer_id} 时出错: {e}"
-                )
-                # 设置默认值
-                review.pros_weights = []
-                review.cons_weights = []
-                review.expected_score = Config.BASE_SCORE
-                review.bias = review.actual_score - Config.BASE_SCORE
-        
-        return paper
-    
-    def quantify_unified_paper(self, paper: Paper) -> Paper:
-        """
-        为论文的统一优缺点量化权重，并计算每个审稿人的预期分数
-        
-        Args:
-            paper: 论文对象（必须已提取unified_pros和unified_cons）
+                logger.error(f"量化论文 {paper_id} 失败: {e}")
+                quantified_results.append({
+                    "paper_id": paper_id,
+                    "title": title,
+                    "pros_weights": [
+                        {"description": p.get("description", ""), "category": p.get("category", ""), "weight": 0, "reasoning": "量化失败"}
+                        for p in pros
+                    ],
+                    "cons_weights": [
+                        {"description": c.get("description", ""), "category": c.get("category", ""), "weight": 0, "reasoning": "量化失败"}
+                        for c in cons
+                    ],
+                    "expected_score_breakdown": {}
+                })
             
-        Returns:
-            更新后的论文对象
-        """
-        logger.info(f"正在量化论文统一权重: {paper.title}")
-        
-        if not paper.unified_pros and not paper.unified_cons:
-            logger.warning(f"论文 {paper.title} 没有统一优缺点，跳过量化")
-            for review in paper.reviews:
-                review.expected_score = Config.BASE_SCORE
-                review.bias = review.actual_score - Config.BASE_SCORE
-            return paper
-
-        # 1. 为统一优缺点获取权重
-        pros_text = "\n".join([
-            f"{i+1}. [{p.get('category', '未分类')}] {p.get('description', '')}"
-            for i, p in enumerate(paper.unified_pros)
-        ]) if paper.unified_pros else "(无)"
-        
-        cons_text = "\n".join([
-            f"{i+1}. [{c.get('category', '未分类')}] {c.get('description', '')}"
-            for i, c in enumerate(paper.unified_cons)
-        ]) if paper.unified_cons else "(无)"
-        
-        prompt = PromptTemplates.QUANTIFY_WEIGHTS.format(
-            title=paper.title,
-            abstract=paper.abstract,
-            paper_content=paper.paper_content or "(未提供正文内容)",
-            pros_text=pros_text,
-            cons_text=cons_text,
-            min_score=Config.MIN_SCORE,
-            max_score=Config.MAX_SCORE,
-            base_score=Config.BASE_SCORE
-        )
-        
-        try:
-            response = self._call_llm(prompt)
-            result = safe_json_parse(response, default={})
+            tracker.update(1)
             
-            pros_weights = result.get("pros_weights", [])
-            cons_weights = result.get("cons_weights", [])
-            
-            # 将权重映射回统一列表
-            for i, p in enumerate(paper.unified_pros):
-                if i < len(pros_weights):
-                    p["weight"] = pros_weights[i].get("weight", 0)
-                    p["reasoning"] = pros_weights[i].get("reasoning", "")
-                else:
-                    p["weight"] = 0
-            
-            for i, c in enumerate(paper.unified_cons):
-                if i < len(cons_weights):
-                    c["weight"] = cons_weights[i].get("weight", 0)
-                    c["reasoning"] = cons_weights[i].get("reasoning", "")
-                else:
-                    c["weight"] = 0
-                    
-            # 2. 为每个审稿人计算分数
-            for review in paper.reviews:
-                # 找出该审稿人提到的优缺点
-                review_pros = [p for p in paper.unified_pros if review.reviewer_id in p.get("reviewers", [])]
-                review_cons = [c for c in paper.unified_cons if review.reviewer_id in c.get("reviewers", [])]
-                
-                review.pros_weights = review_pros
-                review.cons_weights = review_cons
-                
-                # 线性相加计算预期分数
-                total_pro_weight = sum(p.get("weight", 0) for p in review_pros)
-                total_con_weight = sum(c.get("weight", 0) for c in review_cons)
-                
-                expected = Config.BASE_SCORE + total_pro_weight + total_con_weight
-                review.expected_score = max(Config.MIN_SCORE, min(Config.MAX_SCORE, expected))
-                review.bias = review.actual_score - review.expected_score
-                
-                logger.info(
-                    f"  审稿人 {review.reviewer_id}: "
-                    f"提及{len(review_pros)}优点/{len(review_cons)}缺点, "
-                    f"期望={review.expected_score:.2f}, 实际={review.actual_score:.2f}, 偏差={review.bias:+.2f}"
-                )
-                
-        except Exception as e:
-            logger.error(f"量化统一权重失败: {e}")
-            for review in paper.reviews:
-                review.expected_score = Config.BASE_SCORE
-                review.bias = review.actual_score - Config.BASE_SCORE
-                
-        return paper
-
-    def quantify_papers(self, papers: List[Paper], unified: bool = True) -> List[Paper]:
-        """
-        批量量化多篇论文的权重
-        
-        Args:
-            papers: 论文列表（会被原地修改）
-            unified: 是否使用统一量化模式
-            
-        Returns:
-            更新后的论文列表
-        """
-        mode_desc = "统一权重量化" if unified else "独立权重量化"
-        logger.info(f"开始批量 {mode_desc}，共 {len(papers)} 篇论文...")
-        
-        tracker = ProgressTracker(
-            total=len(papers) if unified else sum(len(p.reviews) for p in papers),
-            description=mode_desc
-        )
-        
-        for paper in papers:
-            if unified:
-                self.quantify_unified_paper(paper)
-                tracker.update(1)
-            else:
-                self.quantify_paper(paper)
-                tracker.update(len(paper.reviews))
+            # 请求间隔，防止速率限制
+            if idx < len(anonymized_data) - 1:
+                logger.info(f"  ⏳ 等待 {Config.REQUEST_DELAY:.1f} 秒...")
+                time.sleep(Config.REQUEST_DELAY)
         
         tracker.finish()
         
-        return papers
+        # 保存量化结果
+        output_file = output_dir / "quantified_weights.json"
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(quantified_results, f, ensure_ascii=False, indent=2)
+        
+        logger.info(f"量化结果已保存到: {output_file}")
+        
+        return output_file
     
     def calculate_expected_score(
         self,
@@ -471,46 +355,51 @@ if __name__ == "__main__":
     # 测试量化器
     from data_loader import Paper, Review
     
-    # 创建测试数据
-    test_review = Review(
-        reviewer_id="test_reviewer",
-        review_text="Test review",
-        actual_score=7.0
-    )
-    
-    # 模拟已提取的优缺点
-    test_review.pros = [
-        {"description": "创新的方法", "category": "创新性 (Novelty/Originality)"},
-        {"description": "实验充分", "category": "实验充分性 (Experimental Rigor)"}
+    # 创建测试匿名数据
+    test_anonymized = [
+        {
+            "paper_id": "test_001",
+            "title": "Test Paper",
+            "abstract": "Test abstract",
+            "pros": [
+                {"shuffled_index": 0, "description": "创新方法", "category": "创新性"},
+                {"shuffled_index": 1, "description": "实验充分", "category": "实验充分性"}
+            ],
+            "cons": [
+                {"shuffled_index": 0, "description": "写作问题", "category": "写作质量"}
     ]
-    test_review.cons = [
-        {"description": "写作有瑕疵", "category": "写作质量 (Writing Quality)"}
+        }
     ]
     
+    # 创建测试论文
     test_paper = Paper(
-        paper_id="test_paper",
+        paper_id="test_001",
         title="Test Paper",
-        abstract="This is a test abstract."
+        abstract="Test abstract",
+        paper_content="This is the paper content..."
     )
-    test_paper.add_review(test_review)
+    
+    # 保存测试文件
+    test_file = Path("./test_anonymized.json")
+    with open(test_file, 'w', encoding='utf-8') as f:
+        json.dump(test_anonymized, f, ensure_ascii=False, indent=2)
     
     # 测试量化
     quantifier = LLMQuantifier()
     
     try:
         Config.validate()
-        quantifier.quantify_paper(test_paper)
+        output_file = quantifier.quantify_anonymized_file(
+            test_file, 
+            [test_paper]
+        )
         
-        print("\n量化结果:")
-        print(f"期望分数: {test_review.expected_score:.2f}")
-        print(f"实际分数: {test_review.actual_score:.2f}")
-        print(f"偏差: {test_review.bias:+.2f}")
-        
-        print("\n✓ LLM量化器测试完成！")
+        print(f"\n✓ 量化器测试完成！")
+        print(f"输出文件: {output_file}")
         
     except ValueError as e:
         print(f"\n⚠ 需要配置API密钥才能测试: {e}")
-
-
-
-
+    finally:
+        # 清理
+        if test_file.exists():
+            test_file.unlink()

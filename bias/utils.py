@@ -166,7 +166,8 @@ def cached(func: Callable) -> Callable:
 def retry_on_failure(max_retries: int = None, delay: int = None):
     """
     重试装饰器
-    用于API调用失败时自动重试
+    用于API调用失败时自动重试，使用指数退避策略
+    对于401错误（速率限制），等待更长时间
     """
     max_retries = max_retries or Config.MAX_RETRIES
     delay = delay or Config.RETRY_DELAY
@@ -181,11 +182,27 @@ def retry_on_failure(max_retries: int = None, delay: int = None):
                     return func(*args, **kwargs)
                 except Exception as e:
                     last_exception = e
+                    error_str = str(e)
+                    
+                    # 检测是否是速率限制错误 (401, 429, rate limit)
+                    is_rate_limit = any(x in error_str.lower() for x in ['401', '429', 'rate', 'limit', '无效的令牌'])
+                    
+                    if is_rate_limit:
+                        # 速率限制：使用更长的退避时间
+                        wait_time = delay * (2 ** attempt) + 5  # 指数退避 + 额外5秒
+                        logger.warning(
+                            f"检测到速率限制，第 {attempt + 1}/{max_retries} 次尝试失败，"
+                            f"等待 {wait_time} 秒后重试: {e}"
+                        )
+                    else:
+                        # 普通错误：标准递增延迟
+                        wait_time = delay * (attempt + 1)
                     logger.warning(
                         f"第 {attempt + 1}/{max_retries} 次尝试失败: {e}"
                     )
+                    
                     if attempt < max_retries - 1:
-                        time.sleep(delay * (attempt + 1))  # 递增延迟
+                        time.sleep(wait_time)
             
             logger.error(f"所有重试均失败: {last_exception}")
             raise last_exception

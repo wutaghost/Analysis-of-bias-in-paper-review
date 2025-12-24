@@ -1,11 +1,15 @@
 """
 特征提取模块
 使用LLM从审稿意见中提取结构化的优缺点
+步骤1: 独立提取每个审稿人的优缺点并保存到文件
 """
 
+import json
 from typing import List, Dict, Any
+from pathlib import Path
 from openai import OpenAI
 
+import time
 from config import Config, PromptTemplates
 from data_loader import Paper, Review
 from utils import logger, cached, retry_on_failure, safe_json_parse, ProgressTracker
@@ -71,117 +75,101 @@ class FeatureExtractor:
             logger.error(f"LLM调用失败: {e}")
             raise
     
-    def extract_pros_cons_from_review(
+    def extract_pros_cons_from_paper(
         self, 
-        review: Review, 
-        paper_title: str, 
-        paper_abstract: str
-    ) -> Dict[str, List[Dict[str, str]]]:
+        paper: Paper
+    ) -> Dict[str, List[Dict[str, Any]]]:
         """
-        使用LLM从单条审稿意见中提取优缺点
+        使用LLM一次性提取一篇论文所有审稿意见的优缺点
         
         Args:
-            review: 审稿记录
-            paper_title: 论文标题
-            paper_abstract: 论文摘要
+            paper: 论文对象（包含所有审稿意见）
             
         Returns:
-            包含pros和cons的字典
+            包含每个审稿人优缺点的字典
         """
-        logger.debug(f"正在提取审稿人 {review.reviewer_id} 的优缺点...")
+        logger.info(f"正在提取论文 {paper.title[:50]}... 的所有审稿优缺点")
+        
+        # 构建所有审稿意见的文本
+        all_reviews_text = ""
+        for i, review in enumerate(paper.reviews):
+            all_reviews_text += f"\n{'='*40}\n"
+            all_reviews_text += f"【审稿人 {review.reviewer_id}】\n"
+            all_reviews_text += f"{'='*40}\n"
+            all_reviews_text += f"{review.review_text}\n"
         
         # 构建提示词
         categories_str = ", ".join(Config.CATEGORIES)
-        prompt = PromptTemplates.EXTRACT_PROS_CONS.format(
-            title=paper_title,
-            abstract=paper_abstract,
-            review_text=review.review_text,
+        prompt = PromptTemplates.EXTRACT_PROS_CONS_BATCH.format(
+            title=paper.title,
+            abstract=paper.abstract,
+            num_reviewers=len(paper.reviews),
+            all_reviews_text=all_reviews_text,
             categories=categories_str
         )
         
-        # 调用LLM
+        # 调用LLM（一次调用处理所有审稿意见）
         try:
             response = self._call_llm(prompt)
             
             # 解析JSON响应
-            result = safe_json_parse(response, default={
-                "pros": [],
-                "cons": []
-            })
+            result = safe_json_parse(response, default={"reviewers": []})
             
-            # 验证结果
-            if "pros" not in result:
-                result["pros"] = []
-            if "cons" not in result:
-                result["cons"] = []
-            
-            # 确保每个优缺点都有必需的字段
-            for pro in result["pros"]:
-                if "category" not in pro:
-                    pro["category"] = "未分类"
-                if "description" not in pro:
-                    pro["description"] = ""
-            
-            for con in result["cons"]:
-                if "category" not in con:
-                    con["category"] = "未分类"
-                if "description" not in con:
-                    con["description"] = ""
-            
-            logger.debug(
-                f"提取到 {len(result['pros'])} 个优点，"
-                f"{len(result['cons'])} 个缺点"
-            )
-            
-            return result
-            
-        except Exception as e:
-            logger.error(f"LLM提取优缺点失败: {e}")
-            # 返回空结果
-            return {"pros": [], "cons": []}
-    
-    def extract_from_paper(self, paper: Paper) -> Paper:
-        """
-        从论文的所有审稿意见中提取优缺点
-        
-        Args:
-            paper: 论文对象（会被原地修改）
-            
-        Returns:
-            更新后的论文对象
-        """
-        logger.info(f"正在处理论文: {paper.title}")
-        
-        for review in paper.reviews:
-            try:
-                result = self.extract_pros_cons_from_review(
-                    review=review,
-                    paper_title=paper.title,
-                    paper_abstract=paper.abstract
-                )
+            # 构建 reviewer_id -> 优缺点 的映射
+            reviewer_results = {}
+            for reviewer_data in result.get("reviewers", []):
+                reviewer_id = reviewer_data.get("reviewer_id", "")
+                pros = reviewer_data.get("pros", [])
+                cons = reviewer_data.get("cons", [])
                 
-                # 更新review对象
-                review.pros = result["pros"]
-                review.cons = result["cons"]
+                # 确保每个优缺点都有必需的字段
+                for pro in pros:
+                    if "category" not in pro:
+                        pro["category"] = "未分类"
+                    if "description" not in pro:
+                        pro["description"] = ""
+                
+                for con in cons:
+                    if "category" not in con:
+                        con["category"] = "未分类"
+                    if "description" not in con:
+                        con["description"] = ""
+                
+                reviewer_results[reviewer_id] = {
+                    "pros": pros,
+                    "cons": cons
+                }
+            
+            # 为每个审稿人更新结果
+            for review in paper.reviews:
+                if review.reviewer_id in reviewer_results:
+                    data = reviewer_results[review.reviewer_id]
+                    review.pros = data["pros"]
+                    review.cons = data["cons"]
+                else:
+                    # 如果LLM没有返回该审稿人的结果，设为空
+                    logger.warning(f"  ⚠ 未找到审稿人 {review.reviewer_id} 的提取结果")
+                    review.pros = []
+                    review.cons = []
                 
                 logger.info(
                     f"  审稿人 {review.reviewer_id}: "
                     f"{len(review.pros)} 优点, {len(review.cons)} 缺点"
                 )
-                
-            except Exception as e:
-                logger.error(
-                    f"处理审稿人 {review.reviewer_id} 时出错: {e}"
-                )
-                # 设置空结果
+            
+            return reviewer_results
+            
+        except Exception as e:
+            logger.error(f"LLM提取优缺点失败: {e}")
+            # 为所有审稿人设置空结果
+            for review in paper.reviews:
                 review.pros = []
                 review.cons = []
-        
-        return paper
+            return {}
     
-    def extract_unified_from_paper(self, paper: Paper) -> Paper:
+    def extract_from_paper(self, paper: Paper) -> Paper:
         """
-        整合提取论文所有审稿人的统一优缺点
+        从论文的所有审稿意见中提取优缺点（一次LLM调用）
         
         Args:
             paper: 论文对象（会被原地修改）
@@ -189,83 +177,137 @@ class FeatureExtractor:
         Returns:
             更新后的论文对象
         """
-        logger.info(f"正在为论文提取统一特征: {paper.title}")
-        
-        # 构建审稿文本列表
-        reviews_text_list = []
-        for i, review in enumerate(paper.reviews):
-            reviews_text_list.append(
-                f"--- 审稿人 {i+1} (ID: {review.reviewer_id}) ---\n{review.review_text}"
-            )
-        reviews_text = "\n\n".join(reviews_text_list)
-        
-        # 构建提示词
-        categories_str = ", ".join(Config.CATEGORIES)
-        prompt = PromptTemplates.EXTRACT_UNIFIED_FEATURES.format(
-            title=paper.title,
-            abstract=paper.abstract,
-            paper_content=paper.paper_content or "(未提供正文内容)",
-            reviews_text=reviews_text,
-            categories=categories_str
-        )
-        
-        # 调用LLM
-        try:
-            response = self._call_llm(prompt)
-            
-            # 解析JSON响应
-            result = safe_json_parse(response, default={
-                "unified_pros": [],
-                "unified_cons": []
-            })
-            
-            # 存储到paper对象
-            paper.unified_pros = result.get("unified_pros", [])
-            paper.unified_cons = result.get("unified_cons", [])
-            
-            logger.info(
-                f"  完成整合提取: {len(paper.unified_pros)} 统一优点, "
-                f"{len(paper.unified_cons)} 统一缺点"
-            )
-            
-            return paper
-            
-        except Exception as e:
-            logger.error(f"LLM整合提取优缺点失败: {e}")
-            paper.unified_pros = []
-            paper.unified_cons = []
-            return paper
+        # 一次性提取该论文所有审稿人的优缺点
+        self.extract_pros_cons_from_paper(paper)
+        return paper
     
-    def extract_from_papers(self, papers: List[Paper], unified: bool = True) -> List[Paper]:
+    def extract_from_papers(self, papers: List[Paper], checkpoint_interval: int = 5) -> List[Paper]:
         """
         批量提取多篇论文的优缺点
+        每篇论文只需要一次LLM调用（而不是每个审稿人一次）
+        支持断点续传：跳过已有提取结果的论文
         
         Args:
             papers: 论文列表（会被原地修改）
-            unified: 是否使用统一提取模式
+            checkpoint_interval: 每隔多少篇保存一次检查点
             
         Returns:
             更新后的论文列表
         """
-        mode_desc = "统一特征提取" if unified else "独立特征提取"
-        logger.info(f"开始批量 {mode_desc}，共 {len(papers)} 篇论文...")
+        total_reviews = sum(len(p.reviews) for p in papers)
+        logger.info(f"开始批量特征提取，共 {len(papers)} 篇论文 ({total_reviews} 条审稿)")
+        logger.info(f"📌 优化: 每篇论文1次API调用，共需 {len(papers)} 次API调用")
+        
+        # 检查已有提取结果的论文（断点续传）
+        papers_to_process = []
+        papers_already_done = 0
+        for paper in papers:
+            # 检查是否所有审稿都已有提取结果
+            has_results = all(
+                len(r.pros) > 0 or len(r.cons) > 0 
+                for r in paper.reviews
+            )
+            if has_results:
+                papers_already_done += 1
+            else:
+                papers_to_process.append(paper)
+        
+        if papers_already_done > 0:
+            logger.info(f"📋 断点续传: 跳过 {papers_already_done} 篇已处理论文")
+        
+        if not papers_to_process:
+            logger.info("所有论文已处理完成，无需API调用")
+            return papers
+        
+        logger.info(f"需要处理: {len(papers_to_process)} 篇论文")
         
         tracker = ProgressTracker(
-            total=len(papers) if unified else sum(len(p.reviews) for p in papers),
-            description=mode_desc
+            total=len(papers_to_process),
+            description="特征提取"
         )
         
-        for paper in papers:
-            if unified:
-                self.extract_unified_from_paper(paper)
-                tracker.update(1)
-            else:
+        consecutive_failures = 0
+        max_consecutive_failures = 3
+        
+        for i, paper in enumerate(papers_to_process):
+            try:
                 self.extract_from_paper(paper)
-                tracker.update(len(paper.reviews))
+                tracker.update(1)
+                consecutive_failures = 0  # 重置连续失败计数
+                
+                # 每隔一定数量保存检查点
+                if (i + 1) % checkpoint_interval == 0:
+                    logger.info(f"💾 检查点: 已处理 {i + 1}/{len(papers_to_process)} 篇")
+                
+                # 论文之间添加延迟，避免API请求过于密集
+                if i < len(papers_to_process) - 1:
+                    # 根据处理进度动态调整延迟
+                    if i > 0 and i % 10 == 0:
+                        # 每处理10篇，增加一次长休息
+                        long_delay = Config.BATCH_DELAY
+                        logger.info(f"  ⏳ 长休息 {long_delay:.1f} 秒 (已处理 {i+1} 篇)...")
+                        time.sleep(long_delay)
+                    else:
+                        logger.info(f"  ⏳ 等待 {Config.REQUEST_DELAY:.1f} 秒...")
+                        time.sleep(Config.REQUEST_DELAY)
+                        
+            except Exception as e:
+                consecutive_failures += 1
+                logger.error(f"处理论文 {paper.title[:30]}... 失败: {e}")
+                
+                # 如果连续失败多次，增加等待时间
+                if consecutive_failures >= max_consecutive_failures:
+                    wait_time = Config.BATCH_DELAY * 2
+                    logger.warning(f"⚠️ 连续失败 {consecutive_failures} 次，等待 {wait_time} 秒后继续...")
+                    time.sleep(wait_time)
+                    consecutive_failures = 0
         
         tracker.finish()
         
         return papers
+    
+    def save_extraction_results(self, papers: List[Paper], output_dir: Path = None) -> Path:
+        """
+        步骤1: 将提取结果保存到文件
+        保存格式: 每个审稿人的优缺点，包含审稿人ID信息
+        
+        Args:
+            papers: 论文列表（已提取优缺点）
+            output_dir: 输出目录，默认为 Config.EXTRACTION_DIR
+            
+        Returns:
+            输出文件路径
+        """
+        output_dir = output_dir or Config.EXTRACTION_DIR
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        extraction_data = []
+        
+        for paper in papers:
+            paper_data = {
+                "paper_id": paper.paper_id,
+                "title": paper.title,
+                "abstract": paper.abstract,
+                "reviews": []
+            }
+            
+            for review in paper.reviews:
+                review_data = {
+                    "reviewer_id": review.reviewer_id,
+                    "actual_score": review.actual_score,
+                    "pros": review.pros,
+                    "cons": review.cons
+                }
+                paper_data["reviews"].append(review_data)
+            
+            extraction_data.append(paper_data)
+        
+        output_file = output_dir / "extraction_results.json"
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(extraction_data, f, ensure_ascii=False, indent=2)
+        
+        logger.info(f"特征提取结果已保存到: {output_file}")
+        return output_file
     
     def compare_reviews_similarity(
         self,
@@ -475,9 +517,10 @@ if __name__ == "__main__":
         print(f"优点数: {len(test_review.pros)}")
         print(f"缺点数: {len(test_review.cons)}")
         
+        # 测试保存
+        extractor.save_extraction_results([test_paper])
+        
         print("\n✓ 特征提取器测试完成！")
         
     except ValueError as e:
         print(f"\n⚠ 需要配置API密钥才能测试: {e}")
-
-

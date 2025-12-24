@@ -1,5 +1,11 @@
 """
 运行ICLR 2025数据分析的示例脚本
+
+新流程（四步骤）:
+1. 特征提取: 使用LLM提取每个审稿人的优缺点 -> 输出文件
+2. 匿名化处理: 去除审稿人信息，打乱顺序 -> 输出新文件
+3. 权重量化: 基于匿名化文件+PDF内容，使用LLM量化 -> 输出量化文件
+4. 匹配计算: 代码逻辑匹配回审稿人，线性相加得分数
 """
 
 import sys
@@ -24,9 +30,15 @@ def main():
         return 1
     
     print("="*70)
-    print("ICLR 2025 审稿偏差分析")
+    print("ICLR 2025 审稿偏差分析（四步骤流程）")
     print("="*70)
     print(f"\n数据目录: {iclr_data_dir.resolve()}")
+    
+    print("\n流程说明:")
+    print("  步骤1: 特征提取 - 使用LLM独立提取每个审稿人的优缺点")
+    print("  步骤2: 匿名化处理 - 去除审稿人信息，随机打乱顺序")
+    print("  步骤3: 权重量化 - 基于匿名优缺点+论文全文，LLM量化权重")
+    print("  步骤4: 匹配计算 - 代码逻辑匹配回审稿人，线性相加计算分数")
     
     # 检查API密钥
     try:
@@ -78,21 +90,14 @@ def main():
                 pipeline.papers = pipeline.papers[:10]
                 print(f"已限制为前10篇论文")
         
-        # 运行完整分析
+        # 运行完整分析（四步骤）
         print("\n" + "="*70)
-        print("开始运行完整分析...")
+        print("开始运行完整四步骤分析...")
         print("="*70)
         print("\n这可能需要一些时间，请耐心等待...")
         print("进度信息将实时显示在下方\n")
         
         results = pipeline.run_full_analysis()
-        
-        # 额外分析：审稿相似度
-        print("\n" + "="*70)
-        print("进行额外分析：审稿相似度...")
-        print("="*70)
-        
-        similarity_results = pipeline.analyze_review_similarity()
         
         # 识别高偏差案例
         print("\n" + "="*70)
@@ -110,16 +115,9 @@ def main():
         pipeline.save_papers()
         pipeline.generate_report()
         
-        # 保存额外结果
+        # 保存高偏差案例
         import json
         
-        # 保存相似度结果
-        similarity_file = Config.OUTPUT_DIR / "iclr_similarity_analysis.json"
-        with open(similarity_file, 'w', encoding='utf-8') as f:
-            json.dump(similarity_results, f, ensure_ascii=False, indent=2)
-        logger.info(f"相似度分析结果已保存: {similarity_file}")
-        
-        # 保存高偏差案例
         if problematic:
             import pandas as pd
             
@@ -155,22 +153,24 @@ def main():
         print(f"  {t_test['interpretation']}")
         print(f"  p值: {t_test['p_value']:.4f}")
         
-        if similarity_results:
-            print(f"\n相似度分析:")
-            print(f"  平均相似度: {similarity_results['avg_similarity']:.3f}")
-            print(f"  平均分数差异: {similarity_results['avg_score_diff']:.2f}")
-            print(f"  {similarity_results['interpretation']}")
-        
         print(f"\n高偏差案例: {len(problematic)} 个")
+        
+        # 显示中间文件位置
+        print(f"\n中间文件输出:")
+        print(f"  - 步骤1 提取结果: {results['output_files']['extraction']}")
+        print(f"  - 步骤2 匿名化文件: {results['output_files']['anonymized']}")
+        print(f"  - 步骤2 映射文件: {results['output_files']['mapping']}")
+        print(f"  - 步骤3 量化结果: {results['output_files']['quantified']}")
         
         print(f"\n所有结果已保存到: {Config.OUTPUT_DIR}")
         print(f"  - 分析报告: analysis_report.txt")
         print(f"  - 详细结果: analysis_results.json")
+        print(f"  - 每篇论文详情: paper_details/")
         print(f"  - 可视化图表: figures/")
         print(f"  - 高偏差案例: iclr_high_bias_cases.csv")
         
         print("\n" + "="*70)
-        print("✓ 分析完成！")
+        print("✓ 四步骤分析完成！")
         print("="*70)
         
         return 0
@@ -187,7 +187,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-
-
-
-

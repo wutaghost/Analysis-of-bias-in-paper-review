@@ -46,10 +46,6 @@ class Paper:
     source_dir: Optional[Path] = None  # 记录源目录以便延迟加载 PDF
     reviews: List[Review] = field(default_factory=list)
     
-    # 统一特征提取结果
-    unified_pros: List[Dict[str, Any]] = field(default_factory=list)
-    unified_cons: List[Dict[str, Any]] = field(default_factory=list)
-    
     # 统计信息（后续填充）
     avg_actual_score: Optional[float] = None
     std_actual_score: Optional[float] = None
@@ -385,7 +381,7 @@ class DataLoader:
                 return
         
         logger.debug(f"  未找到论文 {paper.paper_id} 的 PDF 文件")
-
+    
     def save_to_json(self, file_path: Union[str, Path]):
         """保存数据到JSON文件"""
         file_path = Path(file_path)
