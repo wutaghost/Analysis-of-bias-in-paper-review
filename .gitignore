@@ -9,3 +9,5 @@ results/
 venv/
 env/
 
+# 数据文件夹
+ICLR_2025*/
